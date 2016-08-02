@@ -11,3 +11,4 @@ dist/
 
 # Local data
 local_settings.py
+.flags/
