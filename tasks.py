@@ -23,9 +23,9 @@ def finalize_version(ctx):
 
 
 @task
-def increase_version(ctx, level, dev_flag=True):
+def increase_version(ctx, level='micro', dev_flag=True):
     current_version = version.extract()
-    new_version = version.increase(finalized_version, level=level, dev_flag=dev_flag)
+    new_version = version.increase(current_version, level=level, dev_flag=dev_flag)
     version.save(new_version)
     ctx.run('git add {version_file}'.format(version_file=version.VERSION_FILE))
     ctx.run('git commit -m "Start working on version {version}"'.format(version=new_version))
