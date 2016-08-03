@@ -1,7 +1,7 @@
 import re
 
 VERSION_FILE = 'flocs/_version.py'
-VERSION_LINE_TEMPLATE = '__version__ = "{version}"'
+VERSION_LINE_TEMPLATE = '__version__ = "{version}"\n'
 VERSION_LINE_RE = re.compile(r"^__version__ = ['\"]([^'\"]*)['\"]")
 
 
