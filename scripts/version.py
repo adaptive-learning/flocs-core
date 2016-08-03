@@ -46,13 +46,16 @@ class Version(object):
         return int(self.parts[2])
 
 
-def increase(version, level):
+def increase(version, *, level, dev_flag):
     if level == 'major':
-        return Version(version.major + 1, 0, 0)
+        version = Version(version.major + 1, 0, 0)
     elif level == 'minor':
-        return Version(version.major, version.minor + 1, 0)
+        version = Version(version.major, version.minor + 1, 0)
     elif level == 'micro':
-        return Version(version.major, version.minor, version.micro + 1)
+        version = Version(version.major, version.minor, version.micro + 1)
+    if dev_flag:
+        version = Version(version.major, version.minor, version.micro, 'dev')
+    return version
 
 
 def remove_dev_flag(version):
