@@ -3,31 +3,34 @@ from scripts import version
 
 @task
 def release(ctx, level='micro'):
+    finalize_version(ctx)
+    ctx.run('python setup.py sdist upload')
+    increase_version(ctx, level=level, dev_flag=True)
+
+
+@task
+def finalize_version(ctx):
+    dev_version = version.extract()
+    finalized_version = version.remove_dev_flag(dev_version)
+    tag = 'release-{version}'.format(version=finalized_version)
     ctx.run('git reset')
-    version_remove_dev_flag(ctx)
-    ctx.run('git add flocs/_version.py')
-    ctx.run('git commit -m "Release version {version}"'.format(version=version.extract()))
-    #TBA: git tags
-    #TBA: git push
-    #TBA: python setup.py sdist upload
-    #TBA: invoke version_increase --level micro
-    #TBA: git push
+    version.save(finalized_version)
+    ctx.run('git add {version_file}'.format(version_file=version.VERSION_FILE))
+    ctx.run('git commit -m "Release version {version}"'.format(version=finalized_version))
+    ctx.run('git tag {tag}'.format(tag=tag))
+    ctx.run('git push origin {tag}'.format(tag=tag))
 
 
 @task
-def version_print(ctx):
+def increase_version(ctx, level, dev_flag=True):
+    current_version = version.extract()
+    new_version = version.increase(finalized_version, level=level, dev_flag=dev_flag)
+    version.save(new_version)
+    ctx.run('git add {version_file}'.format(version_file=version.VERSION_FILE))
+    ctx.run('git commit -m "Start working on version {version}"'.format(version=new_version))
+    ctx.run('git push')
+
+
+@task
+def print_version(ctx):
     print(version.extract())
-
-
-@task
-def version_increase(ctx, level='micro', dev_flag=True):
-    current_version = version.extract()
-    new_version = version.increase(current_version, level=level, dev_flag=dev_flag)
-    version.save(new_version)
-
-
-@task
-def version_remove_dev_flag(ctx):
-    current_version = version.extract()
-    new_version = version.remove_dev_flag(current_version)
-    version.save(new_version)
