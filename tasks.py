@@ -19,6 +19,7 @@ def finalize_version(ctx):
     ctx.run('git commit -m "Release version {version}"'.format(version=finalized_version))
     ctx.run('git tag {tag}'.format(tag=tag))
     ctx.run('git push origin {tag}'.format(tag=tag))
+    ctx.run('git push')
 
 
 @task
