@@ -1,10 +1,12 @@
 from setuptools import setup
-from scripts import version
 
+def extract_version():
+    with open('flocs/_version.py') as version_file:
+        return version_file.read().split('"')[1]
 
 setup(
     name='flocs',
-    version=str(version.extract()),
+    version=extract_version(),
     description='Components for adaptive learning of computer science',
     author='Tomas Effenberger',
     author_email='tomas.effenberger@gmail.com',
