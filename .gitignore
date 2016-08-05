@@ -1,13 +1,10 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
-
-# Distribution / packaging
+.cache/
+*.log
 dist/
 *.egg-info/
-
-# Temporary data
-*.log
 
 # Local data
 local_settings.py

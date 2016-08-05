@@ -1,6 +1,12 @@
 from invoke import task
 from scripts import version
 
+
+@task
+def test(ctx):
+    ctx.run('py.test --doctest-modules')
+
+
 @task
 def release(ctx, level='micro'):
     finalize_version(ctx)

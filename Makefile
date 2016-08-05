@@ -1,5 +1,7 @@
 # The most high-level tasks
 
+# TODO: test release dependencies etc. (?)
+
 FLAGS=$(CURDIR)/.flags
 
 dependencies: $(FLAGS)/dependencies
@@ -10,4 +12,4 @@ $(FLAGS)/dependencies: $(FLAGS) requirements.txt
 $(FLAGS):
 	mkdir $(FLAGS)
 
-.PHONY: release tag dependencies
+.PHONY: release test dependencies

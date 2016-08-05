@@ -22,8 +22,8 @@ def save(version):
         f.write(version_line)
 
 
-# TODO: make it a namedtuple?
-class Version(object):
+# TODO: make it a namedtuple? (or subclass)
+class Version:
     def __init__(self, *parts):
         self.parts = tuple(map(str, parts))
 
@@ -31,7 +31,10 @@ class Version(object):
         return '.'.join(self.parts)
 
     def __repr__(self):
-        return '<Version {0}>'.format(str(self))
+        return 'Version({0})'.format(', '.join(self.parts))
+
+    def __eq__(self, other):
+        return self.parts == other.parts
 
     @property
     def major(self):
@@ -47,6 +50,11 @@ class Version(object):
 
 
 def increase(version, *, level, dev_flag):
+    """Return version increased on given level and optionally set dev flag
+
+    >>> increase(Version(2, 5, 14), level='minor', dev_flag=True)
+    Version(2, 6, 0, dev)
+    """
     if level == 'major':
         version = Version(version.major + 1, 0, 0)
     elif level == 'minor':
@@ -59,4 +67,9 @@ def increase(version, *, level, dev_flag):
 
 
 def remove_dev_flag(version):
+    """Return version without the dev flag
+
+    >>> remove_dev_flag(Version(2, 5, 14, 'dev'))
+    Version(2, 5, 14)
+    """
     return Version(version.major, version.minor, version.micro)

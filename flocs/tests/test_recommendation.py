@@ -1,16 +1,7 @@
-import unittest
-from recommendation import recommend_task
+from flocs.recommendation import recommend_task
 
 
-class TestRecommendation(unittest.TestCase):
-
-    def setUp(self):
-        self.student = 'Lojza', #Student()
-        self.tasks = ['zig-zag'], #[Task()]
-
-
-    def test_recommend_single_task(self):
-        self.assertEqual(
-            recommend_task(self.student, [self.tasks[0]], criteria=[]),
-            self.tasks[0]
-        )
+def test_recommend_single_task():
+    ANY_TASK = 'task1'
+    task = recommend_task(None, [ANY_TASK], criteria=[])
+    assert task == ANY_TASK
