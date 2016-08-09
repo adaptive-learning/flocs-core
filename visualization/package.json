@@ -11,6 +11,8 @@
   "homepage": "https://github.com/adaptive-learning/flocs-core#readme",
   "main": "index.js",
   "dependencies": {
+    "axios": "^0.13.1",
+    "es6-promise": "^3.2.1",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
     "react-router": "^2.6.1"
