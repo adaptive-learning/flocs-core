@@ -2,23 +2,13 @@ import React from 'react';
 import WorldBlock from '../components/WorldBlock'
 
 export default function SpaceWorld(props) {
-  return (
-    <div>
-      {props.blocks.map((row, index) =>
-        <SpaceWorldRow key={index} blocks={row}/>
-      )}
-    </div>
-  );
-}
+  var dimensions = {xMin: 1, xMax: 3, yMin: 1, yMax: 2};
 
-
-function SpaceWorldRow(props) {
   return (
     <div>
       {props.blocks.map((block, index) =>
-        <WorldBlock key={index} data={block}/>
+        <div key={index}><WorldBlock name={block.name}/> @ {block.position}</div>
       )}
     </div>
   );
 }
-

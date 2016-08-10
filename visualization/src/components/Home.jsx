@@ -1,18 +1,10 @@
 import React from 'react';
+import SpaceGame from '../containers/SpaceGame'
 
-export default class Home extends React.Component {
-  render() {
-    return (
-      <div>
-        TODO: home page
-      </div>
-    )
-  }
+export default function Home(props) {
+  return (
+    <div>
+      <SpaceGame />
+    </div>
+  )
 }
-
-/*
-class SpaceWorld extends React.Component {
-  render() {
-    return <span>Space World is here!</span>
-  }
-}*/
