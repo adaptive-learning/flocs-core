@@ -1,33 +1,9 @@
-import React from 'react';
-import SpaceWorld from '../components/SpaceWorld';
-import SpaceControls from '../components/SpaceControls'
-import flocsDao from '../services/flocsDao';
+import { connect } from 'react-redux';
+import taskActions from '../actions/task';
+import SpaceWorldWithControls from '../components/SpaceWorldWithControls';
 
 
-export default class SpaceGame extends React.Component {
-
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      fields: {},
-      hero: null,
-    };
-  };
-
-  // return serialized blocks as a single array
-  getBlocks() {
-    var blocks = []
-    for (var position in this.state.fields) {
-      blocks.push({position: position, name: this.state.fields[position].background});
-      // TBA: push all objects on this position as well
-    }
-    if (this.state.hero !== null) {
-      var heroPositionKey = this.state.hero.y + '-' + this.state.hero.x;
-      blocks.push({position: heroPositionKey, name: 'space-rocket'});
-    }
-    return blocks;
-  }
-
+/*
   componentDidMount() {
     // TODO: use store
     var key = 'zig-zag'
@@ -38,23 +14,21 @@ export default class SpaceGame extends React.Component {
       });
     }.bind(this));
   }
+*/
 
-  handleNewCommand(command) {
-    var delta = {ahead: 0, left: -1, right: +1}[command.direction];
-    this.setState({
-      hero: {
-        x: this.state.hero.x + delta,
-        y: this.state.hero.y + 1,
-      }
-    });
-  }
+const mapStateToProps = (state) => {
+  return {
+    task: state.task
+  };
+};
 
-  render() {
-    return (
-      <div>
-        <SpaceWorld blocks={this.getBlocks()} />
-        <SpaceControls onNewCommand={this.handleNewCommand.bind(this)} />
-      </div>
-    )
-  }
-}
+const mapDispatchToProps = (dispatch) => {
+  return {};  // TBA
+};
+
+const SpaceGame = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SpaceWorldWithControls);
+
+export default SpaceGame;

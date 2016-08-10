@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default function WorldBlock(props) {
+export default function WorldBlock({ name }) {
   return (
     <span>
-      [{props.name}]
+      [{name}]
     </span>
   );
 }
