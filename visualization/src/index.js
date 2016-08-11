@@ -8,6 +8,11 @@ import reducers from './reducers'
 import Main from './components/Main'  // TODO: user router instead and remove this import
 import Home from './components/Home'  // TODO: user router instead and remove this import
 
+
+// quick test
+import { run } from './actions/task'
+console.log(run());
+
 let store = createStore(reducers);
 ReactDOM.render(
   <Provider store={store}>
