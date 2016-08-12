@@ -1,5 +1,27 @@
-import ActionTypes from './actionTypes';
+import ActionTypes from '../actions/actionTypes';
 
+const FAKE_TASKS = {
+  1: {
+    id: 1,
+    ref: 'zig-zag',
+    setting: 'TBA',
+    solution: 'TBA',
+  }
+};
+
+function tasks(state={}, action) {
+  switch (action.type) {
+    case ActionTypes.TASKS.FETCH:
+      return FAKE_TASKS;
+    case ActionTypes.TASKS.OPEN:
+      return tasks;
+    default:
+      return state;
+  }
+}
+
+
+export default tasks;
 
 /*const emptyTask = {
   name: '',

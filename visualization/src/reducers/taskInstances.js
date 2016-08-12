@@ -1,4 +1,31 @@
-import ActionTypes from './actionTypes';
+import ActionTypes from '../actions/actionTypes';
+
+
+function taskInstances(state={}, action) {
+  switch (action.type) {
+    case ActionTypes.TASKS.OPEN:
+      return openTask(state, action.payload.taskId, action.payload.taskInstanceId);
+    default:
+      return state;
+  }
+}
+
+
+function openTask(taskInstances, taskId) {
+  // TODO:  check if a task has  already opened task instance...
+  //if (taskId in taskInstances) {
+  //  return taskInstances;
+  //}
+  const newTaskInstance = {
+    id: 'tmp' + taskInstancesCounter++;
+  };
+  return Object.assign({}, state, {
+          visibilityFilter: action.filter
+        })
+
+}
+
+export default taskInstances;
 
 
 /*const emptyTask = {

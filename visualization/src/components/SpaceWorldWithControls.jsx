@@ -8,8 +8,8 @@ export default class SpaceWorldWithControls extends React.Component {
   constructor(props, context) {
     super(props, context);
     // TODO: state should only be a list of applied commands?
-    const initialFields = props.task.setting.fields;  // TODO: stop breaking rule of Demeter
-    const initialHeroX = props.task.setting.start;
+    const initialFields = {}; //props.task.setting.fields;  // TODO: stop breaking rule of Demeter
+    const initialHeroX = 0; //props.task.setting.start;
     this.state = {
       fields: initialFields,
       hero: {x: initialHeroX, y: 1},

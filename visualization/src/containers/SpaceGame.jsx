@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import taskActions from '../actions/task';
+import * as tasksActions from '../actions/tasks';
 import SpaceWorldWithControls from '../components/SpaceWorldWithControls';
 
 

@@ -1,18 +1,30 @@
 import ActionTypes from './actionTypes';
 
 
+let nextTaskInstanceId = 0;
+
+
 export function fetch() {
-  return { type: ActionTypes.TASKS.FETCH };
+  return {
+    type: ActionTypes.TASKS.FETCH
+  };
 };
 
 
 export function open(taskId) {
-  return { type: ActionTypes.TASK_INSTANCE.OPEN, taskId };
+  const taskInstanceId = 'tmp' + nextTaskInstanceId++;
+  return {
+    type: ActionTypes.TASK_INSTANCE.OPEN,
+    payload: { taskId, taskInstanceId }
+  };
 };
 
 
 export function changeCode(taskInstanceId) {
-  return { type: ActionTypes.TASK_INSTANCE.CHANGE_CODE, taskInstanceId };
+  return {
+    type: ActionTypes.TASK_INSTANCE.CHANGE_CODE,
+    payload: { taskInstanceId }
+  };
 };
 
 

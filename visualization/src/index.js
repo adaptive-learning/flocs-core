@@ -10,8 +10,8 @@ import Home from './components/Home'  // TODO: user router instead and remove th
 
 
 // quick test
-import { run } from './actions/task'
-console.log(run());
+//import { run } from './actions/task'
+//console.log(run());
 
 let store = createStore(reducers);
 ReactDOM.render(
