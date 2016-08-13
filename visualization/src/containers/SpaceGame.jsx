@@ -1,3 +1,4 @@
+// TODO: change to TaskPreviewContainer (?)
 import { connect } from 'react-redux';
 import * as tasksActions from '../actions/tasks';
 import SpaceWorldWithControls from '../components/SpaceWorldWithControls';

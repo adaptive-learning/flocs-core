@@ -5,17 +5,29 @@ let nextTaskInstanceId = 0;
 
 
 export function fetch() {
+  // TODO: dispatch new event to fetch task asynchronously
   return {
     type: ActionTypes.TASKS.FETCH
   };
 };
 
 
-export function open(taskId) {
+export function createTaskInstanceIfNotExist(taskId) {
+  // TODO: think and refactor (make it readable)
+  return function(dispatch, getState) {
+    // TODO: does this logic belong here?
+    if (!(taskId in getState().openTasks)) {
+      dispatch(createTaskInstance(taskId));
+    }
+  };
+};
+
+
+export function createTaskInstance(taskId) {
   const taskInstanceId = 'tmp' + nextTaskInstanceId++;
   return {
-    type: ActionTypes.TASK_INSTANCE.OPEN,
-    payload: { taskId, taskInstanceId }
+    type: ActionTypes.TASK_INSTANCE.CREATE,
+    payload: { taskInstanceId, taskId }
   };
 };
 

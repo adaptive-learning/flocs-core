@@ -9,19 +9,17 @@ const FAKE_TASKS = {
   }
 };
 
-function tasks(state={}, action) {
+function reduceTasks(state={}, action) {
   switch (action.type) {
     case ActionTypes.TASKS.FETCH:
       return FAKE_TASKS;
-    case ActionTypes.TASKS.OPEN:
-      return tasks;
     default:
       return state;
   }
 }
 
 
-export default tasks;
+export default reduceTasks;
 
 /*const emptyTask = {
   name: '',

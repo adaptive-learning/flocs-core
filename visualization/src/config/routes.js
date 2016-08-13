@@ -1,14 +1,17 @@
 import React from 'react';
-import { Router, Route, Link, IndexRoute, hashHistory } from 'react-router';
-import Main from '../components/Main';
+import { Route, IndexRoute } from 'react-router';
+import MainContainer from '../containers/MainContainer';
 import Home from '../components/Home';
+import TaskTableContainer from '../containers/TaskTableContainer';
+import TaskPreviewContainer from '../containers/TaskPreviewContainer';
 
-var routes = (
-  <Router history={hashHistory}>
-    <Route path='/' component={Main}>
-      <IndexRoute component={Home} />
-    </Route>
-  </Router>
+
+const routes = (
+  <Route path='/' component={MainContainer}>
+    <IndexRoute component={Home} />
+    <Route path='tasks' component={TaskTableContainer} />
+    <Route path='task/:taskId' component={TaskPreviewContainer} />
+  </Route>
 );
 
 export default routes;

@@ -1,31 +1,33 @@
 import ActionTypes from '../actions/actionTypes';
 
 
-function taskInstances(state={}, action) {
+function reduceTaskInstances(state={}, action) {
   switch (action.type) {
-    case ActionTypes.TASKS.OPEN:
-      return openTask(state, action.payload.taskId, action.payload.taskInstanceId);
+    case ActionTypes.TASK_INSTANCE.CREATE:
+      const { taskId, taskInstanceId } = action.payload;
+      return openTask(state, taskInstanceId, taskId);
     default:
       return state;
   }
 }
 
 
-function openTask(taskInstances, taskId) {
-  // TODO:  check if a task has  already opened task instance...
-  //if (taskId in taskInstances) {
-  //  return taskInstances;
-  //}
+function openTask(taskInstances, taskInstanceId, taskId) {
   const newTaskInstance = {
-    id: 'tmp' + taskInstancesCounter++;
+    id: taskInstanceId,
+    taskId: taskId,
+    code: {},
+    commands: []
   };
-  return Object.assign({}, state, {
-          visibilityFilter: action.filter
-        })
 
+  // TODO: rewrite using object spread syntax (babel plugin) or immutable.js
+  return Object.assign({}, taskInstances, {
+    [taskInstanceId]: newTaskInstance
+  });
 }
 
-export default taskInstances;
+
+export default reduceTaskInstances;
 
 
 /*const emptyTask = {
