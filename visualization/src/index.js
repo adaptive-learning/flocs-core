@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux'
@@ -14,7 +14,12 @@ import Home from './components/Home';  // TODO: user router instead and remove t
 
 
 const logger = createLogger();
-const store = createStore(reducers, applyMiddleware(thunk, logger));
+const store = createStore(reducers, compose(
+  applyMiddleware(thunk, logger),
+  window.devToolsExtension ? window.devToolsExtension() : f => f
+));
+
+
 const history = syncHistoryWithStore(browserHistory, store);
 const app = (
   <Provider store={store}>
