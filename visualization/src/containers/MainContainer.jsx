@@ -2,16 +2,30 @@ import { connect } from 'react-redux';
 import Main from '../components/Main';
 
 
-const mapStateToProps = (state) => {
+function mapStateToProps(state, props) {
   return {
-    task: state.task
+    path: extractPathPartsFromProps(props),
   };
-};
+}
 
 
-const mapDispatchToProps = (dispatch) => {
+function extractPathPartsFromProps(props) {
+  // TODO: generalize
+  const path = props.location.pathname;
+  if (path.startsWith('/tasks')) {
+    if (props.params.taskId) {
+      return ['home', 'tasks', props.params.taskId];
+    }
+    return ['home', 'tasks'];
+  }
+  return ['home'];
+}
+
+
+function mapDispatchToProps(dispatch) {
   return {};  // TBA
-};
+}
+
 
 const MainContainer = connect(
   mapStateToProps,

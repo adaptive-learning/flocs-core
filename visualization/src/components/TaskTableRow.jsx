@@ -8,7 +8,7 @@ export default class TaskTableRow extends React.Component {
     return (
       <tr>
         <td>{ task.id }</td>
-        <td><Link to={`/task/${task.id}`}>{ task.ref }</Link></td>
+        <td><Link to={`/tasks/${task.id}`}>{ task.ref }</Link></td>
       </tr>
     )
   }

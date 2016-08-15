@@ -10,7 +10,7 @@ const routes = (
   <Route path='/' component={MainContainer}>
     <IndexRoute component={Home} />
     <Route path='tasks' component={TaskTableContainer} />
-    <Route path='task/:taskId' component={TaskPreviewContainer} />
+    <Route path='tasks/:taskId' component={TaskPreviewContainer} />
   </Route>
 );
 

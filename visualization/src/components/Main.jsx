@@ -3,9 +3,10 @@ import Header from './Header'
 
 export default class Main extends React.Component {
   render() {
+    const { path } = this.props;
     return (
       <div>
-        <Header />
+        <Header path={path} />
         {this.props.children}
       </div>
     )
