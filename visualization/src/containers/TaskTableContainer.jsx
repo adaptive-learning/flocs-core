@@ -1,22 +1,29 @@
+import React from 'react';
 import { connect } from 'react-redux';
 import * as tasksActions from '../actions/tasks';
 import TaskTable from '../components/TaskTable';
+import { fetchTasksIfNeeded } from '../actions/tasks';
 
 
-const mapStateToProps = (state) => {
+class TaskTableContainer extends React.Component {
+  render() {
+    return (
+      <TaskTable tasks={this.props.tasks}/>
+    );
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch(fetchTasksIfNeeded());
+  }
+}
+
+
+function mapStateToProps(state) {
   return {
-    task: state.task
+    tasks: state.tasks
   };
 };
 
-
-const mapDispatchToProps = (dispatch) => {
-  return {};  // TBA
-};
-
-const TaskTableContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TaskTable);
-
-export default TaskTableContainer;
+const ConnectedTaskTableContainer = connect(mapStateToProps)(TaskTableContainer);
+export default ConnectedTaskTableContainer;

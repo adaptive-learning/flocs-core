@@ -1,15 +1,50 @@
 import ActionTypes from './actionTypes';
+import flocsDao from '../services/flocsDao';
 
 
 let nextTaskInstanceId = 0;
 
 
-export function fetch() {
-  // TODO: dispatch new event to fetch task asynchronously
+export function fetchTasksIfNeeded() {
+  const action = function(dispatch, getState) {
+    if (shouldFetchTasks(getState())) {
+      return dispatch(fetchTasks())
+    } else {
+      return Promise.resolve()
+    }
+  };
+  return action;
+}
+
+
+function shouldFetchTasks(state) {
+  return !(state.posts);
+}
+
+
+function fetchTasks() {
+  const action = function(dispatch) {
+    dispatch(requestTasks());
+    return flocsDao.fetchTasks().then(tasks => dispatch(receiveTasks(tasks)));
+  };
+  return action;
+}
+
+
+export function requestTasks() {
   return {
-    type: ActionTypes.TASKS.FETCH
+    type: ActionTypes.TASKS.REQUEST,
   };
 };
+
+
+export function receiveTasks(tasks) {
+  return {
+    type: ActionTypes.TASKS.RECEIVE,
+    payload: { tasks },
+  };
+};
+
 
 
 export function createTaskInstanceIfNotExist(taskId) {

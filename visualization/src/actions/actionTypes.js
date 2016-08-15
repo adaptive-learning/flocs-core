@@ -1,7 +1,8 @@
 // TODO: unify naming conventions (use a style-guide), e.g. ActionTypes vs. actionTypes
 const ActionTypes = {
   TASKS: {
-    FETCH: 'FETCH TASKS',
+    REQUEST: 'REQUEST TASKS',
+    RECEIVE: 'RECEIVE TASKS',
     //OPEN: 'OPEN TASK',
   },
   TASK_INSTANCE: {

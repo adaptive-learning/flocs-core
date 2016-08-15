@@ -1,18 +1,11 @@
 import ActionTypes from '../actions/actionTypes';
 
-const FAKE_TASKS = {
-  1: {
-    id: 1,
-    ref: 'zig-zag',
-    setting: 'TBA',
-    solution: 'TBA',
-  }
-};
 
 function reduceTasks(state={}, action) {
   switch (action.type) {
-    case ActionTypes.TASKS.FETCH:
-      return FAKE_TASKS;
+    // TODO? isFetching flag on TASKS.REQUEST?
+    case ActionTypes.TASKS.RECEIVE:
+      return action.payload.tasks;
     default:
       return state;
   }
