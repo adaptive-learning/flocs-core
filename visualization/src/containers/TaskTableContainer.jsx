@@ -25,5 +25,6 @@ function mapStateToProps(state) {
   };
 };
 
+
 const ConnectedTaskTableContainer = connect(mapStateToProps)(TaskTableContainer);
 export default ConnectedTaskTableContainer;
