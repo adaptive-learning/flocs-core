@@ -62,6 +62,7 @@ Questions
   - store, state, reducers
   - extractors (selectors, computers, derivers)
   - practice session (training)
+  - concept (learning component)
 - puro or impure reducers (immutable, but not Pythonic)
   - is ChainMap a reasonable solution or not
   - or should I consider 3rd party immutable types (and namedtuples)
@@ -87,6 +88,8 @@ Questions
  - better serialization than using to_json methods on django models?
  - how to deal with parallel transactions leading to collisions (two students want to create next task instance - and we need to choose ids for both of them)
     - possible solution is locking DB (django.db.transaction.atomic) for each view (or intent execution), but it hurts performance
+- how to version tasks and other data, or even changes in actions (and reducers)
+  - use special-purpose action like ChangeDomain, ChangePackageVersion
 
 
 
@@ -94,10 +97,14 @@ TODO
 ----
 - move TODOs and Questions to GH issues
 - move overview/requirements to docstrings and README
+- finish prove of concept including web (min. viable product), then consult and improve
 - improve architecture, s.t. clients doesn't need to use subclassing (which requires knowing internals of the core), but rather just class/function composition [Q]
 - implement and test basic intents
   - [Q] how? injecting state/store (alt. is using corouintes)
 - implement and test basic store
+  - it should be a context manager: commit on each `__enter__` and/or `__exit__` (but after saving)
+  - method for computing diff
+  - thinking about usage: web/analysis can subclass and provide save method, but is there better way - maybe just providng import/export handler [Q]
 - tests for all modules
   - important: reducers, lazy state
   - using fixtures
