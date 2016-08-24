@@ -40,12 +40,12 @@ from django.db import transaction
 
 class DjangoStore(Store):
     def __init__(self):
-        initial_state = DjangoState()
         # NOTE: in future, we will replace world reducer by some web-specific
         # reducer  (?)
         super().__init__(initial_state, WORLD_REDUCER)
 
     def __enter__(self):
+        initial_state = DjangoState()
         pass
 
     def __exit__(self, *args):

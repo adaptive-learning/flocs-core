@@ -1,37 +1,37 @@
 """ Functions describing how the world changes after various actions
 """
 from collections import ChainMap
-from .actions import CreateStudent, StartTask, SolveTask, GiveUpTask
+from .actions import ActionType
 from .entities import Student, TaskInstance
 
 
 def reduce_students(students, action):
     reducers = {
-        CreateStudent: create_student,
+        ActionType.create_student: create_student,
     }
-    reduce_action = reducers.get(type(action), lambda state, **data: state)
+    reduce_action = reducers.get(action['type'], lambda state, **data: state)
     next_state = reduce_action(students, **action._asdict())
     return next_state
 
 
 def reduce_task_instances(task_instances, action):
     reducers = {
-        StartTask: create_task_instance,
-        SolveTask: solve_task_instance,
-        GiveUpTask: give_up_task_instance,
+        ActionType.start_task: create_task_instance,
+        ActionType.solve_task: solve_task_instance,
+        ActionType.give_up_task: give_up_task_instance,
     }
-    reduce_action = reducers.get(type(action), lambda state, **data: state)
+    reduce_action = reducers.get(action['type'], lambda state, **data: state)
     next_state = reduce_action(task_instances, **action._asdict())
     return next_state
 
 
 def reduce_tasks_stats(stats, action):
     reducers = {
-        StartTask: increase_started_count,
-        SolveTask: increase_solved_count,
-        GiveUpTask: increase_given_up_count,
+        ActionType.start_task: increase_started_count,
+        ActionType.solve_task: increase_solved_count,
+        ActionType.give_up_task: increase_given_up_count,
     }
-    reduce_action = reducers.get(type(action), lambda state, **data: state)
+    reduce_action = reducers.get(action['type'], lambda state, **data: state)
     next_state = reduce_action(stats, **action._asdict())
     return next_state
 

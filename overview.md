@@ -1,10 +1,10 @@
 Overview
 ========
 - concepts:
-  - entities and data
-  - actions and intents
   - state, reducers and store
+  - actions and intents
   - extractors
+  - data, entitities, techniques
 - actions and state are orthogonal concepts (one reducer may reduce a particular part of the state for a particular action)
 - initial state and reducers are also orthogonal (because we will want to start in different initial states, consider web case)
   - but both depends on the "state shape" contract
@@ -26,6 +26,7 @@ Specific:
   - series of actions are the complete "source of truth" enabling to reconstruct any past state without any additional information
   - this enables to see how the parameters were changing, as well as how they would be changing for different models
   - also enables to restore any past state if something goes wrong
+  - enables to easily inspect and understand a situation when a bug in production occurred and fix it promptly
   - actions should be domain-specific (CreateStudent, StartTask, SolveTask, GiveUpTask),
     one action might require to change several entities (e.g. creating new attempt and update parameters of skill/difficulty models)
 - state in DB (or a state in CSV tables / json dumps) are just derivatives of an action stream (and initial state)
@@ -37,10 +38,15 @@ Specific:
 Questions
 ---------
 - state vs. store (what should be passed where - e.g. extractors, intents, reducers)
+- best approach to customize store behavior (loading and storing state)?
+  - possibilities: pass handlers (post commit hooks), inheritance (template method), composition (wrap)
 - concept of intents
   - how to use them
-  - how to represent them (function return an action, procudure modifying store, generator yielding actions, coroutine, class, namedtuples)
+  - how to represent them (function return an action, procedure modifying store, generator yielding actions, coroutine, class, namedtuples)
   - how should they receive info from shell (parameters, state/store dependency injection, coroutines: yield/send)
+- should meta (id, parent_id, version) and context (time, randomness_seed) be part of each action?
+  - why: because it changes often (at least time) and maybe it could allow for easier merging (rebasing?)
+  - meta vs. context? (should we even destinguish these two and where does version belong)
 - where to use dictionaries vs. namedtuples, advantages and disadvantages, pitfalls (e.g. see state: tasks or task_instances, etc.)
   - one consideration is (json) serialization, which is easier with dicts (for namedtuples, custom handler is necessary, and loading would be tricky)
   - namedtuples are immutable (also look better in code)
@@ -61,9 +67,13 @@ Questions
   - actions (events, effects), intents
   - store, state, reducers
   - extractors (selectors, computers, derivers)
+  - experiments, practice contexts
+  - task, task instance (?)
+  - entities, models (predictions), student, skill, task, difficulty, student-task interaction: time and flow
+  - techniques (strategies, [algorithms], methods), (activity|task) recommendation/selection
   - practice session (training)
   - concept (learning component)
-- puro or impure reducers (immutable, but not Pythonic)
+- pure or impure reducers (immutable, but not Pythonic)
   - is ChainMap a reasonable solution or not
   - or should I consider 3rd party immutable types (and namedtuples)
 - clean architecture (pure core, io shell) - advantages and disadvantages
@@ -90,6 +100,8 @@ Questions
     - possible solution is locking DB (django.db.transaction.atomic) for each view (or intent execution), but it hurts performance
 - how to version tasks and other data, or even changes in actions (and reducers)
   - use special-purpose action like ChangeDomain, ChangePackageVersion
+- can lazy loading from DB (if the requests are handled non-atomicly) lead to some inconsistencies?!
+  - (probably yes)
 
 
 
@@ -98,6 +110,7 @@ TODO
 - move TODOs and Questions to GH issues
 - move overview/requirements to docstrings and README
 - finish prove of concept including web (min. viable product), then consult and improve
+- unit tests and integration tests, s.t. they are easily reused for web/analysis stores
 - improve architecture, s.t. clients doesn't need to use subclassing (which requires knowing internals of the core), but rather just class/function composition [Q]
 - implement and test basic intents
   - [Q] how? injecting state/store (alt. is using corouintes)
@@ -143,6 +156,7 @@ TODO
 - consider convention of always mapping entities on the entities in DB (or static data?) and context to a computed values
 - generalize recommendation: recommend different activity than task (break) - add a session (training) layer
 - recommendation - merge the current code (or replace) with sth. like:
+- react visualization component for exploring actions with time travel (can dispatch/close actions, explore state, commit/rollback) - like redux dev tools, but the changes will affect backend
 
 ```
 # extractors.py
