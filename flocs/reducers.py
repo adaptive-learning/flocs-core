@@ -1,16 +1,33 @@
 """ Functions describing how the world changes after various actions
 """
 from collections import ChainMap
+from inspect import signature
 from .actions import ActionType
 from .entities import Student, TaskInstance
 
+# --------------------------------------------------------------------------
+
+def data_extracting(subreducer):
+    """Decorate subreducer to take a substate and data dict
+    >>> @data_extracting
+    ... def subreducer(substate, a, c): return substate, a, c
+    >>> subreducer('X', data={'a': 1, 'b': 2, 'c': 3})
+    ('X', 1, 3)
+    """
+    data_keys = tuple(signature(subreducer).parameters)[1:]
+    def wrapped_subreducer(substate, data):
+        data_kwargs = {key: data[key] for key in data_keys}
+        return subreducer(substate, **data_kwargs)
+    return wrapped_subreducer
+
+# --------------------------------------------------------------------------
 
 def reduce_students(students, action):
     reducers = {
         ActionType.create_student: create_student,
     }
-    reduce_action = reducers.get(action['type'], lambda state, **data: state)
-    next_state = reduce_action(students, **action._asdict())
+    reduce_action = reducers.get(action.type, lambda state: state)
+    next_state = data_extracting(reduce_action)(students, data=action.data)
     return next_state
 
 
@@ -20,8 +37,8 @@ def reduce_task_instances(task_instances, action):
         ActionType.solve_task: solve_task_instance,
         ActionType.give_up_task: give_up_task_instance,
     }
-    reduce_action = reducers.get(action['type'], lambda state, **data: state)
-    next_state = reduce_action(task_instances, **action._asdict())
+    reduce_action = reducers.get(action.type, lambda state: state)
+    next_state = data_extracting(reduce_action)(task_instances, data=action.data)
     return next_state
 
 
@@ -31,8 +48,8 @@ def reduce_tasks_stats(stats, action):
         ActionType.solve_task: increase_solved_count,
         ActionType.give_up_task: increase_given_up_count,
     }
-    reduce_action = reducers.get(action['type'], lambda state, **data: state)
-    next_state = reduce_action(stats, **action._asdict())
+    reduce_action = reducers.get(action.type, lambda state: state)
+    next_state = data_extracting(reduce_action)(stats, data=action.data)
     return next_state
 
 
@@ -55,21 +72,21 @@ def create_task_instance(task_instances, task_instance_id, student_id, task_id):
     return ChainMap({task_instance_id: task_instance}, task_instances)
 
 
-def increase_started_count(stats, *, task_id, **_kwargs):
+def increase_started_count(stats, task_id):
     task_stats = stats[task_id]
     updated_started_count = task_stats.started_count + 1
     updated_task_stats = task_stats._replace(started_count=updated_started_count)
     return ChainMap({task_id: updated_task_stats}, stats)
 
 
-def increase_solved_count(stats, *, task_id, **_kwargs):
+def increase_solved_count(stats, task_id):
     task_stats = stats[task_id]
     updated_solved_count = task_stats.solved_count + 1
     updated_task_stats = task_stats._replace(solved_count=updated_solved_count)
     return ChainMap({task_id: updated_task_stats}, stats)
 
 
-def increase_given_up_count(stats, *, task_id, **_kwargs):
+def increase_given_up_count(stats, task_id):
     task_stats = stats[task_id]
     updated_given_up_count = task_stats.given_up_count + 1
     updated_task_stats = task_stats._replace(given_up_count=updated_given_up_count)

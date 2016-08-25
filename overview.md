@@ -37,6 +37,8 @@ Specific:
 
 Questions
 ---------
+- action creators - module (funcitons) vs. class (static methods) + suitable names
+  - parameters: should they take state, or just context and meta, should we extract parameters from state/context/meta
 - state vs. store (what should be passed where - e.g. extractors, intents, reducers)
 - best approach to customize store behavior (loading and storing state)?
   - possibilities: pass handlers (post commit hooks), inheritance (template method), composition (wrap)
@@ -49,7 +51,7 @@ Questions
   - meta vs. context? (should we even destinguish these two and where does version belong)
 - where to use dictionaries vs. namedtuples, advantages and disadvantages, pitfalls (e.g. see state: tasks or task_instances, etc.)
   - one consideration is (json) serialization, which is easier with dicts (for namedtuples, custom handler is necessary, and loading would be tricky)
-  - namedtuples are immutable (also look better in code)
+  - namedtuples are immutable (also look better in code) and at least for a specific type, the (de)serialization is trivial (using `x._asdict()` and MyNamedtuple(`**dictionary`))
 - code review (all modules, incl. test)
   - are the requirments above satisfied? (e.g. is it readable? what can be improved?)
   - project architecture and structure
@@ -73,6 +75,7 @@ Questions
   - techniques (strategies, [algorithms], methods), (activity|task) recommendation/selection
   - practice session (training)
   - concept (learning component)
+  - action data vs. context vs. meta (define precisely)
 - pure or impure reducers (immutable, but not Pythonic)
   - is ChainMap a reasonable solution or not
   - or should I consider 3rd party immutable types (and namedtuples)
@@ -102,6 +105,11 @@ Questions
   - use special-purpose action like ChangeDomain, ChangePackageVersion
 - can lazy loading from DB (if the requests are handled non-atomicly) lead to some inconsistencies?!
   - (probably yes)
+- namedtuples vs. dicts - when to use which?
+- how to dry actions.py (e.g. having identifier/string "create_student" only once/twice (if one is string literal), not 4 times)
+- how to represent context (dict + context.py + decorator to extract values from context(?) vs. class Context with useful properties)
+- generating random id's (see context.py) the right way
+  - should we consider uuid4 / os.random / ... ?
 
 
 
@@ -109,9 +117,12 @@ TODO
 ----
 - move TODOs and Questions to GH issues
 - move overview/requirements to docstrings and README
+- consider consistent `@extract_state` (and `@extract_data`?) for  action creators and reducers
+  - how about context which can be (maybe?) part of both action and state
 - finish prove of concept including web (min. viable product), then consult and improve
 - unit tests and integration tests, s.t. they are easily reused for web/analysis stores
 - improve architecture, s.t. clients doesn't need to use subclassing (which requires knowing internals of the core), but rather just class/function composition [Q]
+- doc tests: `data_extracting`, action creators, (reducers)
 - implement and test basic intents
   - [Q] how? injecting state/store (alt. is using corouintes)
 - implement and test basic store
@@ -157,6 +168,10 @@ TODO
 - generalize recommendation: recommend different activity than task (break) - add a session (training) layer
 - recommendation - merge the current code (or replace) with sth. like:
 - react visualization component for exploring actions with time travel (can dispatch/close actions, explore state, commit/rollback) - like redux dev tools, but the changes will affect backend
+- fix data_extracting decorator probably using functools (pylint shouldn't print any errors in test_reducers.py)
+- factor out duplicate logic for generate-id-if-None in action creators using simple decorator
+  - and generally dry action creators (e.g. adding context and meta parameters)
+- context.py, generate random id etc.: factor out (context) dictionary access (e.g. using a decorator?)
 
 ```
 # extractors.py
