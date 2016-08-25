@@ -117,10 +117,14 @@ TODO
 ----
 - move TODOs and Questions to GH issues
 - move overview/requirements to docstrings and README
+- implement computing diff
+- consider renaming store (is confusing if it's not reponsible for persistence in any way) [Q - suggestions?]
 - consider consistent `@extract_state` (and `@extract_data`?) for  action creators and reducers
   - how about context which can be (maybe?) part of both action and state
 - finish prove of concept including web (min. viable product), then consult and improve
 - unit tests and integration tests, s.t. they are easily reused for web/analysis stores
+  - current tests in `test_store` are integration test, there should be clear separation between unit tests and integration tests and integration tests should be easy to reuse in different settings (web, analysis)
+  - improve store tests using (Magic)Mock
 - improve architecture, s.t. clients doesn't need to use subclassing (which requires knowing internals of the core), but rather just class/function composition [Q]
 - doc tests: `data_extracting`, action creators, (reducers)
 - implement and test basic intents

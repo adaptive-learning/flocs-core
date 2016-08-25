@@ -115,8 +115,8 @@ def combine_reducers(reducers):
     """
     def reducer(state, action):
         next_state = {
-            (key, reducer(state, action) if reducer is not None else state)
-            for key, reducer in reducers
+            key: (reducer(state[key], action) if reducer is not None else state[key])
+            for key, reducer in reducers.items()
         }
         return next_state
     return reducer
