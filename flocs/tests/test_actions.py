@@ -1,10 +1,11 @@
-from flocs.actions import Action, ActionType, ActionCreators
+from flocs.action_creators import create_student
+from flocs.actions import Action
 
 
 def test_create_student_with_id():
-    action = ActionCreators.create_student(student_id=17)
+    action = create_student(student_id=17)
     expected_action = Action(
-        type=ActionType.create_student,
+        type='create_student',
         data={'student_id': 17},
         context=None,
         meta=None,
@@ -14,9 +15,9 @@ def test_create_student_with_id():
 
 def test_create_student_without_id():
     context = {'randomness_seed': 1}
-    action = ActionCreators.create_student(context=context)
+    action = create_student(context=context)
     expected_action = Action(
-        type=ActionType.create_student,
+        type='create_student',
         data={'student_id': 272996653310673477252411125948039410165},
         context=context,
         meta=None,

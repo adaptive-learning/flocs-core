@@ -1,85 +1,34 @@
-""" Actions represent intreactions and events in the world we want to model
+""" Actions represent events and interactions in the world we want to model
 """
 from collections import namedtuple
 from enum import Enum
-from flocs.context import generate_random_id
 
 
-# TODO: consider using modules for namespaces instead of classes
-# TODO: describe semantics of each action, if neccessary
+Action = namedtuple('Action', [
+    'type',     # one of the string from the finite set of actions (ActionType enum)
+    'data',     # dictionary of data specific to this action
+    'context',  # optionally specified context (part of state changing continuously, e.g. time
+    'meta'      # optionally specified mata-information, such as package version
+    ])
 
-Action = namedtuple('Action', ['type', 'data', 'context', 'meta'])
 
-
-class ActionType(str, Enum):
-    """Namespace for available action types
+_action_types = set()
+def action_creator(action_data_creator):
+    """Decorate function to make it an action creator
+    >>> @action_creator
+    ... def create_fruit(fruit_id=None, context=None):
+    ...     fruit_id = fruit_id if fruit_id is not None else context['magic']
+    ...     return {'fruit_id': fruit_id}
+    >>> create_fruit(fruit_id=None, context={'magic': 16}, meta={})
+    Action(type='create_fruit', data={'fruit_id': 16}, context={'magic': 16}, meta={})
     """
-    create_student = 'create_student'
-    start_task = 'start_task'
-    solve_task = 'solve_task'
-    give_up_task = 'give_up_task'
-
-    #Future actions include:
-    #    - ChangePackageVersion
-    #    - StartSession
-    #    - AttemptTask
-    #    - ReportFlow
+    action_type = action_data_creator.__name__
+    _action_types.add(action_type)
+    def wrapped_action_creator(*args, context=None, meta=None, **kwargs):
+        data = action_data_creator(*args, context=context, **kwargs)
+        return Action(type=action_type, data=data, context=context, meta=meta)
+    return wrapped_action_creator
 
 
-class ActionCreators:
-    """Namespace for functions creating actions
-    """
-    # TODO: a decorator to factor out common functionality from the following creators
-
-    @staticmethod
-    def create_student(student_id=None, context=None, meta=None):
-        student_id = student_id if student_id is not None else generate_random_id(context)
-        data = {
-            'student_id': student_id,
-        }
-        return Action(
-            type=ActionType.create_student,
-            data=data,
-            context=context,
-            meta=meta,
-        )
-
-    @staticmethod
-    def start_task(student_id, task_id, task_instance_id=None, context=None, meta=None):
-        task_instance_id = task_instance_id if task_instance_id is not None \
-                           else generate_random_id(context)
-        data = {
-            'task_instance_id': task_instance_id,
-            'student_id': student_id,
-            'task_id': task_id,
-        }
-        return Action(
-            type=ActionType.start_task,
-            data=data,
-            context=context,
-            meta=meta,
-        )
-
-    @staticmethod
-    def solve_task(task_instance_id, context=None, meta=None):
-        data = {
-            'task_instance_id': task_instance_id,
-        }
-        return Action(
-            type=ActionType.solve_task,
-            data=data,
-            context=context,
-            meta=meta,
-        )
-
-    @staticmethod
-    def give_up_task(task_instance_id, context=None, meta=None):
-        data = {
-            'task_instance_id': task_instance_id,
-        }
-        return Action(
-            type=ActionType.give_up_task,
-            data=data,
-            context=context,
-            meta=meta,
-        )
+def get_registered_action_types():
+    return _action_types

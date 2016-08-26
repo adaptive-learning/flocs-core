@@ -39,6 +39,8 @@ Questions
 ---------
 - action creators - module (funcitons) vs. class (static methods) + suitable names
   - parameters: should they take state, or just context and meta, should we extract parameters from state/context/meta
+- use @action_creator to also register available action types -> no need to manually specify own enum
+   - consider making action_creator a class?
 - state vs. store (what should be passed where - e.g. extractors, intents, reducers)
 - best approach to customize store behavior (loading and storing state)?
   - possibilities: pass handlers (post commit hooks), inheritance (template method), composition (wrap)
@@ -110,6 +112,8 @@ Questions
 - how to represent context (dict + context.py + decorator to extract values from context(?) vs. class Context with useful properties)
 - generating random id's (see context.py) the right way
   - should we consider uuid4 / os.random / ... ?
+  - how to deal with collisions (e.g. when creating new task instance):
+    - approches: 1) sequential ids, 2) collision detection-retry, 3) make the collision probability (extremely) low (and/or mitigate consequences of a collision)
 
 
 

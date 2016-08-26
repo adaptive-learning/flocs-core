@@ -2,7 +2,7 @@
 """
 from collections import ChainMap
 from inspect import signature
-from .actions import ActionType
+from .action_types import ActionType
 from .entities import Student, TaskInstance
 
 # --------------------------------------------------------------------------
