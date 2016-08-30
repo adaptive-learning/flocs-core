@@ -1,59 +1,89 @@
 """ Functions describing how the world changes after various actions
 """
-from collections import ChainMap
+from collections import ChainMap, defaultdict
 from inspect import signature
-from .action_types import ActionType
+from .state import State
+from . import actions, entities
 from .entities import Student, TaskInstance
 
-# --------------------------------------------------------------------------
 
-def data_extracting(subreducer):
-    """Decorate subreducer to take a substate and data dict
-    >>> @data_extracting
-    ... def subreducer(substate, a, c): return substate, a, c
-    >>> subreducer('X', data={'a': 1, 'b': 2, 'c': 3})
-    ('X', 1, 3)
+def reduce_state(state, action):
+    """Reduce the whole state of the world
     """
-    data_keys = tuple(signature(subreducer).parameters)[1:]
-    def wrapped_subreducer(substate, data):
-        data_kwargs = {key: data[key] for key in data_keys}
-        return subreducer(substate, **data_kwargs)
-    return wrapped_subreducer
+    return State(
+        entities=reduce_entities(state.entities, action),
+        context=action.context,
+        meta=action.meta,
+    )
 
-# --------------------------------------------------------------------------
 
-def reduce_students(students, action):
-    reducers = {
-        ActionType.create_student: create_student,
+def reduce_entities(entities, action):
+    new_entities = {
+        entity_type: reduce_entity(entity_type, entity_dict, action)
+        for entity_type, entity_dict in entities.items()
     }
-    reduce_action = reducers.get(action.type, lambda state: state)
-    next_state = data_extracting(reduce_action)(students, data=action.data)
-    return next_state
+    return new_entities
 
 
-def reduce_task_instances(task_instances, action):
-    reducers = {
-        ActionType.start_task: create_task_instance,
-        ActionType.solve_task: solve_task_instance,
-        ActionType.give_up_task: give_up_task_instance,
-    }
-    reduce_action = reducers.get(action.type, lambda state: state)
-    next_state = data_extracting(reduce_action)(task_instances, data=action.data)
-    return next_state
+def reduce_entity(entity_type, entity_dict, action):
+    reducer = ENTITY_REDUCERS[entity_type][action.type]
+    adapted_reducer = extracting_data_context(reducer)
+    next_entity_dict = adapted_reducer(
+        entity_dict=entity_dict,
+        data=action.data,
+        context=action.context,
+    )
+    return next_entity_dict
 
 
-def reduce_tasks_stats(stats, action):
-    reducers = {
-        ActionType.start_task: increase_started_count,
-        ActionType.solve_task: increase_solved_count,
-        ActionType.give_up_task: increase_given_up_count,
-    }
-    reduce_action = reducers.get(action.type, lambda state: state)
-    next_state = data_extracting(reduce_action)(stats, data=action.data)
-    return next_state
+#ENTITY_ACTION_REDUCERS = defaultdict(lambda: identity_reducer)
+#def entity_action_reducer(entity, action):
+#    """Decorator for registering reducers for a specific entity-action tuple
+#
+#    Store a modified version of decorated function in ENTITY_ACTION_REDUCERS
+#    dictionary. The modified versions take (substate, data, context)
+#    as arguments and pass values from data (or context if not found in data)
+#    to the original function as specified by its signature.
+#
+#    >>> @entity_action_reducer(entity='E', action='A')
+#    ... def subreducer(substate, a, c): return substate, a, c
+#    >>> r = ENTITY_ACTION_REDUCERS[('E', 'A')]
+#    >>> r('S', data={'a': 1, 'b': 2}, context={'c': 3, 'd': 4})
+#    ('S', 1, 3)
+#    """
+#    def decorator(reducer):
+#        data_keys = tuple(signature(reducer).parameters)[1:]
+#        def wrapped_reducer(entity_dict, data, context):
+#            data_with_context = ChainMap(data, context)
+#            data_kwargs = {key: data_with_context[key] for key in data_keys}
+#            return reducer(entity_dict, **data_kwargs)
+#        ENTITY_ACTION_REDUCERS[(self.entity, self.action)] = wrapped_reducer
+#        # original function is returned intentionally (easier testing),
+#        # wrapped function is only stored in ENTITY_ACTION_REDUCERS dictionary
+#        return reducer
+#    return decorator
 
 
-# --------------------------------------------------------------------------
+def extracting_data_context(reducer):
+    data_keys = extract_parameters(reducer, skip=1)
+    def adapted_reducer(entity_dict, data, context):
+        data_with_context = ChainMap(data, context)
+        data_kwargs = {key: data_with_context[key] for key in data_keys}
+        return reducer(entity_dict, **data_kwargs)
+    return adapted_reducer
+
+
+def extract_parameters(fn, skip=0):
+    return tuple(signature(fn).parameters)[skip:]
+
+
+def identity_defaultdict(dictionary=None):
+    dictionary = dictionary or {}
+    return defaultdict(lambda: identity_reducer, dictionary)
+
+
+def identity_reducer(state):
+    return state
 
 
 def create_student(students, student_id):
@@ -70,6 +100,18 @@ def create_task_instance(task_instances, task_instance_id, student_id, task_id):
         given_up=False,
         )
     return ChainMap({task_instance_id: task_instance}, task_instances)
+
+
+def solve_task_instance(task_instances, task_instance_id):
+    task_instance = task_instances[task_instance_id]
+    updated_task_instance = task_instance._replace(solved=True)
+    return ChainMap({task_instance_id: updated_task_instance}, task_instances)
+
+
+def give_up_task_instance(task_instances, task_instance_id):
+    task_instance = task_instances[task_instance_id]
+    updated_task_instance = task_instance._replace(given_up=True)
+    return ChainMap({task_instance_id: updated_task_instance}, task_instances)
 
 
 def increase_started_count(stats, task_id):
@@ -93,39 +135,41 @@ def increase_given_up_count(stats, task_id):
     return ChainMap({task_id: updated_task_stats}, stats)
 
 
-def solve_task_instance(task_instances, task_instance_id):
-    task_instance = task_instances[task_instance_id]
-    updated_task_instance = task_instance._replace(solved=True)
-    return ChainMap({task_instance_id: updated_task_instance}, task_instances)
-
-
-def give_up_task_instance(task_instances, task_instance_id):
-    task_instance = task_instances[task_instance_id]
-    updated_task_instance = task_instance._replace(given_up=True)
-    return ChainMap({task_instance_id: updated_task_instance}, task_instances)
-
 # --------------------------------------------------------------------------
+ALWAYS_IDENTITY = identity_defaultdict()
 
-def combine_reducers(reducers):
-    """ Return a reducer that action delegates to all given reducers
-
-    Args:
-        reducers: mapping from substate key to a reducer function
-                  (or to None if it should stay constant)
-    """
-    def reducer(state, action):
-        next_state = {
-            key: (reducer(state[key], action) if reducer is not None else state[key])
-            for key, reducer in reducers.items()
-        }
-        return next_state
-    return reducer
-
-WORLD_REDUCER = combine_reducers({
-    'meta.version': None,
-    'entities.tasks': None,
-    'entities.students': reduce_students,
-    'entities.task_instances': reduce_task_instances,
-    'context.time': None,
-    'context.randomness_seed': None,
-    })
+# it is made explitic which entities are not changing to get a guarantee that
+# an entity key corresponds to an actual entity (e.g. not just a string)
+ENTITY_REDUCERS = {
+    entities.Student: identity_defaultdict({
+        'create_student': create_student,
+    }),
+    entities.TaskInstance: identity_defaultdict({
+        'start_task': create_task_instance,
+        'solve_task': solve_task_instance,
+        'give_up_task': give_up_task_instance,
+    }),
+    entities.TaskStats: identity_defaultdict({
+        'start_task': increase_started_count,
+        'solve_task': increase_solved_count,
+        'give_up_task': increase_given_up_count,
+    }),
+    entities.Task: ALWAYS_IDENTITY,
+}
+## TODO: make it possible to write actions as follows (first consider consequences)
+#ENTITY_REDUCERS = {
+#    entities.Student: identity_defaultdict({
+#        actions.CreateStudent: create_student,
+#    }),
+#    entities.TaskInstance: identity_defaultdict({
+#        actions.StartTask: create_task_instance,
+#        actions.SolveTask: solve_task_instance,
+#        actions.GiveUpTask: give_up_task_instance,
+#    }),
+#    entities.TaskStats: identity_defaultdict({
+#        actions.StartTask: increase_started_count,
+#        actions.SolveTask: increase_solved_count,
+#        actions.GiveUpTask: increase_given_up_count,
+#    }),
+#    entities.Task: ALWAYS_IDENTITY,
+#}

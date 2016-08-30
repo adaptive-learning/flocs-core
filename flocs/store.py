@@ -1,31 +1,35 @@
-""" Wiring for state and reducers
+"""World state and behavior (wiring for state and reducers)
 """
+from contextlib import contextmanager
 from functools import reduce
-from flocs.reducers import WORLD_REDUCER
+from flocs.reducers import reduce_state
+from flocs.state import create_state
 
 
 class Store:
-    """ Wires a state with reducers which describes how the state changes
+    """Represents state of the world together with its behavior
     """
-    def __init__(self, initial_state, hooks=None):
-        self.initial_state = initial_state
-        # TODO: possibility to choose a state shape / related reducers
-        self.reducer = WORLD_REDUCER
+    def __init__(self, entities, create_context, hooks=None):
+        self.create_context = create_context
+        self.initial_state = create_state(entities, self.context)
         self.actions = []
         self.hooks = hooks or self.Hooks()
 
     class Hooks:
         """Base class providing no-op behavior for all available hooks
         """
-        def post_commit(self, state, diff):
+        def post_commit(self, state, diff, actions):
             pass
 
     @property
-    def state(self):
-        return reduce(self.reducer, self.actions, self.initial_state)
+    def context(self):
+        return self.create_context()
 
     @property
-    def diff(self):
+    def state(self):
+        return reduce(reduce_state, self.actions, self.initial_state)
+
+    def compute_diff(self):
         return compute_diff(self.initial_state, self.state)
 
     def stage_action(self, action):
@@ -34,42 +38,36 @@ class Store:
     def commit(self):
         """Squash all actions to create new initial state
         """
-        diff = self.diff
+        diff = self.compute_diff()
+        actions = self.actions
         self.initial_state = self.state
         self.actions = []
-        self.hooks.post_commit(state=self.state, diff=diff)
+        self.hooks.post_commit(state=self.state, diff=diff, actions=actions)
 
+    @contextmanager
     @classmethod
-    def open(self, state_creator, hooks=None):
-        return StoreContextManager(state_creator, hooks)
-
+    def open(cls, entities, create_context, hooks=None):
+        store = cls(entities=entities, create_context=create_context, hooks=hooks)
+        yield store
+        store.commit()
 
 
 def compute_diff(old_state, new_state):
-    """ Return list of changes between the old and new state
+    return compute_entities_diff(old_state.entities, new_state.entities)
 
-    >>> old = {'entities.students': 'x', 'entitities.tasks': 'y'}
-    >>> new = {'entities.students': 'z', 'entitities.tasks': 'y'}
-    >>> compute_diff(old, new)
-    [('entities.students', 'z')]
+
+def compute_entities_diff(old, new):
+    """Return list of changes between the old and new entities
+
+    >>> old = {'students': {1: 'a', 2: 'b'}, 'tasks': {1: 'x'}}
+    >>> new = {'students': {1: 'a', 2: 'B'}, 'tasks': {2: 'y'}}
+    >>> sorted(compute_entities_diff(old, new))
+    [('students', 2, 'B'), ('tasks', 1, None), ('tasks', 2, 'y')]
     """
     diff = [
-        (key, new_value)
-        for key, new_value in new_state.items()
-        if new_value is not old_state[key]
+        (entity_name, entity_id, new[entity_name].get(entity_id, None))
+        for entity_name in new
+        for entity_id in old[entity_name].keys() | new[entity_name].keys()
+        if new[entity_name].get(entity_id, None) is not old[entity_name].get(entity_id, None)
     ]
     return diff
-
-
-class StoreContextManager:
-    def __init__(self, state_creator, hooks=None):
-        self.store = None
-        self.state_creator = state_creator
-        self.hooks = hooks
-
-    def __enter__(self):
-        self.store = Store(initial_state=self.state_creator(), hooks=self.hooks)
-        return self.store
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.store.commit()

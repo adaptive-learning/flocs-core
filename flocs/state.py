@@ -1,37 +1,96 @@
 """
 Representation of a world state
 """
-from collections import namedtuple, UserDict
+from collections import namedtuple
 from datetime import datetime
-from flocs import data, __version__
+from flocs import __version__
+from .data import create_tasks_dict
+from .entities import Student, Task, TaskInstance
 
 
-class State(UserDict):
-    """ World state representation.
+State = namedtuple('State', [
+    'entities',
+    'context',
+    'meta',
+])
 
-    Allows for LazyValues which will be evaluated on demand.
-    """
-    def __init__(self, initial_data=None):
-        provided_initial_data = initial_data or {}
-        complete_initial_data = {**EMPTY_STATE_DATA, **provided_initial_data}
-        super().__init__(complete_initial_data)
+#Entities = namedtuple('Entitities', [
+#    'students',
+#    'tasks',
+#    'task_instances',
+#    'task_stats',
+#])
+#
+#Context = namedtuple('Context', [
+#    'time',
+#    'randomness',
+#])
+#
+#Meta = namedtuple('Meta', [
+#    'version',
+#])
 
-    def __getitem__(self, key):
-        value = self.data[key]
-        if isinstance(value, LazyValue):
-            value = value.fn()
-            self.data[key] = value
-        return value
+
+#def create_state(create_entities=create_static_entities, create_context=create_static_context):
+#    state = State(
+#        meta=create_meta(),
+#        context=create_context(),
+#        entities=create_entities(),
+#    )
+#    return state
 
 
-LazyValue = namedtuple('LazyValue', ['fn'])
+def create_state(entities, context):
+    state = State(
+        entities=entities,
+        context=context,
+        meta=create_meta(),
+    )
+    return state
 
 
-EMPTY_STATE_DATA = {
-    'meta.version': __version__,
-    'entities.tasks': data.TASKS,
-    'entities.students': {},
-    'entities.task_instances': {},
-    'context.time': datetime(1, 1, 1),
-    'context.randomness_seed': 0,
-    }
+def create_static_entities():
+    return STATIC_ENTITIES
+
+STATIC_ENTITIES = {
+    Student: {},
+    Task: create_tasks_dict(),
+    TaskInstance: {},
+}
+
+def create_static_context():
+    return STATIC_CONTEXT
+
+STATIC_CONTEXT = {
+    'time': datetime(1, 1, 1),
+    'randomness':0,
+}
+
+
+def create_meta():
+    return META
+
+META = {
+    'version': __version__,
+}
+
+#def create_static_entities():
+#    entities = Entities(
+#        students={},
+#        tasks=create_tasks_dict(),
+#        task_instances={},
+#    )
+#    return entities
+#
+#
+#def create_static_context():
+#    context = Context(
+#        time=datetime(1, 1, 1),
+#        randomness_seed=0,
+#    )
+#
+#
+#def create_meta():
+#    meta = Meta(
+#        version=__version__,
+#    )

@@ -1,5 +1,5 @@
-from flocs.action_creators import create_student
-from flocs.actions import Action
+from flocs.actions import Action, create_student
+from flocs import __version__
 
 
 def test_create_student_with_id():
@@ -7,19 +7,20 @@ def test_create_student_with_id():
     expected_action = Action(
         type='create_student',
         data={'student_id': 17},
-        context=None,
-        meta=None,
+        context={},
+        meta={'version': __version__},
     )
     assert action == expected_action
 
 
-def test_create_student_without_id():
-    context = {'randomness_seed': 1}
-    action = create_student(context=context)
+
+def test_create_student_without_id(monkeypatch):
+    monkeypatch.setattr('flocs.context.uuid4', lambda: 974375)
+    action = create_student()
     expected_action = Action(
         type='create_student',
-        data={'student_id': 272996653310673477252411125948039410165},
-        context=context,
-        meta=None,
+        data={'student_id': 974375},
+        context={},
+        meta={'version': __version__},
     )
     assert action == expected_action
