@@ -2,8 +2,9 @@
 """
 from collections import ChainMap, defaultdict
 from inspect import signature
+from . import entities
 from .state import State
-from . import actions, entities
+from .actions import ActionType
 from .entities import Student, TaskInstance
 
 
@@ -142,34 +143,17 @@ ALWAYS_IDENTITY = identity_defaultdict()
 # an entity key corresponds to an actual entity (e.g. not just a string)
 ENTITY_REDUCERS = {
     entities.Student: identity_defaultdict({
-        'create_student': create_student,
+        ActionType.create_student: create_student,
     }),
     entities.TaskInstance: identity_defaultdict({
-        'start_task': create_task_instance,
-        'solve_task': solve_task_instance,
-        'give_up_task': give_up_task_instance,
+        ActionType.start_task: create_task_instance,
+        ActionType.solve_task: solve_task_instance,
+        ActionType.give_up_task: give_up_task_instance,
     }),
     entities.TaskStats: identity_defaultdict({
-        'start_task': increase_started_count,
-        'solve_task': increase_solved_count,
-        'give_up_task': increase_given_up_count,
+        ActionType.start_task: increase_started_count,
+        ActionType.solve_task: increase_solved_count,
+        ActionType.give_up_task: increase_given_up_count,
     }),
     entities.Task: ALWAYS_IDENTITY,
 }
-## TODO: make it possible to write actions as follows (first consider consequences)
-#ENTITY_REDUCERS = {
-#    entities.Student: identity_defaultdict({
-#        actions.CreateStudent: create_student,
-#    }),
-#    entities.TaskInstance: identity_defaultdict({
-#        actions.StartTask: create_task_instance,
-#        actions.SolveTask: solve_task_instance,
-#        actions.GiveUpTask: give_up_task_instance,
-#    }),
-#    entities.TaskStats: identity_defaultdict({
-#        actions.StartTask: increase_started_count,
-#        actions.SolveTask: increase_solved_count,
-#        actions.GiveUpTask: increase_given_up_count,
-#    }),
-#    entities.Task: ALWAYS_IDENTITY,
-#}

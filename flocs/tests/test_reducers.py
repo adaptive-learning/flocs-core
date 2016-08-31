@@ -29,7 +29,7 @@ def test_extracting_data_context_values_from_data():
 # TODO: test all subreducers, as well as whole state reducer and entity reducer
 
 def test_reduce_solve_task_action():
-    action = solve_task(task_instance_id=0)
+    action = solve_task(task_instance_id=0).at(STATE_3)
     next_state = reduce_state(STATE_3, action)
     assert next_state == STATE_4
 

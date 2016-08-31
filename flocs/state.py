@@ -3,9 +3,9 @@ Representation of a world state
 """
 from collections import namedtuple
 from datetime import datetime
-from flocs import __version__
 from .data import create_tasks_dict
 from .entities import Student, Task, TaskInstance
+from .meta import META
 
 
 State = namedtuple('State', [
@@ -44,7 +44,7 @@ def create_state(entities, context):
     state = State(
         entities=entities,
         context=context,
-        meta=create_meta(),
+        meta=META,
     )
     return state
 
@@ -64,14 +64,6 @@ def create_static_context():
 STATIC_CONTEXT = {
     'time': datetime(1, 1, 1),
     'randomness':0,
-}
-
-
-def create_meta():
-    return META
-
-META = {
-    'version': __version__,
 }
 
 #def create_static_entities():

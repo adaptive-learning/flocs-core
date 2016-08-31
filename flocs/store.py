@@ -8,10 +8,13 @@ from flocs.state import create_state
 
 class Store:
     """Represents state of the world together with its behavior
+
+    State si changing due to time (context) and actions, store describes how
+    the state evolves and how it looks right now
     """
-    def __init__(self, entities, create_context, hooks=None):
-        self.create_context = create_context
-        self.initial_state = create_state(entities, self.context)
+    def __init__(self, entities, context_generator, hooks=None):
+        self.context_generator = context_generator()
+        self.initial_state = create_state(entities, context=self.current_context)
         self.actions = []
         self.hooks = hooks or self.Hooks()
 
@@ -22,12 +25,14 @@ class Store:
             pass
 
     @property
-    def context(self):
-        return self.create_context()
+    def current_context(self):
+        return next(self.context_generator)
 
     @property
     def state(self):
-        return reduce(reduce_state, self.actions, self.initial_state)
+        state_after_last_action = reduce(reduce_state, self.actions, self.initial_state)
+        current_state = state_after_last_action._replace(context=self.current_context)
+        return current_state
 
     def compute_diff(self):
         return compute_diff(self.initial_state, self.state)
@@ -46,8 +51,8 @@ class Store:
 
     @contextmanager
     @classmethod
-    def open(cls, entities, create_context, hooks=None):
-        store = cls(entities=entities, create_context=create_context, hooks=hooks)
+    def open(cls, entities, context_generator, hooks=None):
+        store = cls(entities=entities, context_generator=context_generator, hooks=hooks)
         yield store
         store.commit()
 
