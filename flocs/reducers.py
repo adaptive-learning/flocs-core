@@ -37,34 +37,6 @@ def reduce_entity(entity_type, entity_dict, action):
     return next_entity_dict
 
 
-#ENTITY_ACTION_REDUCERS = defaultdict(lambda: identity_reducer)
-#def entity_action_reducer(entity, action):
-#    """Decorator for registering reducers for a specific entity-action tuple
-#
-#    Store a modified version of decorated function in ENTITY_ACTION_REDUCERS
-#    dictionary. The modified versions take (substate, data, context)
-#    as arguments and pass values from data (or context if not found in data)
-#    to the original function as specified by its signature.
-#
-#    >>> @entity_action_reducer(entity='E', action='A')
-#    ... def subreducer(substate, a, c): return substate, a, c
-#    >>> r = ENTITY_ACTION_REDUCERS[('E', 'A')]
-#    >>> r('S', data={'a': 1, 'b': 2}, context={'c': 3, 'd': 4})
-#    ('S', 1, 3)
-#    """
-#    def decorator(reducer):
-#        data_keys = tuple(signature(reducer).parameters)[1:]
-#        def wrapped_reducer(entity_dict, data, context):
-#            data_with_context = ChainMap(data, context)
-#            data_kwargs = {key: data_with_context[key] for key in data_keys}
-#            return reducer(entity_dict, **data_kwargs)
-#        ENTITY_ACTION_REDUCERS[(self.entity, self.action)] = wrapped_reducer
-#        # original function is returned intentionally (easier testing),
-#        # wrapped function is only stored in ENTITY_ACTION_REDUCERS dictionary
-#        return reducer
-#    return decorator
-
-
 def extracting_data_context(reducer):
     data_keys = extract_parameters(reducer, skip=1)
     def adapted_reducer(entity_dict, data, context):
@@ -99,7 +71,7 @@ def create_task_instance(task_instances, task_instance_id, student_id, task_id):
         task_id=task_id,
         solved=False,
         given_up=False,
-        )
+    )
     return ChainMap({task_instance_id: task_instance}, task_instances)
 
 

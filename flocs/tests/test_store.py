@@ -1,6 +1,5 @@
 from flocs.actions import solve_task
 from flocs.store import Store
-from flocs.tests.states import STATE_3, STATE_4
 
 # TODO: revive these tests
 #def test_store_context_manager():
