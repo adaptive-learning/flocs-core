@@ -3,14 +3,14 @@ Some worldstates for testing purposes
 """
 from collections import ChainMap
 import pytest
-#from datetime import datetime
 from flocs.tests.fixtures_entities import *
-from flocs.state import create_state, STATIC_CONTEXT
+from flocs.state import State
+from flocs.context import STATIC_CONTEXT
 
 
 @pytest.fixture
 def state_00(entities_00):
-    return create_state(
+    return State.create(
         entities=entities_00,
         context=STATIC_CONTEXT,
     )
@@ -18,7 +18,7 @@ def state_00(entities_00):
 
 @pytest.fixture
 def state_01(entities_01):
-    return create_state(
+    return State.create(
         entities=entities_01,
         context=STATIC_CONTEXT,
     )
@@ -26,7 +26,7 @@ def state_01(entities_01):
 
 @pytest.fixture
 def state_02(entities_02):
-    return create_state(
+    return State.create(
         entities=entities_02,
         context=STATIC_CONTEXT,
     )

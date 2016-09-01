@@ -1,7 +1,12 @@
 from flocs.actions import solve_task
 from flocs.store import Store
 
-# TODO: revive these tests
+# TESTS:
+# - hooks are called
+# - my context
+# - my entities
+# - creating something and storing id (e.g. i need to return it)
+
 #def test_store_context_manager():
 #    # TODO: use mock and also check that post_commit was called exectly once
 #    class MyHooks(Store.Hooks):

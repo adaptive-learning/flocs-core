@@ -1,15 +1,29 @@
-"""Helper functions related to the state context
+"""Context is a part of the world state changing continuously
 """
+import random
+import sys
+from datetime import datetime
 from uuid import uuid4
-#import random
-#
-#    RANDOM_BYTES = 16
-#    RANDOM_BITS = 8 * RANDOM_BYTES
-#
-#    def generate_random_id(context):
-#        random.seed(context['randomness_seed'])
-#        random_id = random.getrandbits(RANDOM_BITS)
-#        return random_id
+
+
+STATIC_CONTEXT = {
+    'time': datetime(1, 1, 1),
+    'randomness': 0,
+}
+
+
+def static_context_generator():
+    while True:
+        yield STATIC_CONTEXT
+
+
+def default_context_generator():
+    while True:
+        context = {
+            'time': datetime.now(),
+            'randomness': random.randint(0, sys.maxsize),
+        }
+        yield context
 
 
 def generate_id_if_not_set(maybe_id):

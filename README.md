@@ -39,9 +39,9 @@ There are several extremely important non-functional requirements we follow:
 the code should be easy and pleasure to use, to read, to extend and to test.
 The code together with the tests should form a beautiful, clear and coherent story.
 
-## Usage
+## Usage for persistence
 
-1. Implement state creator to specify how to load the state:
+1. Implement your entity :
 
     ```python
     from flocs.state import State, LazyValue

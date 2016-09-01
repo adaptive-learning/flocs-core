@@ -2,19 +2,23 @@
 """
 from contextlib import contextmanager
 from functools import reduce
-from flocs.reducers import reduce_state
-from flocs.state import create_state
+from .context import default_context_generator
+from .reducers import reduce_state
+from .state import State
 
 
 class Store:
     """Represents state of the world together with its behavior
 
-    State si changing due to time (context) and actions, store describes how
-    the state evolves and how it looks right now
+    State si changing due to time (context) and actions (entities),
+    store describes how the state evolves and how it looks right now
     """
-    def __init__(self, entities, context_generator, hooks=None):
+    def __init__(self, entities=None, context_generator=default_context_generator, hooks=None):
         self.context_generator = context_generator()
-        self.initial_state = create_state(entities, context=self.current_context)
+        self.initial_state = State.create(
+            entities=entities or {},
+            context=self.current_context
+        )
         self.actions = []
         self.hooks = hooks or self.Hooks()
 
@@ -51,8 +55,8 @@ class Store:
 
     @contextmanager
     @classmethod
-    def open(cls, entities, context_generator, hooks=None):
-        store = cls(entities=entities, context_generator=context_generator, hooks=hooks)
+    def open(cls, *args, **kwargs):
+        store = cls(*args, **kwargs)
         yield store
         store.commit()
 

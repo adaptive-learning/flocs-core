@@ -1,88 +1,28 @@
-"""
-Representation of a world state
+"""Representation of a world state
 """
 from collections import namedtuple
-from datetime import datetime
 from .data import create_tasks_dict
 from .entities import Student, Task, TaskInstance
 from .meta import META
 
 
-State = namedtuple('State', [
-    'entities',
-    'context',
-    'meta',
-])
+class State(namedtuple('State', ['entities', 'context', 'meta'])):
+    """Represents state of the world at a specific moment
 
-#Entities = namedtuple('Entitities', [
-#    'students',
-#    'tasks',
-#    'task_instances',
-#    'task_stats',
-#])
-#
-#Context = namedtuple('Context', [
-#    'time',
-#    'randomness',
-#])
-#
-#Meta = namedtuple('Meta', [
-#    'version',
-#])
+    Attributes:
+        entities - nested mapping: entity type -> id -> entity
+        context - mapping for values changing continuously
+        meta - mapping for information how to interpret the state
+    """
+    __slots__ = ()
 
+    @staticmethod
+    def create(entities, context=None):
+        return State(entities=entities, context=context, meta=META)
 
-#def create_state(create_entities=create_static_entities, create_context=create_static_context):
-#    state = State(
-#        meta=create_meta(),
-#        context=create_context(),
-#        entities=create_entities(),
-#    )
-#    return state
-
-
-def create_state(entities, context):
-    state = State(
-        entities=entities,
-        context=context,
-        meta=META,
-    )
-    return state
-
-
-def create_static_entities():
-    return STATIC_ENTITIES
 
 STATIC_ENTITIES = {
     Student: {},
     Task: create_tasks_dict(),
     TaskInstance: {},
 }
-
-def create_static_context():
-    return STATIC_CONTEXT
-
-STATIC_CONTEXT = {
-    'time': datetime(1, 1, 1),
-    'randomness':0,
-}
-
-#def create_static_entities():
-#    entities = Entities(
-#        students={},
-#        tasks=create_tasks_dict(),
-#        task_instances={},
-#    )
-#    return entities
-#
-#
-#def create_static_context():
-#    context = Context(
-#        time=datetime(1, 1, 1),
-#        randomness_seed=0,
-#    )
-#
-#
-#def create_meta():
-#    meta = Meta(
-#        version=__version__,
-#    )
