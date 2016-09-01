@@ -11,16 +11,26 @@ def entities_00():
 
 
 @pytest.fixture
-def entities_01(entities_00, task_instances_00):
+def entities_01():
     new_entities = {
-        TaskInstance: task_instances_00,
+        TaskInstance: task_instances_00()
     }
-    return ChainMap(new_entities, entities_00)
+    return ChainMap(new_entities, entities_00())
 
 
 @pytest.fixture
-def entities_02(entities_00, task_instances_02):
+def entities_02():
     new_entities = {
-        TaskInstance: task_instances_02,
+        TaskInstance: task_instances_02(),
     }
-    return ChainMap(new_entities, entities_00)
+    return ChainMap(new_entities, entities_00())
+
+
+@pytest.fixture
+def entities_03():
+    new_entities = {
+        TaskInstance: task_instances_01()
+    }
+    return ChainMap(new_entities, entities_00())
+
+

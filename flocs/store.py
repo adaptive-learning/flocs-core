@@ -53,8 +53,8 @@ class Store:
         self.actions = []
         self.hooks.post_commit(state=self.state, diff=diff, actions=actions)
 
-    @contextmanager
     @classmethod
+    @contextmanager
     def open(cls, *args, **kwargs):
         store = cls(*args, **kwargs)
         yield store

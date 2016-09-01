@@ -92,3 +92,6 @@ def give_up_task(task_instance_id):
             'task_instance_id': task_instance_id,
         },
     )
+
+
+EMPTY_ACTION = Action.create()

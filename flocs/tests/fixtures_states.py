@@ -9,24 +9,24 @@ from flocs.context import STATIC_CONTEXT
 
 
 @pytest.fixture
-def state_00(entities_00):
+def state_00():
     return State.create(
-        entities=entities_00,
+        entities=entities_00(),
         context=STATIC_CONTEXT,
     )
 
 
 @pytest.fixture
-def state_01(entities_01):
+def state_01():
     return State.create(
-        entities=entities_01,
+        entities=entities_01(),
         context=STATIC_CONTEXT,
     )
 
 
 @pytest.fixture
-def state_02(entities_02):
+def state_02():
     return State.create(
-        entities=entities_02,
+        entities=entities_02(),
         context=STATIC_CONTEXT,
     )

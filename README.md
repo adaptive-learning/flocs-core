@@ -39,43 +39,71 @@ There are several extremely important non-functional requirements we follow:
 the code should be easy and pleasure to use, to read, to extend and to test.
 The code together with the tests should form a beautiful, clear and coherent story.
 
-## Usage for persistence
+## Usage
 
-1. Implement your entity :
+
+```python
+from flocs.actions import create_student, solve_task
+from flocs.state import STATIC_ENTITIES
+from flocs.store import Store
+
+# create a store by specifying initial entities and optionally a context generator
+store = Store(STATIC_ENTITIES)
+
+# create an action and set its context by `at` operator
+action = create_student(student_id=1).at(store.state)
+
+# stage action to store
+store.stage_action(action)
+
+# create and stage another actions
+action = actions.solve_task(student_id=1, task_id=1).at(store.state)
+store.stage_action(action)
+
+# current state is computed on demand by applying all staged actions to initial state
+# (and also generating current context)
+print(store.state.entities)
+```
+
+
+### Persistence
+
+1. First, specify how to load entities you want to work with.
+   Entities must provide nested mapping `entity type -> id -> entity`.
+   However, it does not need to be a dict, so you can e.g. implement lazy loading from DB.
 
     ```python
-    from flocs.state import State, LazyValue
+    from collections import ChainMap
+    from flocs.entities import Student, TaskInstance
+    from flocs.state import STATIC_ENTITIES
 
-    def create_my_state():
-        state = State({
-          'entities.students': LazyValue(get_all_students),
-          'entities.task_instances': LazyValue(get_all_task_instances),
-          'context.time': datetime.now(),
-          'context.randomness_seed': random.randint(0, sys.maxsize),
-        })
-        return state
+    dynamic_entities = {
+        Student: load_students(),
+        TaskInstance: load_task_instances(),
+    }
+    my_entities = ChainMap(new_entities, STATIC_ENTITIES)
     ```
 
-2. Implement `post_commit` hook to specify how to store the state:
+2. Then you need to specify how to store new state (and performed actions).
+   One way is to to implement `post_commit` hook which will be called after commit in the store.
 
     ```python
     from flocs.store import Store
 
     class PersistenceHooks(Store.Hooks):
-        def post_commit(self, state, diff):
-            pass  # save new state
-
-    my_persistence_hooks = PersistenceHooks()
+        def post_commit(self, state, diff, actions):
+            pass  # save new state and actions
     ```
 
-3. Then you can use `Store.open()` context manager which creates state at the beginning of the `with` block and commits all staged actions at the end of the block.
+3. Finally, use `Store.open()` context manager which creates state at the beginning of the `with` block
+   and commits all staged actions at the end of the block.
 
     ```python
-    from flocs.actions import ActionCreators
+    from flocs import actions
     from flocs.store import Store
 
-    with Store.open(create_my_state, hooks=my_persistence_hooks) as store:
-        action = ActionCreators.solve_task(task_instance_id=0)
+    with Store.open(my_entities, hooks=PersistenceHooks()) as store:
+        action = actions.solve_task(task_instance_id=14).at(store.state)
         store.stage_action(action)
     ```
 
@@ -85,9 +113,12 @@ The code together with the tests should form a beautiful, clear and coherent sto
 
     ```python
     def open_my_persistent_store():
-        return Store.open(create_my_state, hooks=my_persistence_hooks)
+        return Store.open(my_entities, hooks=PersistenceHooks())
 
     with open_my_persistent_store() as store:
-        action = ActionCreators.solve_task(task_instance_id=0)
+        action = actions.solve_task(task_instance_id=14).at(store.state)
         store.stage_action(action)
     ```
+
+* If your persistent state is shared by several threads (e.g. web application), then it is probably good idea to wrap your store operations in an atomic context to avoid inconsistencies.
+
