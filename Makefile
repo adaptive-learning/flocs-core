@@ -1,15 +1,23 @@
-# The most high-level tasks
+# The most high-level and bootstrap tasks
+# All tasks are specified in `tasks.py`
 
-# TODO: test release dependencies etc. (?)
+.PHONY: help install update test check release
 
-FLAGS=$(CURDIR)/.flags
+help:
+	@echo "See Makefile for available targets."
 
-dependencies: $(FLAGS)/dependencies
-$(FLAGS)/dependencies: $(FLAGS) requirements.txt
+install:
+	# NOTE: can't use invoke as it might not be installed yet
 	pip install -r requirements.txt
-	touch .flags/dependencies
 
-$(FLAGS):
-	mkdir $(FLAGS)
+update:
+	pip install -r requirements.txt
 
-.PHONY: release test dependencies
+test:
+	invoke test
+
+check:
+	echo TBD
+
+release:
+	invoke release
