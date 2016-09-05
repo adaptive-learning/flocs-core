@@ -11,6 +11,7 @@ def main():
         url='https://github.com/adaptive-learning/flocs-core',
         packages=[
             'flocs',
+            'flocs.tests',
         ],
         install_requires=[
         ],
