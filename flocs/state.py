@@ -1,7 +1,7 @@
 """Representation of a world state
 """
 from collections import namedtuple
-from .data import create_tasks_dict
+from .data.tasks import TASKS
 from .entities import Student, Task, TaskInstance
 from .meta import META
 
@@ -21,8 +21,16 @@ class State(namedtuple('State', ['entities', 'context', 'meta'])):
         return State(entities=entities, context=context, meta=META)
 
 
-STATIC_ENTITIES = {
-    Student: {},
-    Task: create_tasks_dict(),
-    TaskInstance: {},
-}
+def create_static_entities():
+    return {
+        Student: {},
+        Task: create_tasks_dict(),
+        TaskInstance: {},
+    }
+
+
+def create_tasks_dict():
+    return {task.task_id: task for task in TASKS}
+
+
+STATIC_ENTITIES = create_static_entities()

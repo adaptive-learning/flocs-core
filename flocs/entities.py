@@ -34,14 +34,14 @@ TaskStats = namedtuple('TaskStats', [
 Concept = namedtuple('Concept', [
     'concept_id',
     'ref',
-    'type',
+    'subconcepts',
 ])
 
 
 Toolbox = namedtuple('Toolbox', [
     'toolbox_id',
     'ref',
-    'blocks_ids',
+    'blocks_refs',
 ])
 
 
