@@ -1,7 +1,7 @@
 # The most high-level and bootstrap tasks
 # All tasks are specified in `tasks.py`
 
-.PHONY: help install update test check release
+.PHONY: help install update test lint release
 
 help:
 	@echo "See Makefile for available targets."
@@ -16,8 +16,8 @@ update:
 test:
 	invoke test
 
-check:
-	echo TBD
+lint:
+	pylint ./flocs --reports=n
 
 release:
 	invoke release
