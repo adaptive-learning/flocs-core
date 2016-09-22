@@ -25,6 +25,8 @@ class Store:
     class Hooks:
         """Base class providing no-op behavior for all available hooks
         """
+        # more hook points expected in the future
+        # pylint: disable=too-few-public-methods
         def post_commit(self, state, diff, actions):
             pass
 

@@ -4,6 +4,7 @@ import random
 
 
 def select_random_task(state, student_id):
+    del student_id  # intentionally unused argument
     tasks = state['entities.tasks']
     randomness_seed = state['context.randomness_seed']
     random.seed(randomness_seed)
@@ -13,4 +14,5 @@ def select_random_task(state, student_id):
 
 
 def select_task_in_fixed_order(state, student_id):
+    # pylint: disable=unused-argument
     raise NotImplementedError

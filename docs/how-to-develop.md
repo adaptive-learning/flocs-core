@@ -55,7 +55,7 @@
 8. Test the implemented feature and check the code by pylint:
 
         $ make test
-        $ make check
+        $ make lint
 
 9. Commit changes:
 

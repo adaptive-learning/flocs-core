@@ -17,7 +17,7 @@ test:
 	invoke test
 
 lint:
-	pylint ./flocs --reports=n
+	pylint ./flocs
 
 release:
 	invoke release

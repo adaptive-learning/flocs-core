@@ -18,10 +18,10 @@ def reduce_state(state, action):
     )
 
 
-def reduce_entities(entities, action):
+def reduce_entities(old_entities, action):
     new_entities = {
         entity_type: reduce_entity(entity_type, entity_dict, action)
-        for entity_type, entity_dict in entities.items()
+        for entity_type, entity_dict in old_entities.items()
     }
     return new_entities
 
