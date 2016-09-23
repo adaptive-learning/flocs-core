@@ -1,4 +1,4 @@
-""" Functions describing how the world changes after various actions
+"""Functions describing how the world changes after various actions
 """
 from collections import ChainMap, defaultdict
 from inspect import signature

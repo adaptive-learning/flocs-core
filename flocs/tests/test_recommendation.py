@@ -1,3 +1,5 @@
+"""Unit tests of recommendation strategies
+"""
 from flocs.recommendation import recommend_task
 
 

@@ -1,16 +1,15 @@
+"""Unit tests for reducers
+"""
 from flocs import actions, reducers
-from flocs.entities import Student, TaskInstance, TaskStats
+from flocs.entities import Student, TaskInstance
 from flocs.reducers import reduce_state, extracting_data_context, extract_parameters
-
-# load pytest fixtures
-from flocs.tests.fixtures_task_instances import *
-from flocs.tests.fixtures_entities import *
-from flocs.tests.fixtures_states import *
+from flocs.tests.fixtures_entities import ENTITIES, task_instances_dict
+from flocs.tests.fixtures_states import STATES
 
 
 def test_extracting_data_context_signature():
     @extracting_data_context
-    def subreducer(some_substate, a, c):
+    def subreducer(dummy_substate, dummy_arg1, dummy_arg2):
         pass
     assert extract_parameters(subreducer, skip=1) == ('data', 'context')
 
@@ -33,42 +32,53 @@ def test_create_student():
     assert next_students == expected_students
 
 
-def test_create_task_instance(task_instances_00, task_instances_01):
+def test_create_task_instance():
+    ti3 = ENTITIES['ti3']
     next_task_instances = reducers.create_task_instance(
-        task_instances_00,
-        student_id=37,
-        task_id=28,
-        task_instance_id=27,
+        task_instances=task_instances_dict('ti1', 'ti2'),
+        student_id=ti3.student_id,
+        task_id=ti3.task_id,
+        task_instance_id=ti3.task_instance_id,
     )
-    assert next_task_instances == task_instances_01
+    assert next_task_instances == task_instances_dict('ti1', 'ti2', 'ti3')
 
 
-def test_solve_task_instance(task_instances_00, task_instances_02):
-    next_task_instances = reducers.solve_task_instance(task_instances_00, task_instance_id=14)
-    assert next_task_instances == task_instances_02
+def test_solve_task_instance():
+    next_task_instances = reducers.solve_task_instance(
+        task_instances=task_instances_dict('ti1', 'ti2'),
+        task_instance_id=ENTITIES['ti2'].task_instance_id,
+    )
+    assert next_task_instances == task_instances_dict('ti1', 'ti2s')
 
 
-def test_give_up_task_instance(task_instances_00, task_instances_03):
-    next_task_instances = reducers.give_up_task_instance(task_instances_00, task_instance_id=14)
-    assert next_task_instances == task_instances_03
+def test_give_up_task_instance():
+    next_task_instances = reducers.give_up_task_instance(
+        task_instances=task_instances_dict('ti1', 'ti2'),
+        task_instance_id=ENTITIES['ti2'].task_instance_id,
+    )
+    assert next_task_instances == task_instances_dict('ti1', 'ti2g')
 
 
 # ---------------------------------------------------------------------------
 
 
-def test_reduce_entity(task_instances_00, task_instances_02):
+def test_reduce_entity():
+    ti2 = ENTITIES['ti2']
+    next_entity_dict = reducers.reduce_entity(
+        TaskInstance,
+        task_instances_dict('ti1', 'ti2'),
+        action=actions.solve_task(task_instance_id=ti2.task_instance_id),
+    )
+    assert next_entity_dict == task_instances_dict('ti1', 'ti2s')
+
+
+def test_reduce_entities():
     action = actions.solve_task(task_instance_id=14)
-    next_entity_dict = reducers.reduce_entity(TaskInstance, task_instances_00, action)
-    assert next_entity_dict == task_instances_02
+    next_entities = reducers.reduce_entities(STATES['s1'].entities, action)
+    assert next_entities == STATES['s2'].entities
 
 
-def test_reduce_entities(entities_01, entities_02):
-    action = actions.solve_task(task_instance_id=14)
-    next_entities = reducers.reduce_entities(entities_01, action)
-    assert next_entities == entities_02
-
-
-def test_reduce_state(state_01, state_02):
-    action = actions.solve_task(task_instance_id=14).at(state_01)
-    next_state = reduce_state(state_01, action)
-    assert next_state == state_02
+def test_reduce_state():
+    action = actions.solve_task(task_instance_id=14).at(STATES['s1'])
+    next_state = reduce_state(STATES['s1'], action)
+    assert next_state == STATES['s2']

@@ -1,36 +1,46 @@
-import pytest
-from collections import ChainMap
-from flocs.entities import Student, TaskInstance
-from flocs.state import STATIC_ENTITIES
-from flocs.tests.fixtures_task_instances import *
+"""Entities objects for testing purposes
+"""
+from flocs.entities import TaskInstance
 
 
-@pytest.fixture
-def entities_00():
-    return STATIC_ENTITIES
+ENTITIES = {
+    'ti1': TaskInstance(
+        task_instance_id=81,
+        student_id=13,
+        task_id=28,
+        solved=False,
+        given_up=False,
+    ),
+    'ti2': TaskInstance(
+        task_instance_id=14,
+        student_id=37,
+        task_id=67,
+        solved=False,
+        given_up=False,
+    ),
+    'ti2s': TaskInstance(
+        task_instance_id=14,
+        student_id=37,
+        task_id=67,
+        solved=True,
+        given_up=False,
+    ),
+    'ti2g': TaskInstance(
+        task_instance_id=14,
+        student_id=37,
+        task_id=67,
+        solved=False,
+        given_up=True,
+    ),
+    'ti3': TaskInstance(
+        task_instance_id=27,
+        student_id=37,
+        task_id=28,
+        solved=False,
+        given_up=False,
+    ),
+}
 
 
-@pytest.fixture
-def entities_01():
-    new_entities = {
-        TaskInstance: task_instances_00()
-    }
-    return ChainMap(new_entities, entities_00())
-
-
-@pytest.fixture
-def entities_02():
-    new_entities = {
-        TaskInstance: task_instances_02(),
-    }
-    return ChainMap(new_entities, entities_00())
-
-
-@pytest.fixture
-def entities_03():
-    new_entities = {
-        TaskInstance: task_instances_01()
-    }
-    return ChainMap(new_entities, entities_00())
-
-
+def task_instances_dict(*keys):
+    return {ENTITIES[key].task_instance_id: ENTITIES[key] for key in keys}

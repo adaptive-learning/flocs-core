@@ -26,6 +26,7 @@ class Action(namedtuple('Action', ['type', 'data', 'context', 'meta'])):
     def create(type=None, data=None, context=None):
         """Create an action with common meta information
         """
+        # pylint:disable=redefined-builtin
         return Action(type=type, data=data, context=context, meta=META.copy())
 
     def at(self, state):

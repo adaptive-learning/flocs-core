@@ -1,3 +1,5 @@
+"""Available tasks
+"""
 from ..entities import Task
 
 TASKS = (

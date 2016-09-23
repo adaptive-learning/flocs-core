@@ -76,3 +76,15 @@
         $ deactivate
 
 13. Celebrate the developed feature with some physical exercise and a healthy snack.
+
+
+
+## How to Test
+
+To run all tests:
+
+      $ make test
+
+To list all available fixtures for pytest with description:
+
+      $ py.test -q --fixtures

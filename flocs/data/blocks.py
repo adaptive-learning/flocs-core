@@ -1,3 +1,5 @@
+"""Available blocks
+"""
 from ..entities import Block
 
 BLOCKS = (

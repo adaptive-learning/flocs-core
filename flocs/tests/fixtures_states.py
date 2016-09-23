@@ -1,32 +1,28 @@
-"""
-Some worldstates for testing purposes
+"""Worldstates for testing purposes
 """
 from collections import ChainMap
-import pytest
-from flocs.tests.fixtures_entities import *
 from flocs.state import State
+from flocs.state import STATIC_ENTITIES
 from flocs.context import STATIC_CONTEXT
+from flocs.entities import TaskInstance
+from flocs.tests.fixtures_entities import task_instances_dict
 
 
-@pytest.fixture
-def state_00():
-    return State.create(
-        entities=entities_00(),
+STATES = {
+    's0': State.create(
+        entities=ChainMap({}, STATIC_ENTITIES),
         context=STATIC_CONTEXT,
-    )
-
-
-@pytest.fixture
-def state_01():
-    return State.create(
-        entities=entities_01(),
+    ),
+    's1': State.create(
+        entities=ChainMap({
+            TaskInstance: task_instances_dict('ti1', 'ti2'),
+        }, STATIC_ENTITIES),
         context=STATIC_CONTEXT,
-    )
-
-
-@pytest.fixture
-def state_02():
-    return State.create(
-        entities=entities_02(),
+    ),
+    's2': State.create(
+        entities=ChainMap({
+            TaskInstance: task_instances_dict('ti1', 'ti2s'),
+        }, STATIC_ENTITIES),
         context=STATIC_CONTEXT,
-    )
+    ),
+}

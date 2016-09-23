@@ -1,5 +1,6 @@
 [MESSAGES CONTROL]
-disable=I
+disable=I,
+    redefined-outer-name
 
 [REPORTS]
 reports=no
@@ -8,11 +9,11 @@ reports=no
 # valid names
 const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
 argument-rgx=[a-z_][a-z0-9_]{0,30}$
-variable-rgx=[a-z_][a-z0-9_]{1,30}$
+variable-rgx=([a-z_][a-z0-9_]{1,30}|[A-Z_][A-Z0-9_]{0,30})$
 attr-rgx=[a-z_][a-z0-9_]{0,30}$
 inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
 method-rgx=[a-z_][a-z0-9_]{1,30}$
-function-rgx=[a-z_][a-z0-9_]{1,30}$
+function-rgx=[a-z_][a-z0-9_]{1,60}$
 class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{1,30}|(__.*__))$
 class-rgx=[A-Z_][a-zA-Z0-9]+$
 module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
@@ -31,4 +32,3 @@ max-module-lines=200
 # do not check for unused import in __init__ files
 init-import=no
 dummy-variables-rgx=(_+[a-zA-Z0-9]*?$)|dummy
-redefining-builtins-modules=flocs.actions  # to permit action.type

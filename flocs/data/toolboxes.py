@@ -1,3 +1,5 @@
+"""Available toolboxes
+"""
 from ..entities import Toolbox
 
 

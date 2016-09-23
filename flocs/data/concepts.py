@@ -1,4 +1,8 @@
+"""Available concepts
+"""
 from ..entities import Concept
+
+# pylint:disable=line-too-long
 
 CONCEPTS = (
     Concept(concept_id=1, ref='programming', subconcepts=['programming_sequence', 'programming_loops']),
