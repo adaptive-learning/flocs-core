@@ -17,7 +17,7 @@ Solution
 --------
 
 ```python
-while sense_color() != 'blue':
+while color() != 'b':
     move('right')
     move('left')
 ```

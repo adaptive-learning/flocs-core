@@ -1,5 +1,10 @@
+"""Specification of tasks, which can be run by `invoke fn_name [params]`
+"""
 from invoke import task
 from scripts import version
+from scripts import tasks_builder
+
+# pylint:disable=unused-argument
 
 
 @task
@@ -41,3 +46,8 @@ def increase_version(ctx, level='micro', dev_flag=True):
 @task
 def print_version(ctx):
     print(version.extract())
+
+
+@task
+def build_tasks(ctx, dry=False):
+    tasks_builder.main(dry=dry)
