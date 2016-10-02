@@ -25,11 +25,11 @@ def parse_task_source(file_name, file_content):
 def parse_setting(text):
     """
     >>> text = '''
-    |b |b |bR|
-    |k |kS|k |
-    '''
+    ... |b |b |bR|
+    ... |k |kS|k |
+    ... '''
     >>> parse_setting(text)
-    [['b ', 'b ', 'bR'], ['k ', 'kS', 'k ']]
+    [[('b', []), ('b', []), ('b', ['R'])], [('k', []), ('k', ['S']), ('k', [])]]
     """
     AVAILABLE_COLORS = {
         'b': 'blue',
@@ -46,8 +46,29 @@ def parse_setting(text):
     #       - each object is among AVAILABLE_OBJECTS
     #       - exactly 1 spaceship; at the bottom
     #       - final blue line and no blue color elsewhere
-    # TODO: implement; (fake result for now)
-    return [['b ', 'bR'], ['k ', 'kS']]
+    lines = text.strip().split('\n')
+    setting = [[parse_token(token)
+                for token in line.strip().split('|') if token != '']
+               for line in lines]
+    return setting
+
+
+def parse_token(string):
+    """
+    >>> parse_token('b ')
+    ('b', [])
+    >>> parse_token('bR')
+    ('b', ['R'])
+    >>> parse_token('bRRS')
+    ('b', ['R', 'R', 'S'])
+    """
+    if not string or string[0] == ' ':
+        raise ValueError(
+            'Incorrect field token |{token}| - missing color (first character)'
+            .format(token=string))
+    color = string[0]
+    objects = [char for char in string[1:] if char != ' ']
+    return (color, objects)
 
 
 
@@ -67,11 +88,11 @@ def parse_solution(text):
     NUM -> pos() | 1 | 2 | 3 | 4 | 5
     REL -> == | != | > | >= | < | <=
     >>> text = '''
-    move()
-    while color() != 'b':
-        move('right')
-        move('left')
-    '''
+    ... move()
+    ... while color() != 'b':
+    ...     move('right')
+    ...     move('left')
+    ... '''
     >>> parse_solution(text)
     [['move'], ['while', ['color()', '!=', 'b'], [['move', 'right'],  ['move', 'left']]]]
     """
