@@ -10,7 +10,8 @@ Student = namedtuple('Student', [
 
 Task = namedtuple('Task', [
     'task_id',
-    'ref',
+    'setting',
+    'solution',
 ])
 
 
