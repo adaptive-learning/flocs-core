@@ -113,6 +113,11 @@ def parse_solution(text):
     the following grammar (NOTE: grammar should be specified in code, not in
     a comment, otherwise it gets out of sync soon.
 
+    TODO:
+    Specification of RoboCode programming language.
+    This language is used by students to solve tasks in RoboGame.
+    -> but implement the parser in JS (we will need it in fr-app as well)
+
     PROGRAM -> SEQ
     SEQ -> CMD | CMD \n SEQ
     CMD -> MOVE | WHILE | REPEAT | (...)
