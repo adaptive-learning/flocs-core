@@ -123,6 +123,7 @@ def parse_solution(text):
     CMD -> MOVE | WHILE | REPEAT | (...)
     MOVE -> move() | move('ahead') | move('left') | move('right')
     WHILE -> while COND: \n{ SEQ }  # { and } denotes indentation change
+    REPEAT -> repeat COND: \n{ SEQ }
     COND -> COND and COND | COND or COND | VAL REL VAL
     VAL -> COLOR | NUM
     COLOR -> color() | 'b' | 'r' | 'y' | 'k'
@@ -135,7 +136,7 @@ def parse_solution(text):
     ...     move('left')
     ... '''
     >>> parse_solution(text)
-    [['move', 'ahead'], ['while', ['color()', '!=', 'b'], [['move', 'right'],  ['move', 'left']]]]
+    [['move', 'ahead'], ['while', ['color', '!=', 'b'], [['move', 'right'],  ['move', 'left']]]]
     """
     # TODO: implement; (fake result for now)
     return [['move', 'ahead']]
