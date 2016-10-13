@@ -2,6 +2,7 @@
 """
 import re
 from flocs.entities import Task
+from . import js_services
 
 
 def parse_task(file_name, file_content):
@@ -107,28 +108,9 @@ def parse_token(string):
     return (color, objects)
 
 
-
 def parse_solution(text):
-    """Parse text of solution in Python into a JSON representation according to
-    the following grammar (NOTE: grammar should be specified in code, not in
-    a comment, otherwise it gets out of sync soon.
+    """Parse RoboCode text source into AST-tree (in plain JSON).
 
-    TODO:
-    Specification of RoboCode programming language.
-    This language is used by students to solve tasks in RoboGame.
-    -> but implement the parser in JS (we will need it in fr-app as well)
-
-    PROGRAM -> SEQ
-    SEQ -> CMD | CMD \n SEQ
-    CMD -> MOVE | WHILE | REPEAT | (...)
-    MOVE -> move() | move('ahead') | move('left') | move('right')
-    WHILE -> while COND: \n{ SEQ }  # { and } denotes indentation change
-    REPEAT -> repeat COND: \n{ SEQ }
-    COND -> COND and COND | COND or COND | VAL REL VAL
-    VAL -> COLOR | NUM
-    COLOR -> color() | 'b' | 'r' | 'y' | 'k'
-    NUM -> pos() | 1 | 2 | 3 | 4 | 5
-    REL -> == | != | > | >= | < | <=
     >>> text = '''
     ... move()
     ... while color() != 'b':
@@ -136,9 +118,6 @@ def parse_solution(text):
     ...     move('left')
     ... '''
     >>> parse_solution(text)
-    [['move', 'ahead'], ['while', ['color', '!=', 'b'], [['move', 'right'],  ['move', 'left']]]]
+    [['move', 'ahead'], ['while', ['color', '!=', 'b'], [['move', 'right'], ['move', 'left']]]]
     """
-    # TODO: implement; (fake result for now)
-    return [['move', 'ahead']]
-
-
+    return js_services.parse_robocode(text)

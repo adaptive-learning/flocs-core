@@ -21,6 +21,7 @@ COLOR -> color() | 'b' | 'r' | 'y' | 'k'
 NUM -> pos() | 1 | 2 | 3 | 4 | 5
 REL -> == | != | > | >= | < | <=
 */
+const readline = require('readline');
 
 
 function parseRobocode(text) {
@@ -78,9 +79,9 @@ function parseNumber(text) {
 
 
 function parseMove(line) {
-  var moveCmdRe = /^move\((.*)\)$/;
+  var moveCmdRe = /^move\((['"](.*)['"])?\)$/;
   var match = moveCmdRe.exec(line);
-  var direction = match[1] || 'ahead';
+  var direction = match[2] || 'ahead';
   return ['move', direction];
 }
 
@@ -199,6 +200,12 @@ if pos() > 4:
         move('left')
 `
 
-console.log(parseRobocode(test));
+//console.log(JSON.stringify(parseRobocode(test)));
 //console.log(parseRobocode(test)[1].body);
 //console.log(parseMove('move()'));
+
+process.stdin.on('data', function(buffer) {
+  const text = buffer.toString();
+  const ast = parseRobocode(text);
+  console.log(JSON.stringify(ast));
+});
