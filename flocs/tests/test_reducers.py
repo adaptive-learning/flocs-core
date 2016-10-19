@@ -26,9 +26,9 @@ def test_extracting_data_context_values_from_data():
 
 
 def test_create_student():
-    students = {79: Student(student_id=79)}
-    next_students = reducers.create_student(students, student_id=37)
-    expected_students = {79: Student(student_id=79), 37: Student(student_id=37)}
+    students = {79: Student(student_id=79, last_task_instance=14)}
+    next_students = reducers.create_student(students, student_id=37, last_task_instance=14)
+    expected_students = {79: Student(student_id=79, last_task_instance=14), 37: Student(student_id=37, last_task_instance=14)}
     assert next_students == expected_students
 
 

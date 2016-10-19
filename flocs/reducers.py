@@ -59,8 +59,8 @@ def identity_reducer(state):
     return state
 
 
-def create_student(students, student_id):
-    student = Student(student_id=student_id)
+def create_student(students, student_id, last_task_instance):
+    student = Student(student_id=student_id, last_task_instance=last_task_instance)
     return ChainMap({student_id: student}, students)
 
 

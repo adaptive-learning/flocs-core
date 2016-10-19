@@ -1,6 +1,6 @@
 """Entities objects for testing purposes
 """
-from flocs.entities import TaskInstance
+from flocs.entities import Task, TaskInstance, Student
 
 
 ENTITIES = {
@@ -39,8 +39,34 @@ ENTITIES = {
         solved=False,
         given_up=False,
     ),
+    't1': Task(
+        task_id=28,
+        setting=None,
+        solution=None,
+    ),
+    't2': Task(
+        task_id=67,
+        setting=None,
+        solution=None,
+    ),
+    'stud1': Student(
+        student_id=13,
+        last_task_instance=81
+    ),
+    'stud2': Student(
+        student_id=37,
+        last_task_instance=14
+    ),
 }
 
 
 def task_instances_dict(*keys):
     return {ENTITIES[key].task_instance_id: ENTITIES[key] for key in keys}
+
+
+def tasks_dict(*keys):
+    return {ENTITIES[key].task_id: ENTITIES[key] for key in keys}
+
+
+def students_dict(*keys):
+    return {ENTITIES[key].student_id: ENTITIES[key] for key in keys}
