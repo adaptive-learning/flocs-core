@@ -11,7 +11,8 @@ def extract():
         imports of dependencies in __init__.py (even non-direct)
     """
     with open(VERSION_FILE) as f:
-        version_line = f.read()
+        lines = f.readlines()
+    version_line = next(line for line in lines if line.startswith('__version__'))
     version_string = VERSION_LINE_RE.match(version_line).group(1)
     return Version(*version_string.split('.'))
 

@@ -29,3 +29,9 @@ def test_version_increase_with_dev_flag():
     v1 = Version(1, 2, 3)
     v2 = version.increase(v1, level='minor', dev_flag=True)
     assert v2 == Version(1, 3, 0, 'dev')
+
+
+def test_extract():
+    current_version = version.extract()
+    assert current_version is not None
+    assert isinstance(current_version, Version)
