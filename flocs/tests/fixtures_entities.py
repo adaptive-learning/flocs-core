@@ -49,6 +49,11 @@ ENTITIES = {
         setting=None,
         solution=None,
     ),
+    't3': Task(
+        task_id=55,
+        setting=None,
+        solution=None,
+    ),
     'stud1': Student(
         student_id=13,
         last_task_instance=81
