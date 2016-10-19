@@ -28,7 +28,7 @@ STATES = {
     's3': State.create(
         entities=ChainMap({
             TaskInstance: task_instances_dict('ti1', 'ti2s'),
-            Task: tasks_dict('t1', 't2'),
+            Task: tasks_dict('t1', 't2', 't3'),
             Student: students_dict('stud1', 'stud2')
         }, STATIC_ENTITIES),
         context=STATIC_CONTEXT,

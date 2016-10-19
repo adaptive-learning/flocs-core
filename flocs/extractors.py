@@ -1,8 +1,8 @@
 """ Pure functions extracting information from the world state
 """
 import random
-from flocs.entities import Student, Task, TaskInstance
-from flocs.state import create_tasks_dict
+from flocs.entities import Student, TaskInstance
+from functools import partial
 
 
 def select_random_task(state, student_id):
@@ -15,17 +15,20 @@ def select_random_task(state, student_id):
     return selected_task_id
 
 
-def select_task_in_fixed_order(state, student_id):
+def general_select_task_in_fixed_order(state, student_id, order):
+    """ Must be called partially applied (without order parameter) to satisfy the contract
+    """
     last_task_instance_id = state.entities[Student][student_id].last_task_instance
     last_task_id = state.entities[TaskInstance][last_task_instance_id].task_id
 
-    task_id_list = []
-    for task in state.entities[Task]:
-        task_id_list.append(task)
-    task_id_list.sort()
-
-    index = task_id_list.index(last_task_id)
-    if index == len(task_id_list) - 1:
+    index = order.index(last_task_id)
+    if index == len(order) - 1:
         raise ValueError('last task reached, there is no next task')
-    selected_task_id = task_id_list[index + 1]
+    selected_task_id = order[index + 1]
     return selected_task_id
+
+
+select_task_in_fixed_order_default = partial(general_select_task_in_fixed_order,
+                                             order=['three-steps-forward',
+                                                    'diamond-on-right',
+                                                    'zig_zag'])
