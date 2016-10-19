@@ -1,9 +1,10 @@
-"""Available tasks
+"""Tasks generated from data/tasks/
 """
 from ..entities import Task
 
+# pylint:disable=line-too-long
 TASKS = (
-    Task(task_id='three-steps-forward', setting=[], solution=[]),
-    Task(task_id='diamond-on-right', setting=[], solution=[]),
-    Task(task_id='zig-zag', setting=[], solution=[]),
+    Task(task_id='zig_zag', setting=[[('b', []), ('b', []), ('b', []), ('b', []), ('b', [])], [('k', ['R']), ('k', []), ('k', ['R']), ('k', []), ('k', ['R'])], [('k', []), ('k', ['R']), ('k', []), ('k', ['R']), ('k', [])], [('k', ['R']), ('k', []), ('k', ['R']), ('k', []), ('k', ['R'])], [('k', []), ('k', ['R']), ('k', []), ('k', ['R']), ('k', [])], [('k', ['R']), ('k', []), ('k', ['R']), ('k', []), ('k', ['R'])], [('k', []), ('k', ['R']), ('k', []), ('k', ['R']), ('k', [])], [('k', ['R']), ('k', []), ('k', ['R']), ('k', []), ('k', ['R'])], [('k', []), ('k', []), ('k', ['S']), ('k', []), ('k', [])]], solution=[['while', ['color', '!=', 'b'], [['move', 'right'], ['move', 'left']]]]),
+    Task(task_id='diamond-on-right', setting=[[('b', []), ('b', []), ('b', []), ('b', []), ('b', [])], [('k', []), ('k', []), ('k', []), ('k', ['M']), ('k', [])], [('k', []), ('k', []), ('k', []), ('k', []), ('k', ['D'])], [('k', []), ('k', ['M']), ('k', []), ('k', []), ('k', [])], [('k', []), ('k', []), ('k', ['S']), ('k', []), ('k', [])]], solution=[['move', 'right'], ['move', 'right'], ['move', 'ahead'], ['move', 'ahead']]),
+    Task(task_id='three-steps-forward', setting=[[('b', []), ('b', []), ('b', []), ('b', []), ('b', [])], [('k', []), ('k', []), ('k', []), ('k', []), ('k', [])], [('k', []), ('k', []), ('k', []), ('k', []), ('k', [])], [('k', []), ('k', []), ('k', ['S']), ('k', []), ('k', [])]], solution=[['move', 'ahead'], ['move', 'ahead'], ['move', 'ahead']]),
 )

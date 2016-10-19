@@ -20,7 +20,3 @@ def run_js_script(script_name, input_text):
     #print('err: ' + stderr.decode())
     result = json.loads(stdout.decode())
     return result
-
-
-
-print(parse_robocode('move()\nmove("right")'))

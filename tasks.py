@@ -49,5 +49,5 @@ def print_version(ctx):
 
 
 @task
-def build_tasks(ctx, dry=False):
-    tasks_builder.main(dry=dry)
+def build_tasks(ctx, ref=None, dry=False):
+    tasks_builder.main(ref=ref, dry=dry)
