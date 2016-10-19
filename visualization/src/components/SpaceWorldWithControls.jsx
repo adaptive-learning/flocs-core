@@ -13,7 +13,7 @@ export default class SpaceWorldWithControls extends React.Component {
   render() {
     return (
       <div>
-        <SpaceWorld blocks={this.props.blocks} />
+        <SpaceWorld setting={this.props.setting} />
         <SpaceControls onNewCommand={this.handleNewCommand.bind(this)} />
       </div>
     )

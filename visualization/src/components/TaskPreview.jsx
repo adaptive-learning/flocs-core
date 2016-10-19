@@ -4,9 +4,9 @@ import SpaceWorldWithControls from '../components/SpaceWorldWithControls';
 
 export default class TaskPreview extends React.Component {
   render() {
-    const { blocks } = this.props;
+    const { task } = this.props;
     return (
-        <SpaceWorldWithControls blocks={blocks} />
+        <SpaceWorldWithControls setting={task.setting} />
     )
   }
 };

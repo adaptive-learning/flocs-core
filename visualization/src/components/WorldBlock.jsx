@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default function WorldBlock({ name }) {
+export default function WorldBlock({ background, objects }) {
   return (
     <span>
-      [{name}]
+      {background}
     </span>
   );
 }

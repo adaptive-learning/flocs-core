@@ -14,7 +14,7 @@ class TaskPreviewContainer extends React.Component {
 
   render() {
     return (
-      <TaskPreview task={this.props.task} blocks={this.props.blocks}/>
+      <TaskPreview task={this.props.task}/>
     );
   }
 }
@@ -27,14 +27,14 @@ const mapStateToProps = (state, props) => {
   //const taskInstance = state.taskInstances[taskInstanceId];
   //console.log('in mapStateToProps', task, taskInstance);
   // TODO: use task and task instance (if available) to build current state
-  const blocks = getBlocksList(task.setting);
+  //const blocks = getBlocksList(task.setting);
   // TODO: props contains non-normalized (duplicate) data, is it ok? (probably
   // yes, as it's just derived data, not the source of truth)
-  return { taskId, task, blocks };
+  return { taskId, task };
 };
 
 
-const getBlocksList = (setting) => {
+/*const getBlocksList = (setting) => {
   if (!setting) {
     return [];
   }
@@ -47,7 +47,7 @@ const getBlocksList = (setting) => {
   blocks.push({position: heroPosition, name: 'space-rocket'});
   // TODO: pass and apply commands ?
   return blocks;
-}
+}*/
 
 
 

@@ -6,15 +6,7 @@ const FAKE_TASKS = {
     id: 1,
     ref: 'zig-zag',
     setting: {
-      fields: {
-        '1-1': {background: 'black', objects: []},
-        '1-2': {background: 'black', objects: []},
-        '1-3': {background: 'black', objects: []},
-        '2-1': {background: 'blue', objects: []},
-        '2-2': {background: 'blue', objects: []},
-        '2-3': {background: 'blue', objects: []},
-      },
-      start: 3,
+      fields: [[['b', []], ['b', []], ['b', []], ['b', []], ['b', []]], [['k', ['R']], ['k', []], ['k', ['R']], ['k', []], ['k', ['R']]], [['k', []], ['k', ['R']], ['k', []], ['k', ['R']], ['k', []]], [['k', ['R']], ['k', []], ['k', ['R']], ['k', []], ['k', ['R']]], [['k', []], ['k', ['R']], ['k', []], ['k', ['R']], ['k', []]], [['k', ['R']], ['k', []], ['k', ['R']], ['k', []], ['k', ['R']]], [['k', []], ['k', ['R']], ['k', []], ['k', ['R']], ['k', []]], [['k', ['R']], ['k', []], ['k', ['R']], ['k', []], ['k', ['R']]], [['k', []], ['k', []], ['k', ['S']], ['k', []], ['k', []]]],
     },
     solution: 'TBA',
   },
