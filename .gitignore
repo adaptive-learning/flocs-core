@@ -5,6 +5,7 @@ __pycache__/
 *.log
 dist/
 *.egg-info/
+.idea/
 
 # Local data
 local_settings.py
