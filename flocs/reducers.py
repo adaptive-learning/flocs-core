@@ -5,7 +5,7 @@ from inspect import signature
 from . import entities
 from .state import State
 from .actions import ActionType
-from .entities import Student, TaskInstance
+from .entities import Student, TaskSession
 
 
 def reduce_state(state, action):
@@ -59,32 +59,32 @@ def identity_reducer(state):
     return state
 
 
-def create_student(students, student_id, last_task_instance):
-    student = Student(student_id=student_id, last_task_instance=last_task_instance)
+def create_student(students, student_id, last_task_session):
+    student = Student(student_id=student_id, last_task_session=last_task_session)
     return ChainMap({student_id: student}, students)
 
 
-def create_task_instance(task_instances, task_instance_id, student_id, task_id):
-    task_instance = TaskInstance(
-        task_instance_id=task_instance_id,
+def create_task_session(task_sessions, task_session_id, student_id, task_id):
+    task_session = TaskSession(
+        task_session_id=task_session_id,
         student_id=student_id,
         task_id=task_id,
         solved=False,
         given_up=False,
     )
-    return ChainMap({task_instance_id: task_instance}, task_instances)
+    return ChainMap({task_session_id: task_session}, task_sessions)
 
 
-def solve_task_instance(task_instances, task_instance_id):
-    task_instance = task_instances[task_instance_id]
-    updated_task_instance = task_instance._replace(solved=True)
-    return ChainMap({task_instance_id: updated_task_instance}, task_instances)
+def solve_task_session(task_sessions, task_session_id):
+    task_session = task_sessions[task_session_id]
+    updated_task_session = task_session._replace(solved=True)
+    return ChainMap({task_session_id: updated_task_session}, task_sessions)
 
 
-def give_up_task_instance(task_instances, task_instance_id):
-    task_instance = task_instances[task_instance_id]
-    updated_task_instance = task_instance._replace(given_up=True)
-    return ChainMap({task_instance_id: updated_task_instance}, task_instances)
+def give_up_task_session(task_sessions, task_session_id):
+    task_session = task_sessions[task_session_id]
+    updated_task_session = task_session._replace(given_up=True)
+    return ChainMap({task_session_id: updated_task_session}, task_sessions)
 
 
 def increase_started_count(stats, task_id):
@@ -117,10 +117,10 @@ ENTITY_REDUCERS = {
     entities.Student: identity_defaultdict({
         ActionType.create_student: create_student,
     }),
-    entities.TaskInstance: identity_defaultdict({
-        ActionType.start_task: create_task_instance,
-        ActionType.solve_task: solve_task_instance,
-        ActionType.give_up_task: give_up_task_instance,
+    entities.TaskSession: identity_defaultdict({
+        ActionType.start_task: create_task_session,
+        ActionType.solve_task: solve_task_session,
+        ActionType.give_up_task: give_up_task_session,
     }),
     entities.TaskStats: identity_defaultdict({
         ActionType.start_task: increase_started_count,

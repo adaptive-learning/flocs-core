@@ -1,39 +1,39 @@
 """Entities objects for testing purposes
 """
-from flocs.entities import Task, TaskInstance, Student
+from flocs.entities import Task, TaskSession, Student
 
 
 ENTITIES = {
-    'ti1': TaskInstance(
-        task_instance_id=81,
+    'ts1': TaskSession(
+        task_session_id=81,
         student_id=13,
         task_id=28,
         solved=False,
         given_up=False,
     ),
-    'ti2': TaskInstance(
-        task_instance_id=14,
+    'ts2': TaskSession(
+        task_session_id=14,
         student_id=37,
         task_id=67,
         solved=False,
         given_up=False,
     ),
-    'ti2s': TaskInstance(
-        task_instance_id=14,
+    'ts2s': TaskSession(
+        task_session_id=14,
         student_id=37,
         task_id=67,
         solved=True,
         given_up=False,
     ),
-    'ti2g': TaskInstance(
-        task_instance_id=14,
+    'ts2g': TaskSession(
+        task_session_id=14,
         student_id=37,
         task_id=67,
         solved=False,
         given_up=True,
     ),
-    'ti3': TaskInstance(
-        task_instance_id=27,
+    'ts3': TaskSession(
+        task_session_id=27,
         student_id=37,
         task_id=28,
         solved=False,
@@ -56,17 +56,17 @@ ENTITIES = {
     ),
     'stud1': Student(
         student_id=13,
-        last_task_instance=81
+        last_task_session=81
     ),
     'stud2': Student(
         student_id=37,
-        last_task_instance=14
+        last_task_session=14
     ),
 }
 
 
-def task_instances_dict(*keys):
-    return {ENTITIES[key].task_instance_id: ENTITIES[key] for key in keys}
+def task_sessions_dict(*keys):
+    return {ENTITIES[key].task_session_id: ENTITIES[key] for key in keys}
 
 
 def tasks_dict(*keys):

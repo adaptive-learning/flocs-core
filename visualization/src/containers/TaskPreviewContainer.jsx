@@ -8,8 +8,8 @@ import TaskPreview from '../components/TaskPreview';
 class TaskPreviewContainer extends React.Component {
   componentDidMount() {
     // TODO: should also fetch task(s) if needed? (to enable direct access)
-    const { createTaskInstanceIfNotExist, taskId } = this.props;
-    createTaskInstanceIfNotExist(taskId);
+    const { createTaskSessionIfNotExist, taskId } = this.props;
+    createTaskSessionIfNotExist(taskId);
   }
 
   render() {
@@ -23,10 +23,10 @@ class TaskPreviewContainer extends React.Component {
 const mapStateToProps = (state, props) => {
   const { taskId } = props.params;
   const task = state.tasks[taskId];
-  //const taskInstanceId = state.openTasks[taskId];
-  //const taskInstance = state.taskInstances[taskInstanceId];
-  //console.log('in mapStateToProps', task, taskInstance);
-  // TODO: use task and task instance (if available) to build current state
+  //const TaskSessionId = state.openTasks[taskId];
+  //const TaskSession = state.TaskSessions[TaskSessionId];
+  //console.log('in mapStateToProps', task, TaskSession);
+  // TODO: use task and task session (if available) to build current state
   //const blocks = getBlocksList(task.setting);
   // TODO: props contains non-normalized (duplicate) data, is it ok? (probably
   // yes, as it's just derived data, not the source of truth)

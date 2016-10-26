@@ -2,7 +2,7 @@
 """
 from collections import namedtuple
 from .data.tasks import TASKS
-from .entities import Student, Task, TaskInstance
+from .entities import Student, Task, TaskSession
 from .meta import META
 
 
@@ -25,7 +25,7 @@ def create_static_entities():
     return {
         Student: {},
         Task: create_tasks_dict(),
-        TaskInstance: {},
+        TaskSession: {},
     }
 
 

@@ -4,8 +4,8 @@ from collections import ChainMap
 from flocs.state import State
 from flocs.state import STATIC_ENTITIES
 from flocs.context import STATIC_CONTEXT
-from flocs.entities import TaskInstance, Task, Student
-from flocs.tests.fixtures_entities import task_instances_dict, tasks_dict, students_dict
+from flocs.entities import TaskSession, Task, Student
+from flocs.tests.fixtures_entities import task_sessions_dict, tasks_dict, students_dict
 
 
 STATES = {
@@ -15,19 +15,19 @@ STATES = {
     ),
     's1': State.create(
         entities=ChainMap({
-            TaskInstance: task_instances_dict('ti1', 'ti2'),
+            TaskSession: task_sessions_dict('ts1', 'ts2'),
         }, STATIC_ENTITIES),
         context=STATIC_CONTEXT,
     ),
     's2': State.create(
         entities=ChainMap({
-            TaskInstance: task_instances_dict('ti1', 'ti2s'),
+            TaskSession: task_sessions_dict('ts1', 'ts2s'),
         }, STATIC_ENTITIES),
         context=STATIC_CONTEXT,
     ),
     's3': State.create(
         entities=ChainMap({
-            TaskInstance: task_instances_dict('ti1', 'ti2s'),
+            TaskSession: task_sessions_dict('ts1', 'ts2s'),
             Task: tasks_dict('t1', 't2', 't3'),
             Student: students_dict('stud1', 'stud2')
         }, STATIC_ENTITIES),

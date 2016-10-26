@@ -42,10 +42,10 @@ def test_create_student_without_id(monkeypatch):
 
 
 def test_start_task():
-    action = actions.start_task(student_id=145, task_id=782, task_instance_id=381)
+    action = actions.start_task(student_id=145, task_id=782, task_session_id=381)
     expected_action = Action(
         type='start_task',
-        data={'student_id': 145, 'task_id': 782, 'task_instance_id': 381},
+        data={'student_id': 145, 'task_id': 782, 'task_session_id': 381},
         context=None,
         meta=META,
     )
@@ -53,10 +53,10 @@ def test_start_task():
 
 
 def test_solve_task():
-    action = actions.solve_task(task_instance_id=651)
+    action = actions.solve_task(task_session_id=651)
     expected_action = Action(
         type='solve_task',
-        data={'task_instance_id': 651},
+        data={'task_session_id': 651},
         context=None,
         meta=META,
     )
@@ -64,10 +64,10 @@ def test_solve_task():
 
 
 def test_give_up_task():
-    action = actions.give_up_task(task_instance_id=798)
+    action = actions.give_up_task(task_session_id=798)
     expected_action = Action(
         type='give_up_task',
-        data={'task_instance_id': 798},
+        data={'task_session_id': 798},
         context=None,
         meta=META,
     )

@@ -34,6 +34,6 @@ ReactDOM.render(app, mountElement);
 //store.dispatch(fetchTasksIfNeeded()).then(() =>
 //  console.log('state', store.getState())
 //);
-//store.dispatch(createTaskInstanceIfNotExist(1));
-//store.dispatch(createTaskInstanceIfNotExist(1));
+//store.dispatch(createTaskSessionIfNotExist(1));
+//store.dispatch(createTaskSessionIfNotExist(1));
 //console.log(store.getState());

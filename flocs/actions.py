@@ -60,37 +60,37 @@ def create_student(student_id=None):
     )
 
 
-def start_task(student_id, task_id, task_instance_id=None):
+def start_task(student_id, task_id, task_session_id=None):
     """A student starts working on a task
     """
     return Action.create(
         type=ActionType.start_task,
         data={
-            'task_instance_id': generate_id_if_not_set(task_instance_id),
+            'task_session_id': generate_id_if_not_set(task_session_id),
             'student_id': student_id,
             'task_id': task_id,
         },
     )
 
 
-def solve_task(task_instance_id):
+def solve_task(task_session_id):
     """A student has solved a task
     """
     return Action.create(
         type=ActionType.solve_task,
         data={
-            'task_instance_id': task_instance_id,
+            'task_session_id': task_session_id,
         },
     )
 
 
-def give_up_task(task_instance_id):
+def give_up_task(task_session_id):
     """A student has given up a task
     """
     return Action.create(
         type=ActionType.give_up_task,
         data={
-            'task_instance_id': task_instance_id,
+            'task_session_id': task_session_id,
         },
     )
 

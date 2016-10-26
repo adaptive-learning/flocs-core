@@ -5,7 +5,7 @@ from collections import namedtuple
 
 Student = namedtuple('Student', [
     'student_id',
-    'last_task_instance',
+    'last_task_session',
 ])
 
 
@@ -16,8 +16,8 @@ Task = namedtuple('Task', [
 ])
 
 
-TaskInstance = namedtuple('TaskInstance', [
-    'task_instance_id',
+TaskSession = namedtuple('TaskSession', [
+    'task_session_id',
     'student_id',
     'task_id',
     'solved',

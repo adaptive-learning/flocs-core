@@ -1,33 +1,33 @@
 import ActionTypes from '../actions/actionTypes';
 
 
-function reduceTaskInstances(state={}, action) {
+function reduceTaskSessions(state={}, action) {
   switch (action.type) {
     case ActionTypes.TASK_INSTANCE.CREATE:
-      const { taskId, taskInstanceId } = action.payload;
-      return openTask(state, taskInstanceId, taskId);
+      const { taskId, taskSessionId } = action.payload;
+      return openTask(state, taskSessionId, taskId);
     default:
       return state;
   }
 }
 
 
-function openTask(taskInstances, taskInstanceId, taskId) {
-  const newTaskInstance = {
-    id: taskInstanceId,
+function openTask(taskSessions, taskSessionId, taskId) {
+  const newTaskSession = {
+    id: taskSessionId,
     taskId: taskId,
     code: {},
     commands: []
   };
 
   // TODO: rewrite using object spread syntax (babel plugin) or immutable.js
-  return Object.assign({}, taskInstances, {
-    [taskInstanceId]: newTaskInstance
+  return Object.assign({}, taskSessions, {
+    [taskSessionId]: newTaskSession
   });
 }
 
 
-export default reduceTaskInstances;
+export default reduceTaskSessions;
 
 
 /*const emptyTask = {

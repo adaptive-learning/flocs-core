@@ -2,7 +2,7 @@ import ActionTypes from './actionTypes';
 import flocsDao from '../services/flocsDao';
 
 
-let nextTaskInstanceId = 0;
+let nextTaskSessionId = 0;
 
 
 export function fetchTasksIfNeeded() {
@@ -47,54 +47,54 @@ export function receiveTasks(tasks) {
 
 
 
-export function createTaskInstanceIfNotExist(taskId) {
+export function createTaskSessionIfNotExist(taskId) {
   // TODO: think and refactor (make it readable)
   return function(dispatch, getState) {
     // TODO: does this logic belong here?
     if (!(taskId in getState().openTasks)) {
-      dispatch(createTaskInstance(taskId));
+      dispatch(createTaskSession(taskId));
     }
   };
 };
 
 
-export function createTaskInstance(taskId) {
-  const taskInstanceId = 'tmp' + nextTaskInstanceId++;
+export function createTaskSession(taskId) {
+  const TaskSessionId = 'tmp' + nextTaskSessionId++;
   return {
-    type: ActionTypes.TASK_INSTANCE.CREATE,
-    payload: { taskInstanceId, taskId }
+    type: ActionTypes.TASK_SESSION.CREATE,
+    payload: { TaskSessionId, taskId }
   };
 };
 
 
-export function changeCode(taskInstanceId) {
+export function changeCode(TaskSessionId) {
   return {
-    type: ActionTypes.TASK_INSTANCE.CHANGE_CODE,
-    payload: { taskInstanceId }
+    type: ActionTypes.TASK_SESSION.CHANGE_CODE,
+    payload: { TaskSessionId }
   };
 };
 
 
-export function run(taskInstanceId) {
-  return { type: ActionTypes.TASK_INSTANCE.RUN, taskInstanceId };
+export function run(TaskSessionId) {
+  return { type: ActionTypes.TASK_SESSION.RUN, TaskSessionId };
 };
 
 
-export function reset(taskInstanceId) {
-  return { type: ActionTypes.TASK_INSTANCE.RESET, taskInstanceId };
+export function reset(TaskSessionId) {
+  return { type: ActionTypes.TASK_SESSION.RESET, TaskSessionId };
 };
 
 
-export function executeCommand(taskInstanceId, command) {
-  return { type: ActionTypes.TASK_INSTANCE.EXECUTE_COMMAND, taskInstanceId, command };
+export function executeCommand(TaskSessionId, command) {
+  return { type: ActionTypes.TASK_SESSION.EXECUTE_COMMAND, TaskSessionId, command };
 };
 
 
-export function loadSolution(taskInstanceId) {
-  return { type: ActionTypes.TASK_INSTANCE.LOAD_SOLUTION, taskInstanceId };
+export function loadSolution(TaskSessionId) {
+  return { type: ActionTypes.TASK_SESSION.LOAD_SOLUTION, TaskSessionId };
 };
 
 
-export function exportCode(taskInstanceId) {
-  return { type: ActionTypes.TASK_INSTANCE.EXPORT_CODE, taskInstanceId };
+export function exportCode(TaskSessionId) {
+  return { type: ActionTypes.TASK_SESSION.EXPORT_CODE, TaskSessionId };
 };

@@ -33,12 +33,12 @@ print(store.state.entities)
 
     ```python
     from collections import ChainMap
-    from flocs.entities import Student, TaskInstance
+    from flocs.entities import Student, TaskSession
     from flocs.state import STATIC_ENTITIES
 
     dynamic_entities = {
         Student: load_students(),
-        TaskInstance: load_task_instances(),
+        TaskSession: load_task_sessions(),
     }
     my_entities = ChainMap(new_entities, STATIC_ENTITIES)
     ```
@@ -62,7 +62,7 @@ print(store.state.entities)
     from flocs.store import Store
 
     with Store.open(my_entities, hooks=PersistenceHooks()) as store:
-        action = actions.solve_task(task_instance_id=14).at(store.state)
+        action = actions.solve_task(task_session_id=14).at(store.state)
         store.stage_action(action)
     ```
 
@@ -75,7 +75,7 @@ print(store.state.entities)
         return Store.open(my_entities, hooks=PersistenceHooks())
 
     with open_my_persistent_store() as store:
-        action = actions.solve_task(task_instance_id=14).at(store.state)
+        action = actions.solve_task(task_session_id=14).at(store.state)
         store.stage_action(action)
     ```
 
