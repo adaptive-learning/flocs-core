@@ -8,7 +8,8 @@ import TaskPreview from '../components/TaskPreview';
 class TaskPreviewContainer extends React.Component {
   componentDidMount() {
     // TODO: should also fetch task(s) if needed? (to enable direct access)
-    const { createTaskSessionIfNotExist, taskId } = this.props;
+    const { fetchTaskIfNeeded, createTaskSessionIfNotExist, taskId } = this.props;
+    //fetchTaskIfNeeded(taskId);
     createTaskSessionIfNotExist(taskId);
   }
 

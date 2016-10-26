@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
-import { Router, Route, IndexRoute, browserHistory } from 'react-router';
+import { Router, Route, IndexRoute, browserHistory, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux'
 import thunk from 'redux-thunk';
 import createLogger from 'redux-logger';
@@ -17,7 +17,9 @@ const store = createStore(reducers, compose(
 ));
 
 
-const history = syncHistoryWithStore(browserHistory, store);
+//const history = syncHistoryWithStore(browserHistory, store);
+const history = syncHistoryWithStore(hashHistory, store);
+
 const app = (
   <Provider store={store}>
     <Router history={history}>

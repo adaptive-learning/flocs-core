@@ -5,6 +5,19 @@ import flocsDao from '../services/flocsDao';
 let nextTaskSessionId = 0;
 
 
+export function fetchTaskIfNeeded(taskId) {
+  const action = function(dispatch, getState) {
+    if (shouldFetchTask(getState(), taskId)) {
+      // TODO: fetch single task only
+      return dispatch(fetchTasks())
+    } else {
+      return Promise.resolve()
+    }
+  };
+  return action;
+}
+
+
 export function fetchTasksIfNeeded() {
   const action = function(dispatch, getState) {
     if (shouldFetchTasks(getState())) {
@@ -17,8 +30,14 @@ export function fetchTasksIfNeeded() {
 }
 
 
+function shouldFetchTask(state, taskId) {
+  return !(taskId in state.tasks);
+}
+
+
 function shouldFetchTasks(state) {
-  return !(state.posts);
+  // TODO: better way to find if the tasks were not fetched yet?
+  return (Object.keys(state.tasks).length === 0);
 }
 
 
