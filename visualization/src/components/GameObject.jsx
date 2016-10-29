@@ -11,6 +11,6 @@ export default function GameObject({ type, size }) {
 
 
   return (
-    <Image imageId={IMAGE_TYPES[type]} width={size} height={size} />
+    <Image imageId={IMAGE_TYPES[type]} width={size} height={size} position='absolute' />
   );
 }

@@ -6,6 +6,8 @@ function reduceTaskSessions(state={}, action) {
     case ActionTypes.TASK_SESSION.CREATE:
       const { taskId, taskSessionId } = action.payload;
       return openTask(state, taskSessionId, taskId);
+    case ActionTypes.TASK_SESSION.EXECUTE_COMMAND:
+      return executeCommand(state, action.payload.taskSessionId, action.payload.command);
     default:
       return state;
   }
@@ -27,43 +29,16 @@ function openTask(taskSessions, taskSessionId, taskId) {
 }
 
 
-export default reduceTaskSessions;
-
-
-/*const emptyTask = {
-  name: '',
-  setting: {
-    fields: {
-      '1-1': {background: 'black', objects: []},
-      '1-2': {background: 'black', objects: []},
-      '1-3': {background: 'black', objects: []},
-      '2-1': {background: 'blue', objects: []},
-      '2-2': {background: 'blue', objects: []},
-      '2-3': {background: 'blue', objects: []},
-    },
-    start: 3,
-  },
-};
-
-const task = (state = emptyTask, action) => {
-  switch (action.type) {
-    case 'TASK.SET':
-      return action.task;
-    default:
-      return state;
-  }
-};
-
-function todoApp(state = initialState, action) {
-  switch (action.type) {
-    case SET_VISIBILITY_FILTER:
-      return Object.assign({}, state, {
-        visibilityFilter: action.filter
-      })
-    default:
-      return state
-  }
+function executeCommand(taskSessions, taskSessionId, command) {
+  const taskSession = taskSessions[taskSessionId];
+  const updatedTaskSession = Object.assign({}, taskSession, {
+    commands: [...taskSession.commands, command]
+  });
+  // TODO: rewrite using object spread syntax (babel plugin) or immutable.js
+  return Object.assign({}, taskSessions, {
+    [taskSessionId]: updatedTaskSession
+  });
 }
 
 
-export default task;*/
+export default reduceTaskSessions;

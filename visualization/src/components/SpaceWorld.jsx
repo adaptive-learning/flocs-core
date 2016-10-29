@@ -1,9 +1,7 @@
 import React from 'react';
 import WorldBlock from './WorldBlock'
 
-export default function SpaceWorld({ setting }) {
-  const { fields } = setting;
-
+export default function SpaceWorld({ fields }) {
   return (
     <div>
       {fields.map((fieldRow, index) =>

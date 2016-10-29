@@ -12,6 +12,7 @@ export default function WorldBlock({ background, objects }) {
 
   const fieldStyle = {
     display: 'table-cell',
+    position: 'relative',
     borderStyle: 'solid',
     borderColor: '#444',
     borderWidth: '1px',

@@ -105,7 +105,10 @@ export function reset(taskSessionId) {
 
 
 export function executeCommand(taskSessionId, command) {
-  return { type: ActionTypes.TASK_SESSION.EXECUTE_COMMAND, taskSessionId, command };
+  return {
+    type: ActionTypes.TASK_SESSION.EXECUTE_COMMAND,
+    payload: { taskSessionId, command }
+  };
 };
 
 

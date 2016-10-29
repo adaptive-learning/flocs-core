@@ -5,16 +5,11 @@ import SpaceControls from './SpaceControls'
 
 export default class SpaceWorldWithControls extends React.Component {
 
-  handleNewCommand(command) {
-    // TBA
-    console.log('command:', command);
-  }
-
   render() {
     return (
       <div>
-        <SpaceWorld setting={this.props.setting} />
-        <SpaceControls onNewCommand={this.handleNewCommand.bind(this)} />
+        <SpaceWorld fields={this.props.fields} />
+        <SpaceControls onNewCommand={this.props.handleCommand} />
       </div>
     )
   }

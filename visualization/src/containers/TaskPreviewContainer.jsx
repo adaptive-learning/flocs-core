@@ -15,8 +15,12 @@ class TaskPreviewContainer extends React.Component {
 
   render() {
     return (
-      <TaskPreview task={this.props.task}/>
+      <TaskPreview fields={this.props.fields} handleCommand={this.handleCommand.bind(this)} />
     );
+  }
+
+  handleCommand(command) {
+    this.props.executeCommand(this.props.taskSessionId, command);
   }
 }
 
@@ -24,32 +28,66 @@ class TaskPreviewContainer extends React.Component {
 const mapStateToProps = (state, props) => {
   const { taskId } = props.params;
   const task = state.tasks[taskId];
-  //const TaskSessionId = state.openTasks[taskId];
-  //const TaskSession = state.TaskSessions[TaskSessionId];
-  //console.log('in mapStateToProps', task, TaskSession);
-  // TODO: use task and task session (if available) to build current state
-  //const blocks = getBlocksList(task.setting);
-  // TODO: props contains non-normalized (duplicate) data, is it ok? (probably
-  // yes, as it's just derived data, not the source of truth)
-  return { taskId, task };
+  const taskSessionId = extractTaskSessionId(state, taskId);
+  const fields = (taskSessionId === null) ? task.setting.fields : computeCurrentFields(state, taskSessionId);
+  return { taskId, task, taskSessionId, fields };
 };
 
 
-/*const getBlocksList = (setting) => {
-  if (!setting) {
-    return [];
+function extractTaskSessionId(state, taskId) {
+  if (!(taskId in state.openTasks)) {
+    return null;
   }
-  var blocks = []
-  for (var position in setting.fields) {
-    blocks.push({position: position, name: setting.fields[position].background});
-    // TBA: push all objects on this position as well
-  }
-  var heroPosition = '0-' + setting.start;
-  blocks.push({position: heroPosition, name: 'space-rocket'});
-  // TODO: pass and apply commands ?
-  return blocks;
-}*/
+  const taskSessionId = state.openTasks[taskId];
+  return taskSessionId;
+}
 
+
+function computeCurrentFields(state, taskSessionId) {
+  const taskSession = state.taskSessions[taskSessionId];
+  const task = state.tasks[taskSession.taskId];
+  const fields = runCommands(task.setting.fields, taskSession.commands);
+  return fields;
+}
+
+
+function runCommands(fields, commands) {
+  return commands.reduce(runCommand, fields);
+}
+
+
+function runCommand(fields, command) {
+  const oldSpaceshipPosition = findSpaceshipPosition(fields);
+  console.log('oldSpaceshipPostion:', oldSpaceshipPosition);
+  const horizontalShift = {'left': -1, 'ahead': 0, 'right': 1}[command.direction];
+  const newSpaceshipPosition = [oldSpaceshipPosition[0] - 1, oldSpaceshipPosition[1] + horizontalShift];
+  console.log('newSpaceshipPostion:', newSpaceshipPosition);
+  const newFields = fields.map(function (row, i) {
+    return row.map(function (field, j) {
+      let [background, objects] = field;
+      if (i == oldSpaceshipPosition[0] && j == oldSpaceshipPosition[1]) {
+        objects = [];
+      }
+      if (i == newSpaceshipPosition[0] && j == newSpaceshipPosition[1]) {
+        objects = [...objects, 'S'];
+      }
+      return [background, objects];
+    });
+  });
+  return newFields;
+}
+
+
+function findSpaceshipPosition(fields) {
+  for (let i=0; i<fields.length; i++)  {
+    for (let j=0; j<fields[i].length; j++)  {
+      const objects = fields[i][j][1];
+      if (objects.indexOf('S') >= 0) {
+        return [i, j];
+      }
+    }
+  }
+}
 
 
 const mapDispatchToProps = (dispatch) => {
