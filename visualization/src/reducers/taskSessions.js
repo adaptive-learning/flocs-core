@@ -3,7 +3,7 @@ import ActionTypes from '../actions/actionTypes';
 
 function reduceTaskSessions(state={}, action) {
   switch (action.type) {
-    case ActionTypes.TASK_INSTANCE.CREATE:
+    case ActionTypes.TASK_SESSION.CREATE:
       const { taskId, taskSessionId } = action.payload;
       return openTask(state, taskSessionId, taskId);
     default:

@@ -78,42 +78,42 @@ export function createTaskSessionIfNotExist(taskId) {
 
 
 export function createTaskSession(taskId) {
-  const TaskSessionId = 'tmp' + nextTaskSessionId++;
+  const taskSessionId = 'tmp' + nextTaskSessionId++;
   return {
     type: ActionTypes.TASK_SESSION.CREATE,
-    payload: { TaskSessionId, taskId }
+    payload: { taskSessionId, taskId }
   };
 };
 
 
-export function changeCode(TaskSessionId) {
+export function changeCode(taskSessionId) {
   return {
     type: ActionTypes.TASK_SESSION.CHANGE_CODE,
-    payload: { TaskSessionId }
+    payload: { taskSessionId }
   };
 };
 
 
-export function run(TaskSessionId) {
-  return { type: ActionTypes.TASK_SESSION.RUN, TaskSessionId };
+export function run(taskSessionId) {
+  return { type: ActionTypes.TASK_SESSION.RUN, taskSessionId };
 };
 
 
-export function reset(TaskSessionId) {
-  return { type: ActionTypes.TASK_SESSION.RESET, TaskSessionId };
+export function reset(taskSessionId) {
+  return { type: ActionTypes.TASK_SESSION.RESET, taskSessionId };
 };
 
 
-export function executeCommand(TaskSessionId, command) {
-  return { type: ActionTypes.TASK_SESSION.EXECUTE_COMMAND, TaskSessionId, command };
+export function executeCommand(taskSessionId, command) {
+  return { type: ActionTypes.TASK_SESSION.EXECUTE_COMMAND, taskSessionId, command };
 };
 
 
-export function loadSolution(TaskSessionId) {
-  return { type: ActionTypes.TASK_SESSION.LOAD_SOLUTION, TaskSessionId };
+export function loadSolution(taskSessionId) {
+  return { type: ActionTypes.TASK_SESSION.LOAD_SOLUTION, taskSessionId };
 };
 
 
-export function exportCode(TaskSessionId) {
-  return { type: ActionTypes.TASK_SESSION.EXPORT_CODE, TaskSessionId };
+export function exportCode(taskSessionId) {
+  return { type: ActionTypes.TASK_SESSION.EXPORT_CODE, taskSessionId };
 };
