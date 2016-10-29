@@ -7,9 +7,7 @@ import TaskPreview from '../components/TaskPreview';
 
 class TaskPreviewContainer extends React.Component {
   componentDidMount() {
-    // TODO: should also fetch task(s) if needed? (to enable direct access)
-    const { fetchTaskIfNeeded, createTaskSessionIfNotExist, taskId } = this.props;
-    //fetchTaskIfNeeded(taskId);
+    const { createTaskSessionIfNotExist, taskId } = this.props;
     createTaskSessionIfNotExist(taskId);
   }
 
@@ -58,10 +56,8 @@ function runCommands(fields, commands) {
 
 function runCommand(fields, command) {
   const oldSpaceshipPosition = findSpaceshipPosition(fields);
-  console.log('oldSpaceshipPostion:', oldSpaceshipPosition);
   const horizontalShift = {'left': -1, 'ahead': 0, 'right': 1}[command.direction];
   const newSpaceshipPosition = [oldSpaceshipPosition[0] - 1, oldSpaceshipPosition[1] + horizontalShift];
-  console.log('newSpaceshipPostion:', newSpaceshipPosition);
   const newFields = fields.map(function (row, i) {
     return row.map(function (field, j) {
       let [background, objects] = field;

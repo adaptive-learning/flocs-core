@@ -24,13 +24,13 @@ def parse_task(file_name, file_content):
     ... ```
     ... '''
     >>> parse_task('one-step-forward', content)
-    Task(task_id='one-step-forward', setting=[[('b', []), ...], ...], solution=[['move', 'ahead']])
+    Task(task_id='one-step-forward', setting={'fields': [[('b', []), ...], ...]}, solution=[['move', 'ahead']])
     """
     SECTIONS_RE = re.compile(r"""
         \n* Setting
         \n  -------
         \n+ ```
-            (?P<setting>.*?)
+            (?P<fields>.*?)
             ```
         \n
         \n* Solution
@@ -45,9 +45,9 @@ def parse_task(file_name, file_content):
         raise ValueError('Incorrect basic task source structure, '
                          'see task_specifiaction.SECTIONS_RE.')
     task_id = compute_task_id(file_name)
-    setting = parse_setting(match.group('setting'))
+    fields = parse_fields(match.group('fields'))
     solution = parse_solution(match.group('solution'))
-    task = Task(task_id=task_id, setting=setting, solution=solution)
+    task = Task(task_id=task_id, setting={'fields': fields}, solution=solution)
     return task
 
 
@@ -59,13 +59,13 @@ def compute_task_id(file_name):
     return file_name
 
 
-def parse_setting(text):
+def parse_fields(text):
     """
     >>> text = '''
     ... |b |b |bR|
     ... |k |kS|k |
     ... '''
-    >>> parse_setting(text)
+    >>> parse_fields(text)
     [[('b', []), ('b', []), ('b', ['R'])], [('k', []), ('k', ['S']), ('k', [])]]
     """
     AVAILABLE_COLORS = {
@@ -84,10 +84,10 @@ def parse_setting(text):
     #       - exactly 1 spaceship; at the bottom
     #       - final blue line and no blue color elsewhere
     lines = text.strip().split('\n')
-    setting = [[parse_token(token)
+    fields = [[parse_token(token)
                 for token in line.strip().split('|') if token != '']
                for line in lines]
-    return setting
+    return fields
 
 
 def parse_token(string):

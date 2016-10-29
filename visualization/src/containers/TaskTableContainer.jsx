@@ -11,11 +11,6 @@ class TaskTableContainer extends React.Component {
       <TaskTable tasks={this.props.tasks}/>
     );
   }
-
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch(fetchTasksIfNeeded());
-  }
 }
 
 
