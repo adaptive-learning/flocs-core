@@ -7,14 +7,13 @@ export default class SpaceControls extends React.Component {
       <div>
         <button onClick={this.handleCommandClick.bind(this, 'left')}>Left</button>
         <button onClick={this.handleCommandClick.bind(this, 'ahead')}>Ahead</button>
+        <button onClick={this.handleCommandClick.bind(this, 'ahead+shot')}>Ahead+Shot</button>
         <button onClick={this.handleCommandClick.bind(this, 'right')}>Right</button>
       </div>
     );
   };
 
-  handleCommandClick(direction) {
-    this.props.onNewCommand({
-      direction,
-    });
+  handleCommandClick(commandName) {
+    this.props.onNewCommand(commandName);
   };
 }

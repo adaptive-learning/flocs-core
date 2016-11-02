@@ -29,10 +29,10 @@ function openTask(taskSessions, taskSessionId, taskId) {
 }
 
 
-function executeCommand(taskSessions, taskSessionId, command) {
+function executeCommand(taskSessions, taskSessionId, commandName) {
   const taskSession = taskSessions[taskSessionId];
   const updatedTaskSession = Object.assign({}, taskSession, {
-    commands: [...taskSession.commands, command]
+    commands: [...taskSession.commands, commandName]
   });
   // TODO: rewrite using object spread syntax (babel plugin) or immutable.js
   return Object.assign({}, taskSessions, {

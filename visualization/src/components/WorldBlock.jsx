@@ -6,6 +6,8 @@ export default function WorldBlock({ background, objects }) {
   const BACKGROUND_COLOR_CLASSES = {
     'k': '#222',
     'b': '#00f',
+    'g': '#ddd',
+    'y': '#fe0',
   };
 
   const fieldSize = 50;

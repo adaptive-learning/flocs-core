@@ -5,8 +5,13 @@ export default function GameObject({ type, size }) {
 
   const IMAGE_TYPES = {
     'S': 'spaceship',
-    'R': 'rock-large',
+    'A': 'asteroid',
+    'M': 'meteoroid',
     'D': 'diamond',
+    'explosion': 'explosion',
+    'laser': 'laser',
+    'laser-start': 'laser-start',
+    'laser-end': 'laser-end',
   };
 
 

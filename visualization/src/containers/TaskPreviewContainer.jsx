@@ -17,8 +17,8 @@ class TaskPreviewContainer extends React.Component {
     );
   }
 
-  handleCommand(command) {
-    this.props.executeCommand(this.props.taskSessionId, command);
+  handleCommand(commandName) {
+    this.props.executeCommand(this.props.taskSessionId, commandName);
   }
 }
 
@@ -55,8 +55,39 @@ function runCommands(fields, commands) {
 
 
 function runCommand(fields, command) {
+  const direction = (command == 'ahead+shot') ? 'ahead' : command;
+  const shot = (command == 'ahead+shot');
+  const fieldsAfterEvolution = performObjectEvolution(fields);
+  const fieldsAfterMove = performMove(fieldsAfterEvolution, direction);
+  const newFields = (shot) ?  performShot(fieldsAfterMove) : fieldsAfterMove;
+  return newFields;
+}
+
+
+function performObjectEvolution(fields) {
+  // TODO: factor out 2D map / (world bg+objects map?) into a separate utility function
+  const newFields = fields.map(function (row, i) {
+    return row.map(function (field, j) {
+      let [background, objects] = field;
+      const explosion = (objects.indexOf('explosion') > -1);
+      const removeAllIfExplosion = objects => (explosion) ? [] : objects;
+      const effects = new Set(['laser', 'laser-start', 'laser-end']);
+      const removeEffects = objects => objects.filter(obj => !effects.has(obj));
+      const evolvedObjects = removeAllIfExplosion(removeEffects(objects));
+      return [background, evolvedObjects];
+    });
+  });
+  return newFields;
+}
+
+
+/**
+ * Return new 2D fields after move of the spaceship represented as object 'S'.
+ * Dicection is one of 'left', 'ahead', 'right'.
+ */
+function performMove(fields, direction) {
   const oldSpaceshipPosition = findSpaceshipPosition(fields);
-  const horizontalShift = {'left': -1, 'ahead': 0, 'right': 1}[command.direction];
+  const horizontalShift = {'left': -1, 'ahead': 0, 'right': 1}[direction];
   const newSpaceshipPosition = [oldSpaceshipPosition[0] - 1, oldSpaceshipPosition[1] + horizontalShift];
   const newFields = fields.map(function (row, i) {
     return row.map(function (field, j) {
@@ -71,6 +102,41 @@ function runCommand(fields, command) {
     });
   });
   return newFields;
+}
+
+
+function performShot(fields) {
+  const [yStart, x] = findSpaceshipPosition(fields);
+  const noObjectAt = y => fields[y][x][1].length == [];
+  let yEnd = yStart - 1;
+  while (yEnd > 0 && noObjectAt(yEnd)) {
+    yEnd--;
+  }
+  const newFields = fields.map(function (row, i) {
+    return row.map(function (field, j) {
+      let [background, objects] = field;
+      if (j == x) {
+        if (i == yStart) {
+          objects = ['laser-start', ...objects]
+        } else if (yStart > i && i > yEnd) {
+          objects = ['laser', ...objects]
+        } else if (i == yEnd) {
+          objects = objects.map(shootObject);
+          objects = ['laser-end', ...objects]
+        }
+      }
+      return [background, objects];
+    });
+  });
+  return newFields;
+}
+
+
+function shootObject(obj) {
+  // TODO: improve readability and maintainability
+  const shootableObjects = new Set(['M', 'D']);
+  const shotObject = (shootableObjects.has(obj)) ? 'explosion' : obj;
+  return shotObject;
 }
 
 

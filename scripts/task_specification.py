@@ -70,13 +70,15 @@ def parse_fields(text):
     """
     AVAILABLE_COLORS = {
         'b': 'blue',
-        'r': 'red',
-        'y': 'yellow',
         'k': 'black',
+        'g': 'grey',
+        'y': 'yellow',
     }
     AVAILABLE_OBJECTS = {
         'S': 'spaceship',
-        'R': 'rock',
+        'A': 'asteroid',
+        'M': 'meteoroid',
+        'D': 'diamond',
     }
     # TODO: parse structure (2D maze, color+objects, apply additional tests
     #       - each color is among AVAILABLE_COLORS

@@ -3,13 +3,13 @@ Setting
 
 ```
 |b |b |b |b |b |
-|kR|k |kR|k |kR|
-|k |kR|k |kR|k |
-|kR|k |kR|k |kR|
-|k |kR|k |kR|k |
-|kR|k |kR|k |kR|
-|k |kR|k |kR|k |
-|kR|k |kR|k |kR|
+|kA|k |kA|k |kA|
+|k |kA|k |kA|k |
+|kA|k |kA|k |kA|
+|k |kA|k |kA|k |
+|kA|k |kA|k |kA|
+|k |kA|k |kA|k |
+|kA|k |kA|k |kA|
 |k |k |kS|k |k |
 ```
 

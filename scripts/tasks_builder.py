@@ -4,10 +4,11 @@ import json
 import os
 from flocs.data.tasks import TASKS
 from .task_specification import parse_task
+from .config import DATA_DIR, CORE_PKG_DIR, VISUALIZATION_PKG_DIR
 
 
-SOURCES_DIR = 'data/tasks/'
-DEST_PY = 'flocs/data/tasks.py'
+SOURCES_DIR = os.path.join(DATA_DIR, 'tasks')
+DEST_PY = os.path.join(CORE_PKG_DIR, 'data', 'tasks.py')
 TASK_MODULE_TEMPLATE = '''
 """Tasks generated from data/tasks/*.md
 """
@@ -20,7 +21,7 @@ TASKS = (
 '''.strip()
 TASK_LINE_TEMPLATE = '    {task},'
 
-DEST_JS = 'visualization/exported_data/tasks.js'
+DEST_JS = os.path.join(VISUALIZATION_PKG_DIR, 'exported_data', 'tasks.js')
 JS_TASK_MODULE_TEMPLATE = '''
 // Tasks generated from data/tasks/*.md
 const TASKS = {tasks_json};
@@ -112,7 +113,7 @@ def read_task_source(ref):
 
 
 def task_ref_to_path(ref):
-    return SOURCES_DIR + ref + '.md'
+    return os.path.join(SOURCES_DIR, ref + '.md')
 
 
 if __name__ == "__main__":
