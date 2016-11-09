@@ -7,7 +7,9 @@ function reduceTaskSessions(state={}, action) {
       const { taskId, taskSessionId } = action.payload;
       return openTask(state, taskSessionId, taskId);
     case ActionTypes.TASK_SESSION.EXECUTE_COMMAND:
-      return executeCommand(state, action.payload.taskSessionId, action.payload.command);
+      return executeCommand(state, action.payload.taskSessionId, action.payload.commandName);
+    case ActionTypes.TASK_SESSION.RESET:
+      return resetWorld(state, action.payload.taskSessionId);
     default:
       return state;
   }
@@ -18,7 +20,7 @@ function openTask(taskSessions, taskSessionId, taskId) {
   const newTaskSession = {
     id: taskSessionId,
     taskId: taskId,
-    code: {},
+    program: [['move', 'ahead'], ['move', 'right'], ['move', 'ahead']],  // fake some program for test purposes {}, TODO: UPDATE_program action
     commands: []
   };
 
@@ -31,10 +33,22 @@ function openTask(taskSessions, taskSessionId, taskId) {
 
 function executeCommand(taskSessions, taskSessionId, commandName) {
   const taskSession = taskSessions[taskSessionId];
+  const updatedCommands = [...taskSession.commands, commandName];
   const updatedTaskSession = Object.assign({}, taskSession, {
-    commands: [...taskSession.commands, commandName]
+    commands: updatedCommands
   });
   // TODO: rewrite using object spread syntax (babel plugin) or immutable.js
+  return Object.assign({}, taskSessions, {
+    [taskSessionId]: updatedTaskSession
+  });
+}
+
+
+function resetWorld(taskSessions, taskSessionId) {
+  const taskSession = taskSessions[taskSessionId];
+  const updatedTaskSession = Object.assign({}, taskSession, {
+    commands: []
+  });
   return Object.assign({}, taskSessions, {
     [taskSessionId]: updatedTaskSession
   });

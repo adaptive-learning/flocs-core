@@ -18,7 +18,22 @@ class TaskPreviewContainer extends React.Component {
   }
 
   handleCommand(commandName) {
-    this.props.executeCommand(this.props.taskSessionId, commandName);
+    switch (commandName) {
+      case 'left':
+      case 'right':
+      case 'ahead':
+      case 'ahead+shot':
+        this.props.executeCommand(this.props.taskSessionId, commandName);
+        break;
+      case 'run':
+        this.props.runProgram(this.props.taskSessionId);
+        break;
+      case 'reset':
+        this.props.resetWorld(this.props.taskSessionId);
+        break;
+      default:
+        throw 'Undefined control command ' + commandName;
+    }
   }
 }
 

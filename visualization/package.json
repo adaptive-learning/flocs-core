@@ -35,12 +35,17 @@
     "eslint-plugin-jsx-a11y": "^2.1.0",
     "eslint-plugin-react": "^6.0.0",
     "html-webpack-plugin": "^2.22.0",
+    "napa": "^2.3.0",
     "react-hot-loader": "^3.0.0-beta.6",
     "redux-devtools": "^3.3.1",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
   },
+  "napa": {
+    "js-interpreter": "NeilFraser/JS-Interpreter#76256b5e37e2ba35fe67a1c4caed68d56dfab314"
+  },
   "scripts": {
+    "install": "napa",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --progress --inline --hot",
     "production": "webpack -p",

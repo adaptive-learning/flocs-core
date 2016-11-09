@@ -1,4 +1,5 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var webpack = require("webpack");
 
 module.exports = {
   devtool: "source-map",
@@ -32,5 +33,9 @@ module.exports = {
       filename: 'index.html',
       inject: 'body'
     }),
+    // TODO: avoid definining acorn globally (needed only for JS-Interpreter)
+    new webpack.ProvidePlugin({
+      'acorn': 'js-interpreter/acorn',
+    })
   ]
 };
