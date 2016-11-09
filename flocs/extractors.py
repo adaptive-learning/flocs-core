@@ -1,14 +1,14 @@
 """ Pure functions extracting information from the world state
 """
 import random
-from flocs.entities import Student, TaskSession
+from flocs.entities import Student, Task, TaskSession
 from functools import partial
 
 
 def select_random_task(state, student_id):
     del student_id  # intentionally unused argument
-    tasks = state['entities.tasks']
-    randomness_seed = state['context.randomness_seed']
+    tasks = state.entities[Task]
+    randomness_seed = state.context['randomness']
     random.seed(randomness_seed)
     task_ids = list(tasks.keys())
     selected_task_id = random.choice(task_ids)
