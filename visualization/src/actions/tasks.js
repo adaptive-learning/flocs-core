@@ -1,6 +1,7 @@
 import ActionTypes from './actionTypes';
 import { Interpreter } from 'js-interpreter/interpreter';
 import gameState from '../extractors/gameState';
+import parseRobocode from '../robocode/parser';
 
 
 let nextTaskSessionId = 0;
@@ -26,10 +27,10 @@ export function createTaskSession(taskId) {
 };
 
 
-export function changeCode(taskSessionId) {
+export function changeCode(taskSessionId, code) {
   return {
     type: ActionTypes.TASK_SESSION.CHANGE_CODE,
-    payload: { taskSessionId }
+    payload: { taskSessionId, code }
   };
 };
 
@@ -38,9 +39,10 @@ export function runProgram(taskSessionId) {
   // QUESTION: should this code be here?
   // QUESTION: how to make it readable?
   return function(dispatch, getState) {
-    const program = getState().taskSessions[taskSessionId].program;
+    const code = getState().taskSessions[taskSessionId].code;
+    const roboAst = parseRobocode(code);
     // TODO: factor out to a RoboCodeInterpreter
-    const jsCode = roboAstToJS(program);
+    const jsCode = roboAstToJS(roboAst);
     let pause = false;
 
     function initApi(interpreter, scope) {

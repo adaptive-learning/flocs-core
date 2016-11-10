@@ -10,6 +10,8 @@ function reduceTaskSessions(state={}, action) {
       return executeCommand(state, action.payload.taskSessionId, action.payload.commandName);
     case ActionTypes.TASK_SESSION.RESET:
       return resetWorld(state, action.payload.taskSessionId);
+    case ActionTypes.TASK_SESSION.CHANGE_CODE:
+      return changeCode(state, action.payload.taskSessionId, action.payload.code);
     default:
       return state;
   }
@@ -21,7 +23,8 @@ function openTask(taskSessions, taskSessionId, taskId) {
     id: taskSessionId,
     taskId: taskId,
     //program: [['repeat', 3, [['move', 'right'], ['move', 'left']]]],  // fake some program for test purposes {}, TODO: UPDATE_program action
-    program: [["while", ["position", "<", "5"], [["move", "right"]]],["while", ["position", ">", "1"], [["move", "left"]]]],
+    //program: [["while", ["position", "<", "5"], [["move", "right"]]],["while", ["position", ">", "1"], [["move", "left"]]]],
+    code: '',
     commands: []
   };
 
@@ -36,7 +39,7 @@ function executeCommand(taskSessions, taskSessionId, commandName) {
   const taskSession = taskSessions[taskSessionId];
   const updatedCommands = [...taskSession.commands, commandName];
   const updatedTaskSession = Object.assign({}, taskSession, {
-    commands: updatedCommands
+    commands:updatedCommands
   });
   // TODO: rewrite using object spread syntax (babel plugin) or immutable.js
   return Object.assign({}, taskSessions, {
@@ -50,6 +53,17 @@ function resetWorld(taskSessions, taskSessionId) {
   const updatedTaskSession = Object.assign({}, taskSession, {
     commands: []
   });
+  return Object.assign({}, taskSessions, {
+    [taskSessionId]: updatedTaskSession
+  });
+}
+
+
+function changeCode(taskSessions, taskSessionId, code) {
+  // TODO: unify naming: program vs. code
+  const taskSession = taskSessions[taskSessionId];
+  const updatedTaskSession = Object.assign({}, taskSession, { code });
+  // TODO: rewrite using object spread syntax (babel plugin) or immutable.js
   return Object.assign({}, taskSessions, {
     [taskSessionId]: updatedTaskSession
   });

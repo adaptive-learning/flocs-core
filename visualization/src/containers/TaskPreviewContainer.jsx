@@ -14,7 +14,12 @@ class TaskPreviewContainer extends React.Component {
 
   render() {
     return (
-      <TaskPreview fields={this.props.fields} handleCommand={this.handleCommand.bind(this)} />
+      <TaskPreview
+        fields={this.props.fields}
+        handleCommand={this.handleCommand.bind(this)}
+        code={this.props.code}
+        handleCodeChange={this.handleCodeChange.bind(this)}
+      />
     );
   }
 
@@ -36,6 +41,12 @@ class TaskPreviewContainer extends React.Component {
         throw 'Undefined control command ' + commandName;
     }
   }
+
+  handleCodeChange(code) {
+    // TODO/QUESTION: find if changing store on every code change is a good
+    // idea
+    this.props.changeCode(this.props.taskSessionId, code);
+  }
 }
 
 
@@ -44,7 +55,8 @@ const mapStateToProps = (state, props) => {
   const task = state.tasks[taskId];
   const taskSessionId = extractTaskSessionId(state, taskId);
   const fields = (taskSessionId === null) ? task.setting.fields : gameState(state, taskSessionId).fields;
-  return { taskId, task, taskSessionId, fields };
+  const code = (taskSessionId === null) ? '' : state.taskSessions[taskSessionId].code;
+  return { taskId, task, taskSessionId, fields, code };
 };
 
 
