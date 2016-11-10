@@ -21,7 +21,7 @@ function openTask(taskSessions, taskSessionId, taskId) {
     id: taskSessionId,
     taskId: taskId,
     //program: [['repeat', 3, [['move', 'right'], ['move', 'left']]]],  // fake some program for test purposes {}, TODO: UPDATE_program action
-    program: [["while", ["color", "!=", "b"], [["move", "right"], ["move", "left"]]]],
+    program: [["while", ["position", "<", "5"], [["move", "right"]]],["while", ["position", ">", "1"], [["move", "left"]]]],
     commands: []
   };
 

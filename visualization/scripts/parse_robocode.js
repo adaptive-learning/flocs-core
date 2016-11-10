@@ -18,7 +18,7 @@ REPEAT -> repeat COND: \n{ SEQ }
 COND -> COND and COND | COND or COND | VAL REL VAL
 VAL -> COLOR | NUM
 COLOR -> color() | 'b' | 'r' | 'y' | 'k'
-NUM -> pos() | 1 | 2 | 3 | 4 | 5
+NUM -> position() | 1 | 2 | 3 | 4 | 5
 REL -> == | != | > | >= | < | <=
 */
 const readline = require('readline');
@@ -103,7 +103,7 @@ function parseSimpleCondition(text) {
   const tokens = tokenize(text);
   const conditionParser = {
     color: parseColorCondition,
-    pos: parsePositionCondition,
+    position: parsePositionCondition,
   }[tokens[0]];
   const condition = conditionParser(tokens);
   return condition;
@@ -128,7 +128,7 @@ function parsePositionCondition(tokens) {
   const op = tokens[1];
   const position = parseInt(tokens[2]);
   // TODO: checks and error reports
-  return ['pos', op, position];
+  return ['position', op, position];
 }
 
 
@@ -194,7 +194,7 @@ AVAILABLE_POSITIONS = {
 
 const test = `
 move()
-if pos() > 4:
+if position() > 4:
     repeat(4):
         move('right')
         move('left')

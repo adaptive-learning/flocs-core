@@ -57,6 +57,11 @@ export function runProgram(taskSessionId) {
         interpreter.createNativeFunction(function() {
           return interpreter.createPrimitive(readColor());
       }));
+
+      interpreter.setProperty(scope, 'position',
+        interpreter.createNativeFunction(function() {
+          return interpreter.createPrimitive(readPosition());
+      }));
     }
 
     function move(direction) {
@@ -69,6 +74,13 @@ export function runProgram(taskSessionId) {
       const field = fields[spaceship[0]][spaceship[1]];  // TODO: better way to index fields in 2d map?
       const color = field[0];  // TODO: more explicit way to get background
       return color;
+    }
+
+    function readPosition() {
+      const { spaceship } = gameState(getState(), taskSessionId);
+      const [y, x] = spaceship;
+      const position = x + 1;
+      return position;
     }
 
     var jsInterpreter = new Interpreter(jsCode, initApi);
@@ -149,7 +161,7 @@ function generateCondition(node) {
   const head = node[0];
   switch (head) {
     case 'color':
-    case 'pos':
+    case 'position':
       return generateSimpleCondition(node);
     case 'and':
       return generateComplexCondition('&&', node[1], node[2]);
