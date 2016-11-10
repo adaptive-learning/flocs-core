@@ -1,5 +1,6 @@
 import ActionTypes from './actionTypes';
 import { Interpreter } from 'js-interpreter/interpreter';
+import gameState from '../extractors/gameState';
 
 
 let nextTaskSessionId = 0;
@@ -43,6 +44,7 @@ export function runProgram(taskSessionId) {
     let pause = false;
 
     function initApi(interpreter, scope) {
+      // TODO: dry initApi function
       interpreter.setProperty(scope, 'move',
         interpreter.createNativeFunction(function(direction) {
           direction = direction ? direction.toString() : 'ahead';
@@ -50,12 +52,24 @@ export function runProgram(taskSessionId) {
           pause = true;
           return interpreter.createPrimitive();
       }));
+
+      interpreter.setProperty(scope, 'color',
+        interpreter.createNativeFunction(function() {
+          return interpreter.createPrimitive(readColor());
+      }));
     }
 
     function move(direction) {
       // TODO: unify naming for commands/moves/directions
       dispatch(executeCommand(taskSessionId, direction));
     };
+
+    function readColor() {
+      const { fields, spaceship } = gameState(getState(), taskSessionId);
+      const field = fields[spaceship[0]][spaceship[1]];  // TODO: better way to index fields in 2d map?
+      const color = field[0];  // TODO: more explicit way to get background
+      return color;
+    }
 
     var jsInterpreter = new Interpreter(jsCode, initApi);
 
@@ -79,27 +93,89 @@ export function runProgram(taskSessionId) {
 
 
 // QUESTION: where should this code live?
+// TODO: documentation and tests
 function roboAstToJS(roboAst) {
-  // TODO: unfake it
-  // TODO: unable to highlight lines(/blocks)
-  //const jsCode = 'move()\nmove("right")\nmove()\n';
-  const lines = roboAst.map(function(node) {
-    switch (node[0]) {
-      case 'move':
-        const [command, ...args] = node;
-        const argsList = args.map(encodeArgument).join(',');
-        return `${command}(${argsList})`;
-    };
-  });
-  // TODO: define all other robo-code supported constructs (see robo-code spec)
-  const jsCode = lines.join('\n');
+  // TODO: enable to highlight lines(/blocks)
+  const jsCode = generateSequence(roboAst);
   console.log('program:', jsCode);
   return jsCode;
 }
 
 
+function generateSequence(nodes) {
+  const lines = nodes.map(generateStatement);
+  const jsCode = lines.join('\n');
+  return jsCode;
+}
+
+
+function generateStatement(node) {
+  const head = node[0];
+  switch (head) {
+    case 'move':
+      return generateCommand(node);
+    case 'repeat':
+      return generateRepeatLoop(node);
+    case 'while':
+      return generateWhileLoop(node);
+    default:
+      throw `Unknown node head in roboAST <${head}> in node <${node}> for statement`
+  };
+}
+
+function generateCommand(node) {
+  const [command, ...args] = node;
+  const argsList = args.map(encodeValue).join(',');
+  return `${command}(${argsList})`;
+}
+
+
+function generateRepeatLoop(node) {
+  const [_, count, body] = node;
+  const bodyCode = generateSequence(body);
+  return `for (var i=0; i<${count}; i++) {\n${bodyCode}\n}`;
+}
+
+
+function generateWhileLoop(node) {
+  const [_, condition, body] = node;
+  const conditionCode = generateCondition(condition);
+  const bodyCode = generateSequence(body);
+  return `while ${conditionCode} {\n${bodyCode}\n}`;
+}
+
+
+function generateCondition(node) {
+  const head = node[0];
+  switch (head) {
+    case 'color':
+    case 'pos':
+      return generateSimpleCondition(node);
+    case 'and':
+      return generateComplexCondition('&&', node[1], node[2]);
+    case 'or':
+      return generateComplexCondition('||', node[1], node[2]);
+    default:
+      throw `Unknown node head in roboAST <${head}> in node <${node}> for condition`
+  };
+}
+
+
+function generateSimpleCondition(node) {
+  const [fnName, comparator, value] = node;
+  return `(${fnName}() ${comparator} ${encodeValue(value)})`;
+}
+
+
+function generateComplexCondition(operator, leftConditionNode, rightConditionNode) {
+  const leftCondition = generateSimpleCondition(leftConditionNode);
+  const rightCondition = generateSimpleCondition(rightConditionNode);
+  return `(${leftCondition} ${operator} ${rightCondition})`;
+}
+
+
 // TODO: test
-function encodeArgument(arg) {
+function encodeValue(arg) {
   if (typeof arg == 'string') {
     return `"${arg}"`;
   } else {

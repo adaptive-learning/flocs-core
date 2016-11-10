@@ -20,7 +20,8 @@ function openTask(taskSessions, taskSessionId, taskId) {
   const newTaskSession = {
     id: taskSessionId,
     taskId: taskId,
-    program: [['move', 'ahead'], ['move', 'right'], ['move', 'ahead']],  // fake some program for test purposes {}, TODO: UPDATE_program action
+    //program: [['repeat', 3, [['move', 'right'], ['move', 'left']]]],  // fake some program for test purposes {}, TODO: UPDATE_program action
+    program: [["while", ["color", "!=", "b"], [["move", "right"], ["move", "left"]]]],
     commands: []
   };
 
