@@ -16,6 +16,7 @@ class TaskPreviewContainer extends React.Component {
     return (
       <TaskPreview
         fields={this.props.fields}
+        initial={this.props.initial}
         solved={this.props.solved}
         dead={this.props.dead}
         handleCommand={this.handleCommand.bind(this)}
@@ -59,10 +60,11 @@ const mapStateToProps = (state, props) => {
   const currentGameState = (taskSessionId !== null) ? gameState(state, taskSessionId, taskId) : null;
   // TODO: factor out taskSessionId test
   const fields = (taskSessionId === null) ? task.setting.fields : currentGameState.fields;
+  const initial = (taskSessionId === null) ? false : currentGameState.initial;
   const solved = (taskSessionId === null) ? false : currentGameState.solved;
   const dead = (taskSessionId === null) ? false : currentGameState.dead;
   const code = (taskSessionId === null) ? '' : state.taskSessions[taskSessionId].code;
-  return { taskId, task, taskSessionId, fields, solved, dead, code };
+  return { taskId, task, taskSessionId, fields, initial, solved, dead, code };
 };
 
 

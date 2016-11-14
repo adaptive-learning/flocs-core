@@ -3,14 +3,11 @@ import SpaceWorld from './SpaceWorld';
 import SpaceControls from './SpaceControls'
 
 
-export default class SpaceWorldWithControls extends React.Component {
-
-  render() {
-    return (
-      <div>
-        <SpaceWorld fields={this.props.fields} />
-        <SpaceControls onNewCommand={this.props.handleCommand} />
-      </div>
-    )
-  }
+export default function SpaceWorldWithControls({ fields, controls, handleCommand }) {
+  return (
+    <div>
+      <SpaceWorld fields={fields} />
+      <SpaceControls controls={controls} onNewCommand={handleCommand} />
+    </div>
+  );
 }

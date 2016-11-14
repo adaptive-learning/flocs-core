@@ -1,26 +1,32 @@
-// TODO: tests, docs, readability
+// TODO: tests, docs, readability, rename gameState to ?extract/get/computeGameState
 
 function gameState(state, taskSessionId, taskId = null) {
-  // TODO: optimize if needed
-  // TODO: factor out special case handling from normal flow
   let fields = null;
   if (taskSessionId !== null) {
-    fields = computeCurrentFields(state, taskSessionId);
+    const taskSession = state.taskSessions[taskSessionId];
+    const task = state.tasks[taskSession.taskId];
+    return gameStateOfSession(task, taskSession);
   } else if (taskId !== null) {
-    fields = state.tasks[taskId];
+    //fields = state.tasks[taskId];
+    throw 'Creating special-object gameState not implemented yet';
   } else {
     throw 'Either taskSessionId or taskId must be specified in order to compute game state';
   }
-  const spaceship = findSpaceshipPosition(fields);
-  const solved = gameSolved(fields, spaceship);
-  const dead = isSpaceshipDead(fields, spaceship);
-  return { fields, spaceship, solved, dead }
 }
 
 
-function computeCurrentFields(state, taskSessionId) {
-  const taskSession = state.taskSessions[taskSessionId];
-  const task = state.tasks[taskSession.taskId];
+function gameStateOfSession(task, taskSession) {
+  // TODO: optimize if needed
+  const fields = computeCurrentFields(task, taskSession);
+  const spaceship = findSpaceshipPosition(fields);
+  const initial = taskSession.commands.length == 0;
+  const solved = gameSolved(fields, spaceship);
+  const dead = isSpaceshipDead(fields, spaceship);
+  return { fields, spaceship, initial, solved, dead }
+}
+
+
+function computeCurrentFields(task, taskSession) {
   const fields = runCommands(task.setting.fields, taskSession.commands);
   return fields;
 }

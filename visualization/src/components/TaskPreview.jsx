@@ -6,11 +6,16 @@ import CodeEditor from '../components/CodeEditor';
 
 export default class TaskPreview extends React.Component {
   render() {
-    const { fields, solved, dead, handleCommand, code, handleCodeChange } = this.props;
+    const { fields, initial, solved, dead, handleCommand, code, handleCodeChange } = this.props;
+    const controls = {
+      commands: (solved || dead) ? 'passive' : 'active',
+      run: initial ? 'active' : 'hidden',
+      reset: (!initial) ? 'active' : 'hidden'
+    };
     return (
       <div>
         <TaskStatus solved={solved} dead={dead} />
-        <SpaceWorldWithControls fields={fields} handleCommand={handleCommand} />
+        <SpaceWorldWithControls controls={controls} fields={fields} handleCommand={handleCommand} />
         <CodeEditor code={code} onChange={handleCodeChange} />
       </div>
     )
