@@ -1,10 +1,20 @@
 // TODO: tests, docs, readability
 
-function gameState(state, taskSessionId) {
+function gameState(state, taskSessionId, taskId = null) {
   // TODO: optimize if needed
-  const fields = computeCurrentFields(state, taskSessionId);
+  // TODO: factor out special case handling from normal flow
+  let fields = null;
+  if (taskSessionId !== null) {
+    fields = computeCurrentFields(state, taskSessionId);
+  } else if (taskId !== null) {
+    fields = state.tasks[taskId];
+  } else {
+    throw 'Either taskSessionId or taskId must be specified in order to compute game state';
+  }
   const spaceship = findSpaceshipPosition(fields);
-  return { fields, spaceship }
+  const solved = gameSolved(fields, spaceship);
+  const dead = isSpaceshipDead(fields, spaceship);
+  return { fields, spaceship, solved, dead }
 }
 
 
@@ -116,6 +126,38 @@ function findSpaceshipPosition(fields) {
       }
     }
   }
+}
+
+
+function gameSolved(fields, spaceship) {
+  return lastRowReached(spaceship);
+}
+
+
+function lastRowReached(spaceship) {
+  return spaceship[0] == 0;
+}
+
+
+function isSpaceshipDead(fields, spaceship) {
+  return outsideWorld(fields, spaceship) || onRock(fields, spaceship);
+  return lastRowReached(fields, spaceship);
+}
+
+
+function outsideWorld(fields, position) {
+  const [y, x] = position;
+  const [minX, maxX] = [0, fields[0].length-1];
+  const [minY, maxY] = [0, fields.length-1];
+  return (x < minX || x > maxX || y < minY || y > maxY);
+}
+
+
+function onRock(fields, position) {
+  const rockObjects = new Set(['M', 'A']);  //TODO: factor out to common world description?)
+  const [y, x] = position;
+  const objects = fields[y][x][1];
+  return objects.some(object => rockObjects.has(object));
 }
 
 

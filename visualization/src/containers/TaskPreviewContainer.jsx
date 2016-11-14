@@ -9,13 +9,15 @@ import gameState from '../extractors/gameState';
 class TaskPreviewContainer extends React.Component {
   componentDidMount() {
     const { createTaskSessionIfNotExist, taskId } = this.props;
-    createTaskSessionIfNotExist(taskId);
+    createTaskSessionIfNotExist(taskId); // QUESTION: should this happen on didMount?
   }
 
   render() {
     return (
       <TaskPreview
         fields={this.props.fields}
+        solved={this.props.solved}
+        dead={this.props.dead}
         handleCommand={this.handleCommand.bind(this)}
         code={this.props.code}
         handleCodeChange={this.handleCodeChange.bind(this)}
@@ -54,9 +56,13 @@ const mapStateToProps = (state, props) => {
   const { taskId } = props.params;
   const task = state.tasks[taskId];
   const taskSessionId = extractTaskSessionId(state, taskId);
-  const fields = (taskSessionId === null) ? task.setting.fields : gameState(state, taskSessionId).fields;
+  const currentGameState = (taskSessionId !== null) ? gameState(state, taskSessionId, taskId) : null;
+  // TODO: factor out taskSessionId test
+  const fields = (taskSessionId === null) ? task.setting.fields : currentGameState.fields;
+  const solved = (taskSessionId === null) ? false : currentGameState.solved;
+  const dead = (taskSessionId === null) ? false : currentGameState.dead;
   const code = (taskSessionId === null) ? '' : state.taskSessions[taskSessionId].code;
-  return { taskId, task, taskSessionId, fields, code };
+  return { taskId, task, taskSessionId, fields, solved, dead, code };
 };
 
 
