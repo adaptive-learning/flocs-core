@@ -132,6 +132,8 @@ function generateStatement(node) {
       return generateRepeatLoop(node);
     case 'while':
       return generateWhileLoop(node);
+    case 'if':
+      return generateIfStatement(node);
     default:
       throw `Unknown node head in roboAST <${head}> in node <${node}> for statement`
   };
@@ -156,6 +158,14 @@ function generateWhileLoop(node) {
   const conditionCode = generateCondition(condition);
   const bodyCode = generateSequence(body);
   return `while ${conditionCode} {\n${bodyCode}\n}`;
+}
+
+
+function generateIfStatement(node) {
+  const [_, condition, body] = node;
+  const conditionCode = generateCondition(condition);
+  const bodyCode = generateSequence(body);
+  return `if ${conditionCode} {\n${bodyCode}\n}`;
 }
 
 
