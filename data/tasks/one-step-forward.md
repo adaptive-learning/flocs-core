@@ -1,0 +1,14 @@
+Setting
+-------
+
+```
+|b |b |b |
+|k |kS|k |
+```
+
+Solution
+--------
+
+```python
+move()
+```

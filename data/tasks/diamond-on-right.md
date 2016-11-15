@@ -2,11 +2,11 @@ Setting
 -------
 
 ```
-|b |b |b |b |b |
-|k |k |k |kM|k |
-|k |k |k |k |kD|
+|b |bM|b |b |b |
+|k |k |k |kA|k |
+|kA|k |k |k |kD|
 |k |kM|k |k |k |
-|k |k |kS|k |k |
+|k |k |kS|k |kM|
 ```
 
 Solution
