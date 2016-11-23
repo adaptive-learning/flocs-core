@@ -29,7 +29,7 @@ STATES = {
         entities=ChainMap({
             TaskSession: task_sessions_dict('ts1', 'ts2s'),
             Task: tasks_dict('t1', 't2', 't3'),
-            Student: students_dict('stud1', 'stud2')
+            Student: students_dict('stud1', 'stud2', 94)
         }, STATIC_ENTITIES),
         context=STATIC_CONTEXT,
     ),

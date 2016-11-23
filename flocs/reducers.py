@@ -75,6 +75,13 @@ def create_task_session(task_sessions, task_session_id, student_id, task_id):
     return ChainMap({task_session_id: task_session}, task_sessions)
 
 
+def update_last_task_session(students, task_session_id, student_id, task_id):
+    del task_id  # intentionally unused argument
+    student = students[student_id]
+    updated_student = student._replace(last_task_session=task_session_id)
+    return ChainMap({student_id: updated_student}, students)
+
+
 def solve_task_session(task_sessions, task_session_id):
     task_session = task_sessions[task_session_id]
     updated_task_session = task_session._replace(solved=True)
@@ -115,6 +122,7 @@ ALWAYS_IDENTITY = identity_defaultdict()
 # an entity key corresponds to an actual entity (e.g. not just a string)
 ENTITY_REDUCERS = {
     entities.Student: identity_defaultdict({
+        ActionType.start_task: update_last_task_session,
         ActionType.create_student: create_student,
     }),
     entities.TaskSession: identity_defaultdict({

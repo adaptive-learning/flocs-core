@@ -58,6 +58,13 @@ def test_create_student():
     assert next_students == expected_students
 
 
+def test_update_last_task_session():
+    s3 = STATES['s3']
+    stud = ENTITIES[94]
+    new_students = reducers.update_last_task_session(s3.entities[Student], 'new_ts_id', stud.student_id, 'some_task_id')
+    assert new_students[stud.student_id].last_task_session == 'new_ts_id'
+
+
 def test_create_task_session():
     ts3 = ENTITIES['ts3']
     next_task_sessions = reducers.create_task_session(
