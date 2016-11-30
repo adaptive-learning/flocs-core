@@ -1,3 +1,4 @@
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var webpack = require("webpack");
 
@@ -17,17 +18,19 @@ module.exports = {
   },
   module: {
     loaders: [
-      {
-        test: /.jsx?$/,
-        loader: 'babel',
-        exclude: /node_modules/,
-        query: {
-          presets: ['es2015', 'react', 'react-hmre']
-        }
+      { test: /.jsx?$/
+      , loader: 'babel'
+      , exclude: /node_modules/
+      , query: { presets: ['es2015', 'react', 'react-hmre'] }
       }
     ]
   },
   plugins: [
+    new CopyWebpackPlugin([
+      { from: 'node_modules/flocs-visual-components/lib/static/images'
+      , to: 'static/images'
+      },
+    ]),
     new HtmlWebpackPlugin({
       template: __dirname + '/src/index.html',
       filename: 'index.html',
