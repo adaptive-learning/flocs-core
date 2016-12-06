@@ -83,3 +83,14 @@ def test_compute_diff():
                           solved=True,
                           given_up=False,
                           ))}
+
+
+
+def test_reducing_action_without_optional_parameters():
+    """Covers issue #52
+    See https://github.com/adaptive-learning/flocs-core/issues/52
+    """
+    with Store.open({Student: {}}) as store:
+        store.stage_action(actions.create_student())
+    student = list(store.state.entities[Student].values())[0]
+    assert student.last_task_session is None
