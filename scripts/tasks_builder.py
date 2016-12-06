@@ -4,10 +4,9 @@ import json
 import os
 from flocs.data.tasks import TASKS
 from .task_specification import parse_task
-from .config import DATA_DIR, CORE_PKG_DIR, VISUALIZATION_PKG_DIR
+from .config import TASKS_DIR, CORE_PKG_DIR, VISUALIZATION_PKG_DIR
 
 
-SOURCES_DIR = os.path.join(DATA_DIR, 'tasks')
 DEST_PY = os.path.join(CORE_PKG_DIR, 'data', 'tasks.py')
 TASK_MODULE_TEMPLATE = '''
 """Tasks generated from data/tasks/*.md
@@ -97,7 +96,7 @@ def is_new(task):
 
 
 def build_all_tasks():
-    file_names = [name for name in os.listdir(SOURCES_DIR) if name.endswith(".md")]
+    file_names = [name for name in os.listdir(TASKS_DIR) if name.endswith(".md")]
     refs = [name[:-3] for name in file_names]
     contents = [read_task_source(ref) for ref in refs]
     tasks = [parse_task(ref, content) for ref, content in zip(refs, contents)]
@@ -113,7 +112,7 @@ def read_task_source(ref):
 
 
 def task_ref_to_path(ref):
-    return os.path.join(SOURCES_DIR, ref + '.md')
+    return os.path.join(TASKS_DIR, ref + '.md')
 
 
 if __name__ == "__main__":

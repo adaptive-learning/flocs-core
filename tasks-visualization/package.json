@@ -1,7 +1,7 @@
 {
-  "name": "flocs",
+  "name": "flocs-tasks-visualization",
   "version": "1.0.0",
-  "description": "Web components for learning computer science",
+  "description": "Simple app for flocs-tasks visualization and creation",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adaptive-learning/flocs-core.git"
@@ -11,12 +11,10 @@
   "homepage": "https://github.com/adaptive-learning/flocs-core#readme",
   "main": "index.js",
   "dependencies": {
-    "axios": "^0.13.1",
     "es6-promise": "^3.2.1",
-    "flocs-visual-components": "^1.0.2",
+    "flocs-visual-components": "^1.0.5",
     "immutable": "^3.8.1",
     "react": "^15.3.0",
-    "react-ace": "^4.0.0",
     "react-dom": "^15.3.0",
     "react-redux": "^4.4.5",
     "react-router": "^2.6.1",
@@ -38,20 +36,14 @@
     "eslint-plugin-jsx-a11y": "^2.1.0",
     "eslint-plugin-react": "^6.0.0",
     "html-webpack-plugin": "^2.22.0",
-    "napa": "^2.3.0",
     "react-hot-loader": "^3.0.0-beta.6",
     "redux-devtools": "^3.3.1",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
   },
-  "napa": {
-    "js-interpreter": "NeilFraser/JS-Interpreter#76256b5e37e2ba35fe67a1c4caed68d56dfab314"
-  },
   "scripts": {
-    "install": "napa",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --progress --inline --hot",
-    "production": "webpack -p",
     "lint": "eslint"
   }
 }
