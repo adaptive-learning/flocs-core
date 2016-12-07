@@ -1,53 +1,50 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
+import createLogger from 'redux-logger';
 import { Provider } from 'react-redux';
-import { CodeEditorContainer, SpaceGameContainer } from 'flocs-visual-components';
 import { flocsComponentsReducer, flocsActionCreators } from 'flocs-visual-components';
 import { flocsActions } from 'flocs-visual-components';
+import tasksReducer from './reducers/tasks';
+import MainContainer from './containers/MainContainer';
+import TaskTableContainer from './containers/TaskTableContainer';
+import TaskPreviewContainer from './containers/TaskPreviewContainer';
 
 
 function createTaskAppComponent() {
-  const rootReducer = combineReducers({
-    myApp: myAppReducer,
-    flocsComponents: flocsComponentsReducer
-  });
-
-  const middleware = applyMiddleware(thunk);
-  const store = createStore(rootReducer, middleware);
-
-
-  const task = {
-    setting: {
-      fields: [[["b", []], ["b", ["A"]], ["b", ["M"]], ["b", ["A"]], ["b", []]], [["k", []], ["k", ["A"]], ["k", []], ["k", ["A"]], ["k", []]], [["k", []], ["k", ["A"]], ["k", ["M"]], ["k", ["A"]], ["k", []]], [["k", []], ["k", ["A"]], ["k", []], ["k", ["A"]], ["k", []]], [["k", []], ["k", ["A"]], ["k", ["M"]], ["k", ["A"]], ["k", []]], [["k", []], ["k", ["A"]], ["k", []], ["k", ["A"]], ["k", []]], [["k", []], ["k", ["A"]], ["k", ["M"]], ["k", ["A"]], ["k", []]], [["k", []], ["k", ["A"]], ["k", []], ["k", ["A"]], ["k", []]], [["k", []], ["k", ["A"]], ["k", ["S"]], ["k", ["A"]], ["k", []]]],
-    }
-  };
-  const taskEnvId = "single";
-  store.dispatch(flocsActionCreators.setTask(taskEnvId, task));
-
   const appComponent = (
-    <Provider store={store}>
-      <div>
-        <SpaceGameContainer taskEnvironmentId={taskEnvId}/>
-        <CodeEditorContainer taskEnvironmentId={taskEnvId}/>
-      </div>
+    <Provider store={createAppStore()}>
+      <Router history={browserHistory}>
+        {createRoutes()}
+      </Router>
     </Provider>
   );
   return appComponent;
 }
 
-function myAppReducer(state={}, action) {
-  switch (action.type) {
-    case flocsActions.SET_TASK:
-      console.log('myAppReducer responding to new task:', action.payload);
-      return state;
-    case flocsActions.TASK_ATTEMPTED:
-      console.log('myAppReducer responding to attempted task:', action.payload);
-      return state;
-    default:
-      return state;
-  }
+
+function createAppStore() {
+  const rootReducer = combineReducers({
+    tasks: tasksReducer,
+    flocsComponents: flocsComponentsReducer
+  });
+  const logger = createLogger();
+  const middleware = applyMiddleware(thunk, logger);
+  const store = createStore(rootReducer, middleware);
+  return store;
+}
+
+
+function createRoutes() {
+  const routes = (
+    <Route path='/' component={MainContainer}>
+      <IndexRoute component={TaskTableContainer} />
+      <Route path='/task/:taskId' component={TaskPreviewContainer} />
+    </Route>
+  );
+  return routes;
 }
 
 

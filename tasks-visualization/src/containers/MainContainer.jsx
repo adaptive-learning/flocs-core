@@ -3,33 +3,10 @@ import Main from '../components/Main';
 
 
 function mapStateToProps(state, props) {
-  return {
-    path: extractPathPartsFromProps(props),
-  };
-}
+  return props;
+};
 
 
-function extractPathPartsFromProps(props) {
-  // TODO: generalize
-  const path = props.location.pathname;
-  if (path.startsWith('/tasks')) {
-    if (props.params.taskId) {
-      return ['home', 'tasks', props.params.taskId];
-    }
-    return ['home', 'tasks'];
-  }
-  return ['home'];
-}
-
-
-function mapDispatchToProps(dispatch) {
-  return {};  // TBA
-}
-
-
-const MainContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Main);
+const MainContainer = connect(mapStateToProps)(Main);
 
 export default MainContainer;

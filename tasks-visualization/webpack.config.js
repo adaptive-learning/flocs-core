@@ -5,12 +5,18 @@ var webpack = require("webpack");
 module.exports = {
   devtool: "source-map",
   entry: [
-    'webpack-dev-server/client?http://0.0.0.0:8080', // WebpackDevServer host and port
+    'webpack-dev-server/client?http://0.0.0.0:8080',
     'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
     './src/index.js',
   ],
+  devServer: {
+    inline: true,
+    historyApiFallback: true,
+    // on refresh, always look for index.html (on any path)
+  },
   output: {
     path: __dirname + '/dist',
+    publicPath: '/',
     filename: 'bundle.js'
   },
   resolve: {
