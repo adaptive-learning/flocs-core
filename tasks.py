@@ -9,7 +9,7 @@ from scripts import tasks_builder
 
 @task
 def test(ctx):
-    ctx.run('py.test --doctest-modules')
+    ctx.run('py.test --doctest-modules --doctest-glob="flocs/README.md" --doctest-glob="flocs/docs/*.md" --doctest-glob="flocs/flocs/*.md"')
 
 
 @task

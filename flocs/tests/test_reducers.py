@@ -53,8 +53,8 @@ def test_identity_reducer():
 
 def test_create_student():
     students = {79: Student(student_id=79, last_task_session=14)}
-    next_students = reducers.create_student(students, student_id=37, last_task_session=14)
-    expected_students = {79: Student(student_id=79, last_task_session=14), 37: Student(student_id=37, last_task_session=14)}
+    next_students = reducers.create_student(students, student_id=37)
+    expected_students = {79: Student(student_id=79, last_task_session=14), 37: Student(student_id=37, last_task_session=None)}
     assert next_students == expected_students
 
 

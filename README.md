@@ -7,15 +7,17 @@ Flocs is developed by [Adaptive Learning group][2] at Faculty of informatics, Ma
   [1]: https://en.wikipedia.org/wiki/Flow_(psychology)
   [2]: http://www.fi.muni.cz/adaptivelearning/
 
-```
-from flocs.actions import create_student
-from flocs.state import STATIC_ENTITIES
-from flocs.store import Store
+```python
+>>> from flocs.actions import create_student
+>>> from flocs.entities import Student
+>>> from flocs.state import STATIC_ENTITIES
+>>> from flocs.store import Store
 
-store = Store(STATIC_ENTITIES)
-action = create_student(student_id=1)
-store.stage_action(action)
-print(store.state)
+>>> store = Store(STATIC_ENTITIES)
+>>> action = create_student(student_id=1)
+>>> store.stage_action(action)
+>>> print(dict(store.state.entities[Student]))
+{1: Student(student_id=1, last_task_session=None)}
 ```
 
 Python flocs package can be installed with:
