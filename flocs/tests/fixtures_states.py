@@ -33,4 +33,10 @@ STATES = {
         }, STATIC_ENTITIES),
         context=STATIC_CONTEXT,
     ),
+    's4': State.create(
+        entities=ChainMap({
+            Student: students_dict('s_new')
+        }, STATIC_ENTITIES),
+        context=STATIC_CONTEXT,
+    ),
 }

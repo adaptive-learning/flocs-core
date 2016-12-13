@@ -62,6 +62,10 @@ ENTITIES = {
         student_id=37,
         last_task_session=14
     ),
+    's_new': Student(
+        student_id=48,
+        last_task_session=None
+    ),
     # unusual name of this fixture forced by function
     # update_last_task_session which upgrades a student
     # with a new student where =student_id= as a new key

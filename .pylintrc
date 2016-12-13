@@ -7,7 +7,7 @@ reports=no
 
 [BASIC]
 # valid names
-const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__)|([a-z_][a-z0-9_]{1,60}))$
 argument-rgx=[a-z_][a-z0-9_]{0,30}$
 variable-rgx=([a-z_][a-z0-9_]{1,30}|[A-Z_][A-Z0-9_]{0,30})$
 attr-rgx=[a-z_][a-z0-9_]{0,30}$

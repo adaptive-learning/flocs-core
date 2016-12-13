@@ -1,8 +1,8 @@
 """ Pure functions extracting information from the world state
 """
+from functools import partial
 import random
 from flocs.entities import Student, Task, TaskSession
-from functools import partial
 
 
 def select_random_task(state, student_id):
@@ -31,7 +31,17 @@ def general_select_task_in_fixed_order(state, student_id, order):
     return selected_task_id
 
 
-select_task_in_fixed_order_default = partial(general_select_task_in_fixed_order,
-                                             order=['three-steps-forward',
-                                                    'diamond-on-right',
-                                                    'zig_zag'])
+select_task_in_fixed_order = partial(
+    general_select_task_in_fixed_order,
+    order=[
+        'one-step-forward',
+        'three-steps-forward',
+        'turning-left',
+        'turning-right-and-left',
+        'diamond-on-right',
+        'shot',
+        'shooting',
+        'zig-zag',
+        'ladder',
+        'on-yellow-to-left',
+    ])
