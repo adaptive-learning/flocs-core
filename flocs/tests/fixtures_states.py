@@ -39,4 +39,12 @@ STATES = {
         }, STATIC_ENTITIES),
         context=STATIC_CONTEXT,
     ),
+    's5': State.create(
+        entities=ChainMap({
+            TaskSession: task_sessions_dict('ts2s', 'ts3s'),
+            Task: tasks_dict('t1', 't2', 't3'),
+            Student: students_dict('stud2')
+        }, STATIC_ENTITIES),
+        context=STATIC_CONTEXT,
+    ),
 }

@@ -16,18 +16,26 @@ def select_random_task(state, student_id):
 
 
 def general_select_task_in_fixed_order(state, student_id, order):
-    """ Must be called partially applied (without order parameter) to satisfy the contract
-    """
-    last_task_session_id = state.entities[Student][student_id].last_task_session
-    if last_task_session_id is not None:
-        last_task_id = state.entities[TaskSession][last_task_session_id].task_id
-        index = order.index(last_task_id)
-    else:
-        index = -1
+    """Recommend task in a given fixed order
 
-    if index == len(order) - 1:
+    It only moves to next task in the order when the current task is solved.
+    (In particular, it's not enough to start solving the stask. But giving up
+    doesn't convice the recommender to move to the next task neither.)
+
+    This is a general recommeder, to get a specific recommender which satisfy
+    recommender contract, `order` parameter (list of Ids) must be applied.
+    """
+    task_index = 0
+    last_task_session_id = state.entities[Student][student_id].last_task_session
+    if last_task_session_id:
+        last_task_session = state.entities[TaskSession][last_task_session_id]
+        last_task_id = last_task_session.task_id
+        task_index = order.index(last_task_id)
+        if last_task_session.solved:
+            task_index += 1
+    if task_index == len(order):
         raise ValueError('last task reached, there is no next task')
-    selected_task_id = order[index + 1]
+    selected_task_id = order[task_index]
     return selected_task_id
 
 

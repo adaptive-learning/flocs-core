@@ -39,6 +39,13 @@ ENTITIES = {
         solved=False,
         given_up=False,
     ),
+    'ts3s': TaskSession(
+        task_session_id=27,
+        student_id=37,
+        task_id=28,
+        solved=True,
+        given_up=False,
+    ),
     't1': Task(
         task_id=28,
         setting=None,
