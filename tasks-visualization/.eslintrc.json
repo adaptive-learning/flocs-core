@@ -4,5 +4,23 @@
         "react",
         "jsx-a11y",
         "import"
-    ]
+    ],
+    "parser": "babel-eslint",
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+          "jsx": true,
+          "experimentalObjectRestSpread": true
+      }
+    },
+    "env": {
+      "browser" : true
+    },
+    "rules": {
+      "no-use-before-define": [1, "nofunc"],
+      "no-unused-vars": [1, {"varsIgnorePattern": "^_"}],
+      "no-console": 0,
+      "react/require-extension": 0
+    }
 }

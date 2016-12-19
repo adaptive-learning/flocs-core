@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { CodeEditorContainer, SpaceGameContainer } from 'flocs-visual-components';
-import { flocsActionCreators } from 'flocs-visual-components';
+import { CodeEditorContainer,
+         SpaceGameContainer,
+         flocsActionCreators } from 'flocs-visual-components';
 
 
-class TaskPreviewContainer extends React.Component {
+class TaskPreviewWrapper extends React.Component {
 
   componentWillMount() {
     this.props.createTaskEnvironment(this.props.taskEnvironmentId);
@@ -14,22 +15,31 @@ class TaskPreviewContainer extends React.Component {
   render() {
     return (
       <div>
-        <SpaceGameContainer taskEnvironmentId={this.props.taskEnvironmentId}/>
-        <CodeEditorContainer taskEnvironmentId={this.props.taskEnvironmentId}/>
+        <SpaceGameContainer
+          taskEnvironmentId={this.props.taskEnvironmentId}
+          showCommandControls
+        />
+        <CodeEditorContainer taskEnvironmentId={this.props.taskEnvironmentId} />
       </div>
     );
   }
 }
 
-
-function mapStateToProps(state, props) {
-  // TODO: replace by object spread syntax
-  const taskId = props.routeParams.taskId;
-  return Object.assign({}, props, {
-    taskEnvironmentId: "single",
-    task: state.tasks[props.routeParams.taskId]
-  });
+TaskPreviewWrapper.propTypes = {
+  taskEnvironmentId: PropTypes.string.isRequired,
+  task: PropTypes.object.isRequired,
+  createTaskEnvironment: PropTypes.func.isRequired,
+  setTask: PropTypes.func.isRequired,
 };
 
 
-export default connect(mapStateToProps, flocsActionCreators)(TaskPreviewContainer);
+function mapStateToProps(state, props) {
+  // TODO: replace by object spread syntax
+  return Object.assign({}, props, {
+    taskEnvironmentId: 'single',
+    task: state.tasks[props.routeParams.taskId],
+  });
+}
+
+
+export default connect(mapStateToProps, flocsActionCreators)(TaskPreviewWrapper);
