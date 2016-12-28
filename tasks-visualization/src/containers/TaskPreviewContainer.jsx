@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { CodeEditorContainer,
-         SpaceGameContainer,
+import { TaskEnvironment,
          flocsActionCreators } from 'flocs-visual-components';
 
 
@@ -14,13 +13,7 @@ class TaskPreviewWrapper extends React.Component {
 
   render() {
     return (
-      <div>
-        <SpaceGameContainer
-          taskEnvironmentId={this.props.taskEnvironmentId}
-          showCommandControls
-        />
-        <CodeEditorContainer taskEnvironmentId={this.props.taskEnvironmentId} />
-      </div>
+      <TaskEnvironment taskEnvironmentId={this.props.taskEnvironmentId} />
     );
   }
 }
