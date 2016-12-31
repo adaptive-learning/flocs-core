@@ -1,19 +1,18 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { TaskEnvironment,
+import { TaskEnvironmentContainer,
          flocsActionCreators } from 'flocs-visual-components';
 
 
 class TaskPreviewWrapper extends React.Component {
 
   componentWillMount() {
-    this.props.createTaskEnvironment(this.props.taskEnvironmentId);
     this.props.setTask(this.props.taskEnvironmentId, this.props.task);
   }
 
   render() {
     return (
-      <TaskEnvironment taskEnvironmentId={this.props.taskEnvironmentId} />
+      <TaskEnvironmentContainer taskEnvironmentId={this.props.taskEnvironmentId} />
     );
   }
 }
