@@ -18,7 +18,7 @@ Solution
 
 ```python
 while color() != 'b':
-    move()
+    fly()
     if color() == 'y':
-        move('left')
+        left()
 ```

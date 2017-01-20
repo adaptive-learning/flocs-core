@@ -10,5 +10,5 @@ Solution
 --------
 
 ```python
-move()
+fly()
 ```

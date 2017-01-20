@@ -13,8 +13,8 @@ Solution
 --------
 
 ```python
-move('right')
-move('right')
-move()
-move()
+right()
+right()
+fly()
+fly()
 ```

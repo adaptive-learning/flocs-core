@@ -18,6 +18,6 @@ Solution
 
 ```python
 while color() != 'b':
-    move('right')
-    move('left')
+    right()
+    left()
 ```

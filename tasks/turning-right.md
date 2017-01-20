@@ -12,7 +12,7 @@ Solution
 --------
 
 ```python
-move('right')
-move()
-move()
+right()
+fly()
+fly()
 ```

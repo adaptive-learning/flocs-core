@@ -18,6 +18,6 @@ Solution
 
 ```python
 while color() != 'b':
-    move('ahead+shot')
-    move()
+    fly()
+    shoot()
 ```

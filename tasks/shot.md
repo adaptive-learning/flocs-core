@@ -12,7 +12,7 @@ Solution
 --------
 
 ```python
-move('ahead+shot')
-move()
-move()
+fly()
+shoot()
+fly()
 ```

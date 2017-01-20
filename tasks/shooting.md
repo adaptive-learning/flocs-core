@@ -14,9 +14,9 @@ Solution
 --------
 
 ```python
-move('right')
-move('ahead+shot')
-move('ahead+shot')
-move()
-move()
+right()
+fly()
+shoot()
+shoot()
+fly()
 ```
