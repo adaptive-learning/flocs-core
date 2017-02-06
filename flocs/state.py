@@ -36,7 +36,6 @@ class EntityMapping(UserDict):
         return cls({get_id(entity): entity for entity in entity_list})
 
     def filter(self, **kwargs):
-        print('filtering', self.data, 'with', kwargs)
         filtered_mapping = EntityMapping({
             i: entity
             for i, entity in self.data.items()

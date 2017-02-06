@@ -1,6 +1,6 @@
 """Unit tests for state
 """
-from collections import namedtuple
+from collections import ChainMap, namedtuple
 import pytest
 from flocs.state import EntityMapping
 
@@ -60,3 +60,31 @@ class TestEntityMapping:
         e3 = self.entity_class(entity_id=3, a=2, b=1)
         entity_mapping = self.entity_mapping_class.from_list([e1, e2, e3])
         assert entity_mapping.filter(a=1, b=2) == self.entity_mapping_class.from_list([e2])
+
+    def test_chaining(self):
+        """Test of simple chaining using ChainMap.
+
+        Note, however, that created chain map only provides
+        collections.abc.Mapping, not filter method.
+        """
+        e1 = self.entity_class(entity_id=1, a=1, b=1)
+        e2 = self.entity_class(entity_id=2, a=1, b=2)
+        e3 = self.entity_class(entity_id=3, a=2, b=1)
+        e3_updated = self.entity_class(entity_id=3, a=7, b=1)
+        entity_mapping = ChainMap(
+            self.entity_mapping_class.from_list([e3_updated]),
+            self.entity_mapping_class.from_list([e1, e2, e3])
+        )
+        assert entity_mapping[3] == e3_updated
+
+    def test_chaining_squashing(self):
+        e1 = self.entity_class(entity_id=1, a=1, b=1)
+        e2 = self.entity_class(entity_id=2, a=1, b=2)
+        e3 = self.entity_class(entity_id=3, a=2, b=1)
+        e3_updated = self.entity_class(entity_id=3, a=2, b=2)
+        entity_mapping = self.entity_mapping_class(ChainMap(
+            self.entity_mapping_class.from_list([e3_updated]),
+            self.entity_mapping_class.from_list([e1, e2, e3])
+        ))
+        assert entity_mapping.filter(b=2) == self.entity_mapping_class.from_list([e2, e3_updated])
+        assert entity_mapping.filter(b=1) == self.entity_mapping_class.from_list([e1])
