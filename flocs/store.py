@@ -10,7 +10,7 @@ from .state import State
 class Store:
     """Represents state of the world together with its behavior
 
-    State si changing due to time (context) and actions (entities),
+    State is changing due to time (context) and actions (entities),
     store describes how the state evolves and how it looks right now
     """
     def __init__(self, entities=None, context_generator=default_context_generator, hooks=None):
