@@ -2,30 +2,18 @@
 """
 from collections import namedtuple
 import pytest
-from flocs import state
-from flocs.entities import Student, Task, TaskSession
-from flocs.data.tasks import TASKS
 from flocs.state import EntityMapping
-
-
-def test_create_static_entities():
-    created_entities = state.create_static_entities()
-    expected_entities = {
-        Student: {},
-        Task: state.create_tasks_dict(),
-        TaskSession: {},
-    }
-    assert created_entities == expected_entities
-
-
-def test_create_tasks_dict():
-    expected = {task.task_id: task for task in TASKS}
-    created = state.create_tasks_dict()
-    assert expected == created
 
 
 class TestEntityMapping:
     entity_mapping_class = EntityMapping
+    entity_class = namedtuple('Entity', ['entity_id', 'a', 'b'])
+
+    def test_from_list(self):
+        e1 = self.entity_class(entity_id=1, a=1, b=1)
+        e2 = self.entity_class(entity_id=2, a=1, b=1)
+        entity_mapping = self.entity_mapping_class.from_list([e1, e2])
+        assert entity_mapping == EntityMapping({1: e1, 2: e2})
 
     def test_getitem(self):
         entity_mapping = self.entity_mapping_class({'i': 'e'})
@@ -38,41 +26,37 @@ class TestEntityMapping:
             entity_mapping['i']
 
     def test_len(self):
-        entity_mapping = self.entity_mapping_class({'i1': 'e1', 'i2': 'e2'})
+        entity_mapping = self.entity_mapping_class({'i': 'e', 'j': 'f'})
         assert len(entity_mapping) == 2
 
     def test_iter(self):
-        entity_mapping = self.entity_mapping_class({'i1': 'e1', 'i2': 'e2'})
-        assert set(iter(entity_mapping)) == {'i1', 'i2'}
+        entity_mapping = self.entity_mapping_class({'i': 'e', 'j': 'f'})
+        assert set(iter(entity_mapping)) == {'i', 'j'}
 
     def test_filter(self):
-        entity_class = namedtuple('Entity', ['a', 'b'])
-        e1 = entity_class(a=1, b=1)
-        e2 = entity_class(a=1, b=2)
-        e3 = entity_class(a=2, b=1)
-        entity_mapping = self.entity_mapping_class({'i': e1, 'j': e2, 'k': e3})
-        assert entity_mapping.filter(a=1) == EntityMapping({'i': e1, 'j': e2})
+        e1 = self.entity_class(entity_id=1, a=1, b=1)
+        e2 = self.entity_class(entity_id=2, a=1, b=1)
+        e3 = self.entity_class(entity_id=3, a=2, b=1)
+        entity_mapping = self.entity_mapping_class.from_list([e1, e2, e3])
+        assert entity_mapping.filter(a=1) == self.entity_mapping_class.from_list([e1, e2])
 
     def test_filter_empty(self):
-        entity_class = namedtuple('Entity', ['a', 'b'])
-        e1 = entity_class(a=1, b=1)
-        e2 = entity_class(a=1, b=2)
-        e3 = entity_class(a=2, b=1)
-        entity_mapping = self.entity_mapping_class({'i': e1, 'j': e2, 'k': e3})
-        assert entity_mapping.filter(a=3) == EntityMapping()
+        e1 = self.entity_class(entity_id=1, a=1, b=1)
+        e2 = self.entity_class(entity_id=2, a=1, b=1)
+        e3 = self.entity_class(entity_id=3, a=2, b=1)
+        entity_mapping = self.entity_mapping_class.from_list([e1, e2, e3])
+        assert entity_mapping.filter(a=3) == self.entity_mapping_class()
 
     def test_filter_gte(self):
-        entity_class = namedtuple('Entity', ['a'])
-        e1 = entity_class(a=1)
-        e2 = entity_class(a=2)
-        e3 = entity_class(a=3)
-        entity_mapping = self.entity_mapping_class({'i': e1, 'j': e2, 'k': e3})
-        assert entity_mapping.filter(a__gte=2) == EntityMapping({'j': e2, 'k': e3})
+        e1 = self.entity_class(entity_id=1, a=1, b=1)
+        e2 = self.entity_class(entity_id=2, a=2, b=1)
+        e3 = self.entity_class(entity_id=3, a=3, b=1)
+        entity_mapping = self.entity_mapping_class.from_list([e1, e2, e3])
+        assert entity_mapping.filter(a__gte=2) == self.entity_mapping_class.from_list([e2, e3])
 
     def test_filter_conjunction(self):
-        entity_class = namedtuple('Entity', ['a', 'b'])
-        e1 = entity_class(a=1, b=1)
-        e2 = entity_class(a=1, b=2)
-        e3 = entity_class(a=2, b=1)
-        entity_mapping = self.entity_mapping_class({'i': e1, 'j': e2, 'k': e3})
-        assert entity_mapping.filter(a=1, b=2) == EntityMapping({'j': e2})
+        e1 = self.entity_class(entity_id=1, a=1, b=1)
+        e2 = self.entity_class(entity_id=2, a=1, b=2)
+        e3 = self.entity_class(entity_id=3, a=2, b=1)
+        entity_mapping = self.entity_mapping_class.from_list([e1, e2, e3])
+        assert entity_mapping.filter(a=1, b=2) == self.entity_mapping_class.from_list([e2])

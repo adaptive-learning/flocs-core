@@ -26,10 +26,15 @@ class State(namedtuple('State', ['entities', 'context', 'meta'])):
 class EntityMapping(UserDict):
     """Collection of all entities of given type (i.e., 1 entity table)
 
-    Provides two interfaces:
-    1. collections.abc.Mapping
-    2. filter method as in Django QuerySets
+    Provided interface:
+    1. __init__(data) and from_list(entity_list)
+    2. collections.abc.Mapping
+    3. filter method as in Django QuerySets
     """
+    @classmethod
+    def from_list(cls, entity_list):
+        return cls({get_id(entity): entity for entity in entity_list})
+
     def filter(self, **kwargs):
         print('filtering', self.data, 'with', kwargs)
         filtered_mapping = EntityMapping({
@@ -74,14 +79,17 @@ def get_operator(query_type):
 
 def create_static_entities():
     return {
-        Student: {},
-        Task: create_tasks_dict(),
-        TaskSession: {},
+        Student: EntityMapping(),
+        TaskSession: EntityMapping(),
+        Task: EntityMapping.from_list(TASKS),
     }
 
+# TODO: move to some utils
+def get_id(entity):
+    return getattr(entity, get_id_field_name(entity))
 
-def create_tasks_dict():
-    return {task.task_id: task for task in TASKS}
+def get_id_field_name(entity):
+    return entity.__class__.__name__.lower() + '_id'
 
 
 STATIC_ENTITIES = create_static_entities()
