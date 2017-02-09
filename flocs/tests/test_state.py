@@ -9,57 +9,50 @@ class TestEntityMapping:
     entity_mapping_class = EntityMapping
     entity_class = namedtuple('Entity', ['entity_id', 'a', 'b'])
 
+    #def __init__(self):
+    #    self.e1 = None
+    #    self.e2 = None
+    #    self.e3 = None
+    #    self.entity_mapping = None
+
+    def setup_method(self, method):
+        self.e1 = self.entity_class(entity_id='i', a=1, b=1)
+        self.e2 = self.entity_class(entity_id='j', a=2, b=1)
+        self.e3 = self.entity_class(entity_id='k', a=1, b=2)
+        self.entity_mapping = EntityMapping.from_list([self.e1, self.e2, self.e3])
+
     def test_from_list(self):
-        e1 = self.entity_class(entity_id=1, a=1, b=1)
-        e2 = self.entity_class(entity_id=2, a=1, b=1)
-        entity_mapping = self.entity_mapping_class.from_list([e1, e2])
-        assert entity_mapping == EntityMapping({1: e1, 2: e2})
+        assert self.entity_mapping_class.from_list([self.e1, self.e2]).to_dict() \
+            == {'i': self.e1, 'j': self.e2}
 
     def test_getitem(self):
-        entity_mapping = self.entity_mapping_class({'i': 'e'})
-        assert entity_mapping['i'] == 'e'
+        assert self.entity_mapping['i'] == self.e1
 
     def test_get_nonexistent_item(self):
-        entity_mapping = self.entity_mapping_class()
         with pytest.raises(KeyError):
             # pylint:disable=pointless-statement
-            entity_mapping['i']
+            self.entity_mapping['aaa']
 
     def test_len(self):
-        entity_mapping = self.entity_mapping_class({'i': 'e', 'j': 'f'})
-        assert len(entity_mapping) == 2
+        assert len(self.entity_mapping) == 3
 
     def test_iter(self):
-        entity_mapping = self.entity_mapping_class({'i': 'e', 'j': 'f'})
-        assert set(iter(entity_mapping)) == {'i', 'j'}
+        assert set(iter(self.entity_mapping)) == {'i', 'j', 'k'}
 
     def test_filter(self):
-        e1 = self.entity_class(entity_id=1, a=1, b=1)
-        e2 = self.entity_class(entity_id=2, a=1, b=1)
-        e3 = self.entity_class(entity_id=3, a=2, b=1)
-        entity_mapping = self.entity_mapping_class.from_list([e1, e2, e3])
-        assert entity_mapping.filter(a=1) == self.entity_mapping_class.from_list([e1, e2])
+        assert self.entity_mapping.filter(a=1) \
+               == self.entity_mapping_class.from_list([self.e1, self.e3])
 
-    def test_filter_empty(self):
-        e1 = self.entity_class(entity_id=1, a=1, b=1)
-        e2 = self.entity_class(entity_id=2, a=1, b=1)
-        e3 = self.entity_class(entity_id=3, a=2, b=1)
-        entity_mapping = self.entity_mapping_class.from_list([e1, e2, e3])
-        assert entity_mapping.filter(a=3) == self.entity_mapping_class()
+    #def test_filter_empty(self):
+    #    assert self.entity_mapping.filter(a=3) == self.entity_mapping_class()
 
     def test_filter_gte(self):
-        e1 = self.entity_class(entity_id=1, a=1, b=1)
-        e2 = self.entity_class(entity_id=2, a=2, b=1)
-        e3 = self.entity_class(entity_id=3, a=3, b=1)
-        entity_mapping = self.entity_mapping_class.from_list([e1, e2, e3])
-        assert entity_mapping.filter(a__gte=2) == self.entity_mapping_class.from_list([e2, e3])
+        assert self.entity_mapping.filter(a__gte=2) \
+               == self.entity_mapping_class.from_list([self.e2])
 
     def test_filter_conjunction(self):
-        e1 = self.entity_class(entity_id=1, a=1, b=1)
-        e2 = self.entity_class(entity_id=2, a=1, b=2)
-        e3 = self.entity_class(entity_id=3, a=2, b=1)
-        entity_mapping = self.entity_mapping_class.from_list([e1, e2, e3])
-        assert entity_mapping.filter(a=1, b=2) == self.entity_mapping_class.from_list([e2])
+        assert self.entity_mapping.filter(a=1, b=2) \
+               == self.entity_mapping_class.from_list([self.e3])
 
     def test_chaining(self):
         """Test of simple chaining using ChainMap.
@@ -67,24 +60,19 @@ class TestEntityMapping:
         Note, however, that created chain map only provides
         collections.abc.Mapping, not filter method.
         """
-        e1 = self.entity_class(entity_id=1, a=1, b=1)
-        e2 = self.entity_class(entity_id=2, a=1, b=2)
-        e3 = self.entity_class(entity_id=3, a=2, b=1)
-        e3_updated = self.entity_class(entity_id=3, a=7, b=1)
+        e3_updated = self.entity_class(entity_id='k', a=7, b=2)
         entity_mapping = ChainMap(
             self.entity_mapping_class.from_list([e3_updated]),
-            self.entity_mapping_class.from_list([e1, e2, e3])
+            self.entity_mapping_class.from_list([self.e1, self.e2, self.e3])
         )
-        assert entity_mapping[3] == e3_updated
+        assert entity_mapping['k'] == e3_updated
 
-    def test_chaining_squashing(self):
-        e1 = self.entity_class(entity_id=1, a=1, b=1)
-        e2 = self.entity_class(entity_id=2, a=1, b=2)
-        e3 = self.entity_class(entity_id=3, a=2, b=1)
-        e3_updated = self.entity_class(entity_id=3, a=2, b=2)
-        entity_mapping = self.entity_mapping_class(ChainMap(
-            self.entity_mapping_class.from_list([e3_updated]),
-            self.entity_mapping_class.from_list([e1, e2, e3])
-        ))
-        assert entity_mapping.filter(b=2) == self.entity_mapping_class.from_list([e2, e3_updated])
-        assert entity_mapping.filter(b=1) == self.entity_mapping_class.from_list([e1])
+    #def test_chaining_squashing(self):
+    #    e3_updated = self.entity_class(entity_id='k', a=2, b=1)
+    #    entity_mapping = self.entity_mapping_class(ChainMap(
+    #        self.entity_mapping_class.from_list([e3_updated]),
+    #        self.entity_mapping_class.from_list([self.e1, self.e2, self.e3])
+    #    ))
+    #    assert entity_mapping.filter(a=2) \
+    #            == self.entity_mapping_class.from_list([self.e2, e3_updated])
+    #    assert entity_mapping.filter(a=1) == self.entity_mapping_class.from_list([self.e1])

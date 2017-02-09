@@ -43,6 +43,9 @@ class EntityMapping(UserDict):
         })
         return filtered_mapping
 
+    def to_dict(self):
+        return self
+
     def _test_entity(self, entity, **kwargs):
         """Return True if a given entity satisfies condition by **kwargs
 
