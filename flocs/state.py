@@ -1,8 +1,7 @@
 """Representation of a world state
 """
 import operator
-from collections import namedtuple
-from collections import UserDict
+from collections import namedtuple, ChainMap, UserDict
 from .data.tasks import TASKS
 from .entities import Student, Task, TaskSession
 from .meta import META
@@ -34,6 +33,12 @@ class EntityMapping(UserDict):
     @classmethod
     def from_list(cls, entity_list):
         return cls({get_id(entity): entity for entity in entity_list})
+
+    @classmethod
+    def chain(cls, *mappings):
+        # TODO: rethink name of this method (merge?, join?)
+        return cls(ChainMap(*mappings))
+
 
     def filter(self, **kwargs):
         filtered_mapping = EntityMapping({

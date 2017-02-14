@@ -19,24 +19,20 @@ def general_select_task_in_fixed_order(state, student_id, order):
     """Recommend task in a given fixed order
 
     It only moves to next task in the order when the current task is solved.
-    (In particular, it's not enough to start solving the stask. But giving up
+    (In particular, it's not enough to start solving the stask. Giving up
     doesn't convice the recommender to move to the next task neither.)
 
     This is a general recommeder, to get a specific recommender which satisfy
     recommender contract, `order` parameter (list of Ids) must be applied.
     """
-    task_index = 0
-    last_task_session_id = state.entities[Student][student_id].last_task_session
-    if last_task_session_id:
-        last_task_session = state.entities[TaskSession][last_task_session_id]
-        last_task_id = last_task_session.task_id
-        task_index = order.index(last_task_id)
-        if last_task_session.solved:
-            task_index += 1
-    if task_index == len(order):
-        raise ValueError('last task reached, there is no next task')
-    selected_task_id = order[task_index]
-    return selected_task_id
+    solved_task_sessions = state.entities[TaskSession].filter(
+        student_id=student_id,
+        solved=True)
+    solved_task_ids = {ts.task_id for ts in solved_task_sessions.values()}
+    for task_id in order:
+        if task_id not in solved_task_ids:
+            return task_id
+    raise ValueError('last task reached, there is no next task')
 
 
 select_task_in_fixed_order = partial(
@@ -53,3 +49,12 @@ select_task_in_fixed_order = partial(
         'ladder',
         'on-yellow-to-left',
     ])
+
+
+def select_task_fixed_then_random(state, student_id):
+    """Select task in fixed order and when all are solved, select randomly
+    """
+    try:
+        return select_task_in_fixed_order(state, student_id)
+    except ValueError:
+        return select_random_task(state, student_id)

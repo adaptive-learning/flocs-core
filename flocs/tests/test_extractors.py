@@ -5,8 +5,8 @@ import random
 import pytest
 from flocs.extractors import select_random_task, general_select_task_in_fixed_order
 from flocs.extractors import select_task_in_fixed_order
-from flocs.reducers import ENTITY_REDUCERS, reduce_state
-from flocs.entities import Task, Student
+from flocs.reducers import reduce_state
+from flocs.entities import Task
 from flocs import actions
 from flocs.tests.fixtures_entities import ENTITIES
 from flocs.tests.fixtures_states import STATES
@@ -29,6 +29,14 @@ def test_general_select_task_in_fixed_order():
     select_task = partial(general_select_task_in_fixed_order, order=[28, 67, 55])
     selected_task_id = select_task(state, student.student_id)
     # The student solved tasks 28 and 67 (67 was in the last task session)
+    assert selected_task_id == 55
+
+
+def test_select_task_in_fixed_order_no_skipping():
+    state = STATES['s5']
+    student = ENTITIES['stud2']
+    select_task = partial(general_select_task_in_fixed_order, order=[55, 67, 28])
+    selected_task_id = select_task(state, student.student_id)
     assert selected_task_id == 55
 
 
