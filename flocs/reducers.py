@@ -3,7 +3,7 @@
 from collections import defaultdict, ChainMap
 from inspect import signature
 from . import entities
-from .state import State, EntityMapping
+from .state import State
 from .actions import ActionType
 from .entities import Student, TaskSession
 
@@ -61,7 +61,7 @@ def identity_reducer(state):
 
 def create_student(students, student_id):
     student = Student(student_id=student_id, last_task_session=None)
-    return EntityMapping.chain({student_id: student}, students)
+    return students.set(student)
 
 
 def create_task_session(task_sessions, task_session_id, student_id, task_id):
@@ -72,48 +72,47 @@ def create_task_session(task_sessions, task_session_id, student_id, task_id):
         solved=False,
         given_up=False,
     )
-    return EntityMapping.chain({task_session_id: task_session}, task_sessions)
+    return task_sessions.set(task_session)
 
 
 def update_last_task_session(students, task_session_id, student_id, task_id):
     del task_id  # intentionally unused argument
     student = students[student_id]
     updated_student = student._replace(last_task_session=task_session_id)
-    return EntityMapping.chain({student_id: updated_student}, students)
+    return students.set(updated_student)
 
 
 def solve_task_session(task_sessions, task_session_id):
     task_session = task_sessions[task_session_id]
     updated_task_session = task_session._replace(solved=True)
-    return EntityMapping.chain({task_session_id: updated_task_session}, task_sessions)
-    # consider somethin like: return task_sessions.set(updated_task_session)
+    return task_sessions.set(updated_task_session)
 
 
 def give_up_task_session(task_sessions, task_session_id):
     task_session = task_sessions[task_session_id]
     updated_task_session = task_session._replace(given_up=True)
-    return EntityMapping.chain({task_session_id: updated_task_session}, task_sessions)
+    return task_sessions.set(updated_task_session)
 
 
 def increase_started_count(stats, task_id):
     task_stats = stats[task_id]
     updated_started_count = task_stats.started_count + 1
     updated_task_stats = task_stats._replace(started_count=updated_started_count)
-    return EntityMapping.chain({task_id: updated_task_stats}, stats)
+    return stats.set(updated_task_stats)
 
 
 def increase_solved_count(stats, task_id):
     task_stats = stats[task_id]
     updated_solved_count = task_stats.solved_count + 1
     updated_task_stats = task_stats._replace(solved_count=updated_solved_count)
-    return EntityMapping.chain({task_id: updated_task_stats}, stats)
+    return stats.set(updated_task_stats)
 
 
 def increase_given_up_count(stats, task_id):
     task_stats = stats[task_id]
     updated_given_up_count = task_stats.given_up_count + 1
     updated_task_stats = task_stats._replace(given_up_count=updated_given_up_count)
-    return EntityMapping.chain({task_id: updated_task_stats}, stats)
+    return stats.set(updated_task_stats)
 
 
 # --------------------------------------------------------------------------

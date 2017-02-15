@@ -1,7 +1,7 @@
 """Entities objects for testing purposes
 """
 from flocs.entities import Task, TaskSession, Student, TaskStats
-from flocs.state import EntityMapping
+from flocs.state import EntityMap
 
 
 ENTITIES = {
@@ -82,30 +82,35 @@ ENTITIES = {
         last_task_session=None
     ),
     'stat1': TaskStats(
+        task_stats_id=28,
         task_id=28,
         started_count=3,
         solved_count=1,
         given_up_count=1,
     ),
     'stat1st': TaskStats(
+        task_stats_id=28,
         task_id=28,
         started_count=4,
         solved_count=1,
         given_up_count=1,
     ),
     'stat1so': TaskStats(
+        task_stats_id=28,
         task_id=28,
         started_count=3,
         solved_count=2,
         given_up_count=1,
     ),
     'stat1g': TaskStats(
+        task_stats_id=28,
         task_id=28,
         started_count=3,
         solved_count=1,
         given_up_count=2,
     ),
     'stat2': TaskStats(
+        task_stats_id=67,
         task_id=67,
         started_count=5,
         solved_count=4,
@@ -116,15 +121,15 @@ ENTITIES = {
 
 # TODO: replace by single function entity_mapping_from_keys()
 def task_sessions_dict(*keys):
-    return EntityMapping({ENTITIES[key].task_session_id: ENTITIES[key] for key in keys})
+    return EntityMap({ENTITIES[key].task_session_id: ENTITIES[key] for key in keys})
 
 
 def tasks_dict(*keys):
-    return EntityMapping({ENTITIES[key].task_id: ENTITIES[key] for key in keys})
+    return EntityMap({ENTITIES[key].task_id: ENTITIES[key] for key in keys})
 
 
 def students_dict(*keys):
-    return EntityMapping({ENTITIES[key].student_id: ENTITIES[key] for key in keys})
+    return EntityMap({ENTITIES[key].student_id: ENTITIES[key] for key in keys})
 
 def task_stats_dict(*keys):
-    return EntityMapping({ENTITIES[key].task_id: ENTITIES[key] for key in keys})
+    return EntityMap({ENTITIES[key].task_id: ENTITIES[key] for key in keys})

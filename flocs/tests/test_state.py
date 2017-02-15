@@ -2,11 +2,11 @@
 """
 from collections import ChainMap, namedtuple
 import pytest
-from flocs.state import EntityMapping
+from flocs.state import EntityMap
 
 
-class TestEntityMapping:
-    entity_mapping_class = EntityMapping
+class TestEntityMap:
+    entity_mapping_class = EntityMap
     entity_class = namedtuple('Entity', ['entity_id', 'a', 'b'])
 
     #def __init__(self):
@@ -19,10 +19,10 @@ class TestEntityMapping:
         self.e1 = self.entity_class(entity_id='i', a=1, b=1)
         self.e2 = self.entity_class(entity_id='j', a=2, b=1)
         self.e3 = self.entity_class(entity_id='k', a=1, b=2)
-        self.entity_mapping = EntityMapping.from_list([self.e1, self.e2, self.e3])
+        self.entity_mapping = EntityMap.from_list([self.e1, self.e2, self.e3])
 
     def test_from_list(self):
-        assert self.entity_mapping_class.from_list([self.e1, self.e2]).to_dict() \
+        assert dict(self.entity_mapping_class.from_list([self.e1, self.e2])) \
             == {'i': self.e1, 'j': self.e2}
 
     def test_getitem(self):
@@ -43,8 +43,8 @@ class TestEntityMapping:
         assert self.entity_mapping.filter(a=1) \
                == self.entity_mapping_class.from_list([self.e1, self.e3])
 
-    #def test_filter_empty(self):
-    #    assert self.entity_mapping.filter(a=3) == self.entity_mapping_class()
+    def test_filter_empty(self):
+        assert self.entity_mapping.filter(a=3) == self.entity_mapping_class()
 
     def test_filter_gte(self):
         assert self.entity_mapping.filter(a__gte=2) \
@@ -54,25 +54,17 @@ class TestEntityMapping:
         assert self.entity_mapping.filter(a=1, b=2) \
                == self.entity_mapping_class.from_list([self.e3])
 
-    def test_chaining(self):
-        """Test of simple chaining using ChainMap.
+    def test_set_new(self):
+        e4 = self.entity_class(entity_id='l', a=1, b=1)
+        em_updated = self.entity_mapping.set(e4)
+        em_expected = self.entity_mapping_class.from_list([self.e1, self.e2, self.e3, e4])
+        assert em_updated == em_expected
 
-        Note, however, that created chain map only provides
-        collections.abc.Mapping, not filter method.
-        """
+    def test_set_existing(self):
         e3_updated = self.entity_class(entity_id='k', a=7, b=2)
-        entity_mapping = ChainMap(
-            self.entity_mapping_class.from_list([e3_updated]),
-            self.entity_mapping_class.from_list([self.e1, self.e2, self.e3])
-        )
-        assert entity_mapping['k'] == e3_updated
+        em_updated = self.entity_mapping.set(e3_updated)
+        em_expected = self.entity_mapping_class.from_list([self.e1, self.e2, e3_updated])
+        assert em_updated == em_expected
 
-    #def test_chaining_squashing(self):
-    #    e3_updated = self.entity_class(entity_id='k', a=2, b=1)
-    #    entity_mapping = self.entity_mapping_class(ChainMap(
-    #        self.entity_mapping_class.from_list([e3_updated]),
-    #        self.entity_mapping_class.from_list([self.e1, self.e2, self.e3])
-    #    ))
-    #    assert entity_mapping.filter(a=2) \
-    #            == self.entity_mapping_class.from_list([self.e2, e3_updated])
-    #    assert entity_mapping.filter(a=1) == self.entity_mapping_class.from_list([self.e1])
+    def test_entity_class_property(self):
+        assert self.entity_mapping.entity_class == self.entity_class

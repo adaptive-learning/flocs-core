@@ -5,6 +5,7 @@ import pytest
 from flocs import actions
 from flocs.context import static_context_generator
 from flocs.entities import Student, TaskSession
+from flocs.state import EntityMap
 from flocs.store import Store, compute_entities_diff
 from flocs.tests.fixtures_states import STATES
 
@@ -90,7 +91,7 @@ def test_reducing_action_without_optional_parameters():
     """Covers issue #52
     See https://github.com/adaptive-learning/flocs-core/issues/52
     """
-    with Store.open({Student: {}}) as store:
+    with Store.open({Student: EntityMap()}) as store:
         store.stage_action(actions.create_student())
     student = list(store.state.entities[Student].values())[0]
     assert student.last_task_session is None

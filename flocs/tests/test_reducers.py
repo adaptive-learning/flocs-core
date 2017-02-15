@@ -3,6 +3,7 @@
 from flocs import actions, reducers
 from flocs.entities import Student, TaskSession
 from flocs.reducers import reduce_state, extracting_data_context, extract_parameters
+from flocs.state import EntityMap
 from flocs.tests.fixtures_entities import ENTITIES, task_sessions_dict, task_stats_dict
 from flocs.tests.fixtures_states import STATES
 
@@ -52,9 +53,14 @@ def test_identity_reducer():
 
 
 def test_create_student():
-    students = {79: Student(student_id=79, last_task_session=14)}
+    students = EntityMap.from_list([
+        Student(student_id=13, last_task_session=81)
+    ])
     next_students = reducers.create_student(students, student_id=37)
-    expected_students = {79: Student(student_id=79, last_task_session=14), 37: Student(student_id=37, last_task_session=None)}
+    expected_students = EntityMap.from_list([
+        Student(student_id=13, last_task_session=81),
+        Student(student_id=37, last_task_session=None)
+    ])
     assert next_students == expected_students
 
 

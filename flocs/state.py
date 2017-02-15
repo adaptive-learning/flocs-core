@@ -1,7 +1,9 @@
 """Representation of a world state
 """
 import operator
-from collections import namedtuple, ChainMap, UserDict
+import re
+from collections import namedtuple, ChainMap
+from collections.abc import Mapping
 from .data.tasks import TASKS
 from .entities import Student, Task, TaskSession
 from .meta import META
@@ -22,34 +24,62 @@ class State(namedtuple('State', ['entities', 'context', 'meta'])):
         return State(entities=entities, context=context, meta=META)
 
 
-class EntityMapping(UserDict):
+class EntityMap(Mapping):
     """Collection of all entities of given type (i.e., 1 entity table)
-
-    Provided interface:
-    1. __init__(data) and from_list(entity_list)
-    2. collections.abc.Mapping
-    3. filter method as in Django QuerySets
     """
+    def __init__(self, *maps, state=None):
+        """ Initialize with provided map(s)
+            Reference to state is only needed for complex filtering tasks that
+            uses entities of other types
+        """
+        self.chain_map = ChainMap(*maps)
+        self.state = state
+
     @classmethod
     def from_list(cls, entity_list):
         return cls({get_id(entity): entity for entity in entity_list})
 
-    @classmethod
-    def chain(cls, *mappings):
-        # TODO: rethink name of this method (merge?, join?)
-        return cls(ChainMap(*mappings))
+    def __getitem__(self, entity_id):
+        return self.chain_map[entity_id]
 
+    def __iter__(self):
+        return iter(self.chain_map)
+
+    def __len__(self):
+        return len(self.chain_map)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return dict(self) == dict(other)
+        return False
+
+    def __repr__(self):
+        return 'EntityMapping({data})'.format(data=self.chain_map)
+
+    @property
+    def entity_class(self):
+        try:
+            entity = next(iter(self.values()))
+            print('entity is', entity, type(entity), entity.__class__)
+            return entity.__class__
+        except StopIteration:
+            return None
+
+    def set(self, entity):
+        ''' Return a new map from self and the given entity,
+
+        It effectively updates entity if exists, creates otherwise.
+        '''
+        entity_id = get_id(entity)
+        return EntityMap({entity_id: entity}, *self.chain_map.maps)
 
     def filter(self, **kwargs):
-        filtered_mapping = EntityMapping({
-            i: entity
-            for i, entity in self.data.items()
+        filtered_dict = {
+            entity_id: entity
+            for entity_id, entity in self.items()
             if self._test_entity(entity, **kwargs)
-        })
-        return filtered_mapping
-
-    def to_dict(self):
-        return self
+        }
+        return EntityMap(filtered_dict)
 
     def _test_entity(self, entity, **kwargs):
         """Return True if a given entity satisfies condition by **kwargs
@@ -70,6 +100,7 @@ class EntityMapping(UserDict):
         operator = get_operator(query_type)
         return operator(left, right)
 
+
 def get_operator(query_type):
     operator_mapping = {
         'exact': operator.eq,
@@ -86,9 +117,9 @@ def get_operator(query_type):
 
 def create_static_entities():
     return {
-        Student: EntityMapping(),
-        TaskSession: EntityMapping(),
-        Task: EntityMapping.from_list(TASKS),
+        Student: EntityMap(),
+        TaskSession: EntityMap(),
+        Task: EntityMap.from_list(TASKS),
     }
 
 # TODO: move to some utils
@@ -96,7 +127,14 @@ def get_id(entity):
     return getattr(entity, get_id_field_name(entity))
 
 def get_id_field_name(entity):
-    return entity.__class__.__name__.lower() + '_id'
+    class_name = entity.__class__.__name__
+    id_field_name = camel_case_to_snake_case(class_name) + '_id'
+    return id_field_name
+
+def camel_case_to_snake_case(name):
+    partially_underscored = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    underscored = re.sub('([a-z0-9])([A-Z])', r'\1_\2', partially_underscored)
+    return underscored.lower()
 
 
 STATIC_ENTITIES = create_static_entities()
