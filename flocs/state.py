@@ -25,7 +25,7 @@ class State(namedtuple('State', ['entities', 'context', 'meta'])):
 
 
 class EntityMap(Mapping):
-    """Collection of all entities of given type (i.e., 1 entity table)
+    """ Collection of all entities of given type (i.e., 1 entity table)
     """
     def __init__(self, *maps, state=None):
         """ Initialize with provided map(s)
@@ -48,11 +48,6 @@ class EntityMap(Mapping):
     def __len__(self):
         return len(self.chain_map)
 
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            return dict(self) == dict(other)
-        return False
-
     def __repr__(self):
         return 'EntityMapping({data})'.format(data=self.chain_map)
 
@@ -60,20 +55,30 @@ class EntityMap(Mapping):
     def entity_class(self):
         try:
             entity = next(iter(self.values()))
-            print('entity is', entity, type(entity), entity.__class__)
             return entity.__class__
         except StopIteration:
             return None
 
     def set(self, entity):
-        ''' Return a new map from self and the given entity,
-
+        """ Return a new map from self and the given entity
         It effectively updates entity if exists, creates otherwise.
-        '''
+        """
         entity_id = get_id(entity)
         return EntityMap({entity_id: entity}, *self.chain_map.maps)
 
     def filter(self, **kwargs):
+        """ Return a new map filtered according to given query given by kwargs
+
+        For full kwargs specification, see Django QuerySet's filter:
+        https://docs.djangoproject.com/en/dev/ref/models/querysets/#field-lookups
+        But only a subset of lookups is currently implemented, see _test_entity_single
+
+        Note that filtering works even with many maps, but beware that it's
+        iterating through all element, even if some nested map has another
+        (more efficient) implementation of filter method.
+        """
+        # if len(self.chain_map.maps) != 1:
+        #     raise ValueError('Filtering only supported for initial (unmodified) maps')
         filtered_dict = {
             entity_id: entity
             for entity_id, entity in self.items()
@@ -82,11 +87,7 @@ class EntityMap(Mapping):
         return EntityMap(filtered_dict)
 
     def _test_entity(self, entity, **kwargs):
-        """Return True if a given entity satisfies condition by **kwargs
-
-        For full kwargs specification, see Django QuerySet's filter:
-        https://docs.djangoproject.com/en/dev/ref/models/querysets/#field-lookups
-        But only a subset of lookups is currently implemented, see single_test
+        """ Return True if a given entity satisfies condition by **kwargs
         """
         is_true = all(
             self._test_entity_single(entity, query, right)
