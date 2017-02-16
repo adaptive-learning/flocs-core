@@ -49,7 +49,7 @@ class EntityMap(Mapping):
         return len(self.chain_map)
 
     def __repr__(self):
-        return 'EntityMapping({data})'.format(data=self.chain_map)
+        return 'EntityMap({data})'.format(data=self.chain_map)
 
     @property
     def entity_class(self):
@@ -65,6 +65,18 @@ class EntityMap(Mapping):
         """
         entity_id = get_id(entity)
         return EntityMap({entity_id: entity}, *self.chain_map.maps)
+
+    @property
+    def original_entities(self):
+        # if there was no modification, return self - this allows to perform
+        # diffing in constant time by comparing references
+        return self if len(self.chain_map.maps) == 1 else self.chain_map.maps[-1]
+
+    @property
+    def modified_entities(self):
+        """ Return entities which were set since the original state
+        """
+        return ChainMap(*self.chain_map.maps[:-1])
 
     def filter(self, **kwargs):
         """ Return a new map filtered according to given query given by kwargs

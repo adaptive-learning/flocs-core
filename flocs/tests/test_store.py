@@ -67,16 +67,23 @@ def test_integration(mock_hooks):
 
 
 def test_compute_entities_diff():
-    old = {Student: {1: 'a', 2: 'b'}, TaskSession: {1: 'x', 3: 'z'}}
-    new = {Student: {1: 'a', 2: 'B'}, TaskSession: {2: 'y', 3: 'z'}}
+    old = {
+        Student: EntityMap({1: 'a', 2: 'b'}),
+        TaskSession: EntityMap({1: 'x', 3: 'y'})
+    }
+    new = {
+        Student: EntityMap({3: 'c'}, old[Student]),
+        TaskSession: EntityMap({1: 'z'}, old[TaskSession])
+    }
     diff = compute_entities_diff(old, new)
-    assert set(diff) == {(Student, 2, 'B'), (TaskSession, 1, None), (TaskSession, 2, 'y')}
+    print('diff', diff)
+    assert set(diff) == {(Student, 3, 'c'), (TaskSession, 1, 'z')}
 
 
 def test_compute_diff():
     old_state = STATES['s1']
     new_state = STATES['s2']
-    diff = compute_entities_diff(old=old_state.entities, new=new_state.entities)
+    diff = compute_entities_diff(old_state.entities, new_state.entities)
     assert set(diff) == {(TaskSession, 14, TaskSession(
                           task_session_id=14,
                           student_id=37,
