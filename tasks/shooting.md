@@ -1,5 +1,6 @@
-Setting
--------
+# shooting
+
+## Setting
 
 ```
 |bA|bA|bA|b |bA|
@@ -10,8 +11,7 @@ Setting
 |kA|k |kS|k |kA|
 ```
 
-Solution
---------
+## Solution
 
 ```python
 right()

@@ -1,5 +1,6 @@
-Setting
--------
+# turning-right-and-left
+
+## Setting
 
 ```
 |b |bM|b |bM|bA|
@@ -8,8 +9,7 @@ Setting
 |kM|k |kS|kM|k |
 ```
 
-Solution
---------
+## Solution
 
 ```python
 fly()

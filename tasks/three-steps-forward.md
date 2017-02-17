@@ -1,5 +1,6 @@
-Setting
--------
+# three-steps-forward
+
+## Setting
 
 ```
 |b |b |b |b |b |
@@ -8,8 +9,7 @@ Setting
 |k |k |kS|k |k |
 ```
 
-Solution
---------
+## Solution
 
 ```python
 fly()

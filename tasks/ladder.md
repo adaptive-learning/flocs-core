@@ -1,5 +1,6 @@
-Setting
--------
+# ladder
+
+## Setting
 
 ```
 |b |bA|bM|bA|b |
@@ -13,8 +14,7 @@ Setting
 |k |kA|kS|kA|k |
 ```
 
-Solution
---------
+## Solution
 
 ```python
 while color() != 'b':

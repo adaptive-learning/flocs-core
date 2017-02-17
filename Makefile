@@ -1,7 +1,7 @@
 # The most high-level and bootstrap tasks
 # All tasks are specified in `tasks.py`
 
-.PHONY: help install update test lint release
+.PHONY: help install update test lint release tasks
 
 help:
 	@echo "See Makefile for available targets."
@@ -21,3 +21,6 @@ lint:
 
 release:
 	invoke release
+
+tasks:
+	invoke build_tasks

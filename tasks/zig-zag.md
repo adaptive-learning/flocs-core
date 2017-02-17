@@ -1,5 +1,6 @@
-Setting
--------
+# zig-zag
+
+## Setting
 
 ```
 |b |b |b |b |b |
@@ -13,8 +14,7 @@ Setting
 |k |k |kS|k |k |
 ```
 
-Solution
---------
+## Solution
 
 ```python
 while color() != 'b':

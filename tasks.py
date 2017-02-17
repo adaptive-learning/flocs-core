@@ -1,8 +1,8 @@
 """Specification of tasks, which can be run by `invoke fn_name [params]`
 """
 from invoke import task
-from scripts import version
-from scripts import tasks_builder
+from tools import version
+from tools import tasks_builder
 
 # pylint:disable=unused-argument
 

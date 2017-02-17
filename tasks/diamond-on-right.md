@@ -1,5 +1,6 @@
-Setting
--------
+# diamond-on-right
+
+## Setting
 
 ```
 |b |bM|b |b |b |
@@ -9,8 +10,7 @@ Setting
 |k |k |kS|k |kM|
 ```
 
-Solution
---------
+## Solution
 
 ```python
 right()

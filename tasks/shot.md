@@ -1,5 +1,6 @@
-Setting
--------
+# shot
+
+## Setting
 
 ```
 |b |bA|b |bA|b |
@@ -8,8 +9,7 @@ Setting
 |k |kA|kS|kA|k |
 ```
 
-Solution
---------
+## Solution
 
 ```python
 fly()

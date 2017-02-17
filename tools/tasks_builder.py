@@ -3,11 +3,12 @@
 import json
 import os
 from flocs.data.tasks import TASKS
-from .task_specification import parse_task
-from .config import TASKS_DIR, CORE_PKG_DIR, VISUALIZATION_PKG_DIR
+from flocs.entities import Task
+from .config import TASKS_DIR, CORE_DIR, VISUALIZATION_DIR
+from .js import parse_task_source_to_dict
 
 
-DEST_PY = os.path.join(CORE_PKG_DIR, 'data', 'tasks.py')
+DEST_PY = os.path.join(CORE_DIR, 'data', 'tasks.py')
 TASK_MODULE_TEMPLATE = '''
 """Tasks generated from data/tasks/*.md
 """
@@ -20,7 +21,7 @@ TASKS = (
 '''.strip()
 TASK_LINE_TEMPLATE = '    {task},'
 
-DEST_JS = os.path.join(VISUALIZATION_PKG_DIR, 'exported_data', 'tasks.js')
+DEST_JS = os.path.join(VISUALIZATION_DIR, 'exported_data', 'tasks.js')
 JS_TASK_MODULE_TEMPLATE = '''
 // Tasks generated from data/tasks/*.md
 const TASKS = {tasks_json};
@@ -82,7 +83,7 @@ def save_js_task_module_content(content):
 
 def build_and_replace_task(ref):
     content = read_task_source(ref)
-    task = parse_task(file_name=ref, file_content=content)
+    task = parse_task_source(content)
     if is_new(task):
         return tuple(list(TASKS) + [task])
     else:
@@ -99,9 +100,14 @@ def build_all_tasks():
     file_names = [name for name in os.listdir(TASKS_DIR) if name.endswith(".md")]
     refs = [name[:-3] for name in file_names]
     contents = [read_task_source(ref) for ref in refs]
-    tasks = [parse_task(ref, content) for ref, content in zip(refs, contents)]
+    tasks = [parse_task_source(content) for ref, content in zip(refs, contents)]
     return tasks
 
+
+def parse_task_source(text):
+    task_dict = parse_task_source_to_dict(text)
+    task = Task(**task_dict)
+    return task
 
 
 def read_task_source(ref):

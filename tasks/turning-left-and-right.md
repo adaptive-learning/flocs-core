@@ -1,5 +1,6 @@
-Setting
--------
+# turning-left-and-right
+
+## Setting
 
 ```
 |b |bM|b |bM|b |
@@ -8,8 +9,7 @@ Setting
 |k |kM|kS|k |kM|
 ```
 
-Solution
---------
+## Solution
 
 ```python
 left()
