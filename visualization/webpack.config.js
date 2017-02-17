@@ -7,7 +7,7 @@ module.exports = {
   entry: [
     'webpack-dev-server/client?http://0.0.0.0:8080',
     'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
-    './src/index.js',
+    './src/index.jsx',
   ],
   devServer: {
     inline: true,
@@ -28,7 +28,11 @@ module.exports = {
       , loader: 'babel'
       , exclude: /node_modules/
       , query: { presets: ['es2015', 'react', 'react-hmre'] }
-      }
+      },
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader',
+      },
     ]
   },
   plugins: [
