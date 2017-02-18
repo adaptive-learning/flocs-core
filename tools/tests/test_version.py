@@ -1,5 +1,5 @@
-from scripts import version
-from scripts.version import Version
+from tools import version
+from tools.version import Version
 
 
 def test_version_str():

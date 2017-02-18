@@ -4,7 +4,7 @@ import operator
 import re
 from collections import namedtuple, ChainMap
 from collections.abc import Mapping
-from .data.tasks import TASKS
+from .data import tasks
 from .entities import Student, Task, TaskSession
 from .meta import META
 
@@ -132,7 +132,7 @@ def create_static_entities():
     return {
         Student: EntityMap(),
         TaskSession: EntityMap(),
-        Task: EntityMap.from_list(TASKS),
+        Task: EntityMap.from_list(tasks),
     }
 
 # TODO: move to some utils

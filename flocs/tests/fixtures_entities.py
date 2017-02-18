@@ -49,16 +49,19 @@ ENTITIES = {
     ),
     't1': Task(
         task_id=28,
+        category_id=None,
         setting=None,
         solution=None,
     ),
     't2': Task(
         task_id=67,
+        category_id=None,
         setting=None,
         solution=None,
     ),
     't3': Task(
         task_id=55,
+        category_id=None,
         setting=None,
         solution=None,
     ),
