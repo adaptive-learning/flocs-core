@@ -13,6 +13,8 @@
 |k |kA|k |kA|k |
 |k |kA|kS|kA|k |
 ```
+- energy: 4
+- actionsLimit: 2
 
 ## Solution
 

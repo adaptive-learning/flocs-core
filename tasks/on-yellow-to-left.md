@@ -13,6 +13,7 @@
 |k |k |k |k |k |
 |k |k |kS|k |k |
 ```
+- actionsLimit: 2
 
 ## Solution
 
