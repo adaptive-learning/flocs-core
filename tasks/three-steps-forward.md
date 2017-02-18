@@ -1,4 +1,5 @@
 # three-steps-forward
+- category: moves
 
 ## Setting
 

@@ -1,4 +1,5 @@
 # shooting
+- category: world
 
 ## Setting
 

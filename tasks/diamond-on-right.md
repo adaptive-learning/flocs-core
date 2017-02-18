@@ -1,4 +1,5 @@
 # diamond-on-right
+- category: moves
 
 ## Setting
 

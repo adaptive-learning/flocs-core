@@ -1,4 +1,5 @@
 # turning-right
+- category: moves
 
 ## Setting
 

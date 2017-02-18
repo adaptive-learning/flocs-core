@@ -1,4 +1,5 @@
 # zig-zag
+- category: loops
 
 ## Setting
 

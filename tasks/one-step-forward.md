@@ -1,4 +1,5 @@
 # one-step-forward
+- category: moves
 
 ## Setting
 

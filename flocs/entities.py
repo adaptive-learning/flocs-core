@@ -11,8 +11,33 @@ Student = namedtuple('Student', [
 
 Task = namedtuple('Task', [
     'task_id',
+    'category_id',
     'setting',
     'solution',
+])
+
+
+Category = namedtuple('Category', [
+    'category_id',
+    'level_id',
+    'toolbox_id',
+])
+
+
+Level = namedtuple('level', [
+    'level_id',
+    'credits',
+])
+
+
+Toolbox = namedtuple('Toolbox', [
+    'toolbox_id',
+    'block_ids',
+])
+
+
+Block = namedtuple('Block', [
+    'block_id',
 ])
 
 
@@ -34,42 +59,29 @@ TaskStats = namedtuple('TaskStats', [
 ])
 
 
-Concept = namedtuple('Concept', [
-    'concept_id',
-    'ref',
-    'subconcepts',
-])
-
-
-Toolbox = namedtuple('Toolbox', [
-    'toolbox_id',
-    'ref',
-    'blocks_refs',
-])
-
-
-Block = namedtuple('Block', [
-    'block_id',
-    'ref',
-])
-
-
-Instruction = namedtuple('Instruction', [
-    'instruction_id',
-    'concept_id',
-    'ref',
-])
-
-
-ActivityRecommendation = namedtuple('ActivityRecommendation', [
-    'activity_recommendation_id',
-    'student_id',
-    'activity',
-])
-
-
-TaskRecommendation = namedtuple('TaskRecommendation', [
-    'task_recommendation_id',
-    'student_id',
-    'task_id',
-])
+#Concept = namedtuple('Concept', [
+#    'concept_id',
+#    'ref',
+#    'subconcepts',
+#])
+#
+#
+#Instruction = namedtuple('Instruction', [
+#    'instruction_id',
+#    'concept_id',
+#    'ref',
+#])
+#
+#
+#ActivityRecommendation = namedtuple('ActivityRecommendation', [
+#    'activity_recommendation_id',
+#    'student_id',
+#    'activity',
+#])
+#
+#
+#TaskRecommendation = namedtuple('TaskRecommendation', [
+#    'task_recommendation_id',
+#    'student_id',
+#    'task_id',
+#])

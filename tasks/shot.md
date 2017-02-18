@@ -1,4 +1,5 @@
 # shot
+- category: world
 
 ## Setting
 

@@ -1,4 +1,5 @@
 # ladder
+- category: repeat
 
 ## Setting
 

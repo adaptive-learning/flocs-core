@@ -2,7 +2,7 @@
 """
 import json
 import os
-from flocs.data.tasks import TASKS
+from flocs.data import tasks
 from flocs.entities import Task
 from .config import TASKS_DIR, CORE_DIR, VISUALIZATION_DIR
 from .js import parse_task_source_to_dict
@@ -15,7 +15,7 @@ TASK_MODULE_TEMPLATE = '''
 from ..entities import Task
 
 # pylint:disable=line-too-long
-TASKS = (
+tasks = (
 {task_lines}
 )
 '''.strip()
@@ -85,14 +85,14 @@ def build_and_replace_task(ref):
     content = read_task_source(ref)
     task = parse_task_source(content)
     if is_new(task):
-        return tuple(list(TASKS) + [task])
+        return tuple(list(tasks) + [task])
     else:
         return tuple(task if task.task_id == original_task.task_id else original_task
-                     for original_task in TASKS)
+                     for original_task in tasks)
 
 
 def is_new(task):
-    task_ids = [task.task_id for task in TASKS]
+    task_ids = [task.task_id for task in tasks]
     return task.task_id not in task_ids
 
 
