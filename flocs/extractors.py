@@ -71,7 +71,7 @@ def select_task_fixed_then_random(state, student_id):
             selected_task_id = random.choice(unsolved_task_ids)
             return selected_task_id
         else:
-            last_ts_id = state.entities[Student][student_id].last_task_session
+            last_ts_id = state.entities[Student][student_id].last_task_session_id
             last_task_id = state.entities[TaskSession][last_ts_id].task_id
             task_ids.remove(last_task_id)
             selected_task_id = random.choice(task_ids)

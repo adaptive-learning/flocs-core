@@ -136,7 +136,7 @@ def test_select_task_fixed_then_random():
                 if task_session.solved:
                     solved = True
             assert solved
-            last_ts_id = student.last_task_session
+            last_ts_id = student.last_task_session_id
             last_task_id = state.entities[TaskSession][last_ts_id].task_id
             assert selected_task_id != last_task_id
         action1 = actions.start_task(

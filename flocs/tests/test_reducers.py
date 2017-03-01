@@ -24,11 +24,11 @@ def test_extracting_data_context_values_from_data():
 
 
 def test_extract_parameters():
-    def tmp_function(students, student_id, last_task_session=0):
+    def tmp_function(students, student_id, last_task_session_id=0):
         pass
     fn = tmp_function
     parameters = reducers.extract_parameters(fn, skip=1)
-    expected_parameters = ('student_id', 'last_task_session')
+    expected_parameters = ('student_id', 'last_task_session_id')
     assert parameters == expected_parameters
 
 
@@ -54,21 +54,21 @@ def test_identity_reducer():
 
 def test_create_student():
     students = EntityMap.from_list([
-        Student(student_id=13, last_task_session=81)
+        Student(student_id=13, last_task_session_id=81)
     ])
     next_students = reducers.create_student(students, student_id=37)
     expected_students = EntityMap.from_list([
-        Student(student_id=13, last_task_session=81),
-        Student(student_id=37, last_task_session=None)
+        Student(student_id=13, last_task_session_id=81),
+        Student(student_id=37, last_task_session_id=None)
     ])
     assert next_students == expected_students
 
 
-def test_update_last_task_session():
+def test_update_last_task_session_id():
     s3 = STATES['s3']
     stud = ENTITIES[94]
-    new_students = reducers.update_last_task_session(s3.entities[Student], 'new_ts_id', stud.student_id, 'some_task_id')
-    assert new_students[stud.student_id].last_task_session == 'new_ts_id'
+    new_students = reducers.update_last_task_session_id(s3.entities[Student], 'new_ts_id', stud.student_id, 'some_task_id')
+    assert new_students[stud.student_id].last_task_session_id == 'new_ts_id'
 
 
 def test_create_task_session():
@@ -117,7 +117,7 @@ def test_reduce_entities():
     assert next_entities == STATES['s2'].entities
 
 
-def test_reduce_entities_last_ts_updating():
+def test_reduce_entities_last_ts_id_updating():
     action = actions.start_task(student_id=48, task_id=67, task_session_id=14)
     next_entities = reducers.reduce_entities(STATES['s4'].entities, action)
     assert next_entities[Student][48] == ENTITIES['s_not_new']

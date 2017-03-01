@@ -67,26 +67,26 @@ ENTITIES = {
     ),
     'stud1': Student(
         student_id=13,
-        last_task_session=81
+        last_task_session_id=81
     ),
     'stud2': Student(
         student_id=37,
-        last_task_session=14
+        last_task_session_id=14
     ),
     's_new': Student(
         student_id=48,
-        last_task_session=None
+        last_task_session_id=None
     ),
     's_not_new': Student(
         student_id=48,
-        last_task_session=14
+        last_task_session_id=14
     ),
     # unusual name of this fixture forced by function
-    # update_last_task_session which upgrades a student
+    # update_last_task_session_id which upgrades a student
     # with a new student where =student_id= as a new key
     94: Student(
         student_id=94,
-        last_task_session=None
+        last_task_session_id=None
     ),
     'stat1': TaskStats(
         task_stats_id=28,

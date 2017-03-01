@@ -101,4 +101,4 @@ def test_reducing_action_without_optional_parameters():
     with Store.open({Student: EntityMap()}) as store:
         store.stage_action(actions.create_student())
     student = list(store.state.entities[Student].values())[0]
-    assert student.last_task_session is None
+    assert student.last_task_session_id is None

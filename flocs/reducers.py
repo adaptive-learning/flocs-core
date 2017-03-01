@@ -60,7 +60,7 @@ def identity_reducer(state):
 
 
 def create_student(students, student_id):
-    student = Student(student_id=student_id, last_task_session=None)
+    student = Student(student_id=student_id, last_task_session_id=None)
     return students.set(student)
 
 
@@ -75,10 +75,10 @@ def create_task_session(task_sessions, task_session_id, student_id, task_id):
     return task_sessions.set(task_session)
 
 
-def update_last_task_session(students, task_session_id, student_id, task_id):
+def update_last_task_session_id(students, task_session_id, student_id, task_id):
     del task_id  # intentionally unused argument
     student = students[student_id]
-    updated_student = student._replace(last_task_session=task_session_id)
+    updated_student = student._replace(last_task_session_id=task_session_id)
     return students.set(updated_student)
 
 
@@ -122,7 +122,7 @@ ALWAYS_IDENTITY = identity_defaultdict()
 # an entity key corresponds to an actual entity (e.g. not just a string)
 ENTITY_REDUCERS = {
     entities.Student: identity_defaultdict({
-        ActionType.start_task: update_last_task_session,
+        ActionType.start_task: update_last_task_session_id,
         ActionType.create_student: create_student,
     }),
     entities.TaskSession: identity_defaultdict({

@@ -20,13 +20,13 @@ Basic example:
 >>> # create and stage another actions
 >>> action = start_task(student_id=1, task_id=1).at(store.state)
 >>> store.stage_action(action)
->>> action = solve_task(task_session_id=store.state.entities[Student][1].last_task_session).at(store.state)
+>>> action = solve_task(task_session_id=store.state.entities[Student][1].last_task_session_id).at(store.state)
 >>> store.stage_action(action)
 
 >>> # current state is computed on demand by applying all staged actions to initial state
 >>> # (and also generating current context)
 >>> print(dict(store.state.entities[Student]))
-{1: Student(student_id=1, last_task_session=...)}
+{1: Student(student_id=1, last_task_session_id=...)}
 
 ```
 
@@ -43,7 +43,7 @@ Basic example:
 
     >>> # stupid basic loading functions
     >>> def load_students():
-    ...     return {2: Student(student_id=2, last_task_session=14)}
+    ...     return {2: Student(student_id=2, last_task_session_id=14)}
     >>> def load_task_sessions():
     ...     return {14: TaskSession(
     ...         task_session_id=14,
