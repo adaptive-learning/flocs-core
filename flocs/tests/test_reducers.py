@@ -117,6 +117,12 @@ def test_reduce_entities():
     assert next_entities == STATES['s2'].entities
 
 
+def test_reduce_entities_last_ts_updating():
+    action = actions.start_task(student_id=48, task_id=67, task_session_id=14)
+    next_entities = reducers.reduce_entities(STATES['s4'].entities, action)
+    assert next_entities[Student][48] == ENTITIES['s_not_new']
+
+
 def test_reduce_state():
     action = actions.solve_task(task_session_id=14).at(STATES['s1'])
     next_state = reduce_state(STATES['s1'], action)

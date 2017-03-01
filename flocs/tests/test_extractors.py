@@ -3,10 +3,11 @@
 from functools import partial, reduce
 import random
 import pytest
-from flocs.extractors import select_random_task, general_select_task_in_fixed_order
+from flocs.extractors import select_random_task, general_select_task_in_fixed_order, select_task_fixed_then_random
 from flocs.extractors import select_task_in_fixed_order
 from flocs.reducers import reduce_state
-from flocs.entities import Task
+from flocs.entities import Task, TaskSession, Student
+from flocs.context import STATIC_CONTEXT
 from flocs import actions
 from flocs.tests.fixtures_entities import ENTITIES
 from flocs.tests.fixtures_states import STATES
@@ -96,3 +97,51 @@ def test_select_task_in_fixed_order():
     # all tasks solved
     with pytest.raises(ValueError):
         select_task_in_fixed_order(state, student.student_id)
+
+
+def test_select_task_fixed_then_random():
+    state = STATES['s4']
+    expected_order = [
+        'one-step-forward',
+        'three-steps-forward',
+        'turning-left',
+        'turning-right-and-left',
+        'diamond-on-right',
+        'shot',
+        'shooting',
+        'zig-zag',
+        'ladder',
+        'on-yellow-to-left',
+    ]
+    for i in range(3 * state.entities[Task].__len__()):
+        student = state.entities[Student][48]
+        selected_task_id = select_task_fixed_then_random(
+            state, student.student_id)
+        if i < len(expected_order):
+            assert selected_task_id == expected_order[i]
+        elif i < state.entities[Task].__len__():
+            assert selected_task_id not in expected_order
+            task_sessions_of_task = state.entities[TaskSession].filter(
+                student_id=student.student_id,
+                task_id=selected_task_id)
+            if task_sessions_of_task:
+                for task_session in task_sessions_of_task:
+                    assert not task_session.solved
+        else:
+            task_sessions_of_task = state.entities[TaskSession].filter(
+                student_id=student.student_id,
+                task_id=selected_task_id)
+            solved = False
+            for task_session in task_sessions_of_task.values():
+                if task_session.solved:
+                    solved = True
+            assert solved
+            last_ts_id = student.last_task_session
+            last_task_id = state.entities[TaskSession][last_ts_id].task_id
+            assert selected_task_id != last_task_id
+        action1 = actions.start_task(
+            student_id=student.student_id,
+            task_id=selected_task_id).at(state)
+        action2 = actions.solve_task(
+            task_session_id=action1.data['task_session_id']).at(state)
+        state = reduce(reduce_state, [action1, action2], state)
