@@ -113,13 +113,13 @@ def test_select_task_fixed_then_random():
         'ladder',
         'on-yellow-to-left',
     ]
-    for i in range(3 * state.entities[Task].__len__()):
+    for i in range(3 * len(state.entities[Task])):
         student = state.entities[Student][48]
         selected_task_id = select_task_fixed_then_random(
             state, student.student_id)
         if i < len(expected_order):
             assert selected_task_id == expected_order[i]
-        elif i < state.entities[Task].__len__():
+        elif i < len(state.entities[Task]):
             assert selected_task_id not in expected_order
             task_sessions_of_task = state.entities[TaskSession].filter(
                 student_id=student.student_id,
