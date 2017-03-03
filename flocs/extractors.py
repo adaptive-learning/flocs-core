@@ -39,15 +39,10 @@ select_task_in_fixed_order = partial(
     general_select_task_in_fixed_order,
     order=[
         'one-step-forward',
-        'three-steps-forward',
-        'turning-left',
-        'turning-right-and-left',
         'diamond-on-right',
+        'wormhole-demo',
         'shot',
-        'shooting',
-        'zig-zag',
         'ladder',
-        'on-yellow-to-left',
     ])
 
 
