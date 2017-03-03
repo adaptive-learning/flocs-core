@@ -1,5 +1,5 @@
-# zig-zag
-- category: while
+# zig-zag-plus
+- category: loops
 
 ## Setting
 
@@ -8,18 +8,29 @@
 |kA|k |kA|k |kA|
 |k |kA|k |kA|k |
 |kA|k |kA|k |kA|
+|k |kA|kM|kA|k |
+|kA|k |kA|k |kA|
+|kM|kA|k |kA|kM|
+|kA|k |kA|k |kA|
 |k |kA|k |kA|k |
 |kA|k |kA|k |kA|
 |k |kA|k |kA|k |
 |kA|k |kA|k |kA|
 |k |k |kS|k |k |
 ```
-- actionsLimit: 2
+
+- actionsLimit: 4
 
 ## Solution
 
-```python
-while color() != 'b':
+```
+repeat 2:
     right()
+repeat 3:
     left()
+repeat 3:
+    right()
+repeat 5:
+    left()
+
 ```

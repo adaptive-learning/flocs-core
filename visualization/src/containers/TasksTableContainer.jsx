@@ -4,7 +4,7 @@ import { TasksTable } from 'flocs-visual-components';
 
 function mapStateToProps(state) {
   return {
-    tasks: state.tasks,
+    tasks: Object.values(state.tasks),
   };
 }
 

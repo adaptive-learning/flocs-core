@@ -4,8 +4,7 @@
 ## Setting
 
 ```
-|b |b |b |b |b |
-|k |kD|k |k |k |
+|b |bD|b |b |b |
 |kD|k |k |k |k |
 |k |kD|k |k |k |
 |kD|k |k |k |k |
@@ -13,10 +12,7 @@
 |k |k |kD|k |k |
 |k |kD|k |k |k |
 |k |k |kD|k |k |
-|k |k |k |kD|k |
-|k |k |kD|k |k |
-|k |k |k |kD|k |
-|k |k |k |k |kS|
+|k |k |k |kS|k |
 ```
 
 - actionsLimit: 3
