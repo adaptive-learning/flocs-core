@@ -24,8 +24,8 @@
 
 ```
 while color() != 'b':
+    fly()
     if color() == 'y':
         right()
         left()
-    fly()
 ```

@@ -4,20 +4,19 @@
 ## Setting
 
 ```
-|b |b |bA|b |b |
+|b |bA|b |bA|b |
+|kM|kM|kA|k |kM|
 |kM|k |kA|k |kM|
 |k |kA|k |kA|k |
-|k |kM|kA|k |k |
-|kA|k |kM|kA|kA|
+|kA|kM|kM|kA|kA|
 |k |k |kM|k |k |
 |k |kA|k |kA|k |
 |kM|kM|kM|k |kM|
-|kA|k |kM|kA|kA|
-|k |k |kA|k |k |
+|kA|k |kA|kM|kA|
 |k |k |kS|k |k |
 ```
 
-- actionsLimit: 4
+- actionsLimit: 3
 
 ## Solution
 
@@ -25,7 +24,5 @@
 repeat 3:
     left()
     shoot()
-    fly()
     right()
-
 ```

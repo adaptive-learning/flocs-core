@@ -12,6 +12,7 @@ categories = (
     Category(category_id='loops',           level_id=5, toolbox_id='loops'),
     Category(category_id='if',              level_id=6, toolbox_id='loops+if'),
     Category(category_id='comparing',       level_id=7, toolbox_id='loops+if+position'),
-    Category(category_id='else',            level_id=8, toolbox_id='loops+if+else'),
+    Category(category_id='if-else',         level_id=8, toolbox_id='loops+if+else'),
     Category(category_id='final-challenge', level_id=9, toolbox_id='complete'),
+    Category(category_id='uncategorized',   level_id=9, toolbox_id='complete'),
 )

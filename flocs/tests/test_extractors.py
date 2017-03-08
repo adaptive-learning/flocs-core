@@ -70,15 +70,10 @@ def test_select_task_in_fixed_order():
     student = ENTITIES['s_new']
     expected_order = [
         'one-step-forward',
-        'three-steps-forward',
-        'turning-left',
-        'turning-right-and-left',
         'diamond-on-right',
+        'wormhole-demo',
         'shot',
-        'shooting',
-        'zig-zag',
         'ladder',
-        'on-yellow-to-left',
     ]
     for expected_task_id in expected_order:
         selected_task_id = select_task_in_fixed_order(state, student.student_id)
@@ -98,23 +93,18 @@ def test_select_task_fixed_then_random():
     state = STATES['s4']
     expected_order = [
         'one-step-forward',
-        'three-steps-forward',
-        'turning-left',
-        'turning-right-and-left',
         'diamond-on-right',
+        'wormhole-demo',
         'shot',
-        'shooting',
-        'zig-zag',
         'ladder',
-        'on-yellow-to-left',
     ]
-    for i in range(3 * state.entities[Task].__len__()):
+    for i in range(3 * len(state.entities[Task])):
         student = state.entities[Student][48]
         selected_task_id = select_task_fixed_then_random(
             state, student.student_id)
         if i < len(expected_order):
             assert selected_task_id == expected_order[i]
-        elif i < state.entities[Task].__len__():
+        elif i < len(state.entities[Task]):
             assert selected_task_id not in expected_order
             task_sessions_of_task = state.entities[TaskSession].filter(
                 student_id=student.student_id,
