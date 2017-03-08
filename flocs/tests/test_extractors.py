@@ -7,7 +7,6 @@ from flocs.extractors import select_random_task, general_select_task_in_fixed_or
 from flocs.extractors import select_task_in_fixed_order
 from flocs.reducers import reduce_state
 from flocs.entities import Task, TaskSession, Student
-from flocs.context import STATIC_CONTEXT
 from flocs import actions
 from flocs.tests.fixtures_entities import ENTITIES
 from flocs.tests.fixtures_states import STATES
@@ -44,13 +43,9 @@ def test_select_task_in_fixed_order_no_skipping():
 def test_select_task_in_fixed_order_last_task():
     state = STATES['s5']
     stud1 = ENTITIES['stud2']
-    message = 'no exception raised'
     select_task_in_fixed_order_a = partial(general_select_task_in_fixed_order, order=[28, 67])
-    try:
+    with pytest.raises(ValueError):
         select_task_in_fixed_order_a(state, stud1.student_id)
-    except ValueError as ve:
-        message = '{0}'.format(ve)
-    assert message == 'last task reached, there is no next task'
 
 
 def test_select_same_task_until_solved():

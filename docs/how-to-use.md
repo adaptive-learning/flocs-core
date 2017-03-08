@@ -39,18 +39,18 @@ Basic example:
     ```python
     >>> from collections import ChainMap
     >>> from flocs.entities import Student, TaskSession
-    >>> from flocs.state import STATIC_ENTITIES
+    >>> from flocs.state import EntityMap, STATIC_ENTITIES
 
     >>> # stupid basic loading functions
     >>> def load_students():
-    ...     return {2: Student(student_id=2, last_task_session_id=14)}
+    ...     return EntityMap({2: Student(student_id=2, last_task_session_id=14)})
     >>> def load_task_sessions():
-    ...     return {14: TaskSession(
+    ...     return EntityMap({14: TaskSession(
     ...         task_session_id=14,
     ...         student_id=2,
     ...         task_id=10,
     ...         solved=False,
-    ...         given_up=False)}
+    ...         given_up=False)})
 
     >>> new_entities = {
     ...     Student: load_students(),
