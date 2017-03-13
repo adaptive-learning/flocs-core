@@ -96,12 +96,13 @@ def give_up_task(task_session_id):
     )
 
 
-def see_instruction(student_id, instruction_id):
+def see_instruction(student_id, instruction_id, seen_instruction_id=None):
     """ Student has seen instruction
     """
     return Action.create(
         type=ActionType.see_instruction,
         data={
+            'seen_instruction_id': generate_id_if_not_set(seen_instruction_id),
             'student_id': student_id,
             'instruction_id': instruction_id,
         },

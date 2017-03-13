@@ -5,7 +5,8 @@ import re
 from collections import namedtuple, ChainMap
 from collections.abc import Mapping
 from .data import blocks, instructions, levels, toolboxes, categories, tasks
-from .entities import Block, Instruction, Level, Toolbox, Category, Task, Student, TaskSession
+from .entities import Block, Instruction, Level, Toolbox, Category, Task
+from .entities import Student, TaskSession, SeenInstruction
 from .meta import META
 
 
@@ -131,6 +132,7 @@ def get_operator(query_type):
 def create_static_entities():
     return {
         Student: EntityMap(),
+        SeenInstruction: EntityMap(),
         TaskSession: EntityMap(),
         Block: EntityMap.from_list(blocks),
         Instruction: EntityMap.from_list(instructions),

@@ -9,6 +9,13 @@ Student = namedtuple('Student', [
 ])
 
 
+SeenInstruction = namedtuple('SeenInstruction', [
+    'seen_instruction_id',
+    'student_id',
+    'instruction_id',
+])
+
+
 Task = namedtuple('Task', [
     'task_id',
     'category_id',

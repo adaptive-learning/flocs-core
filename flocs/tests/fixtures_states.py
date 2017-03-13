@@ -54,3 +54,14 @@ STATES = {
         context=STATIC_CONTEXT,
     ),
 }
+
+
+def create_state(*entities):
+    """ Creates a test set with all static entities plus any additional ones
+        and with static context
+    """
+    state = State.create(entities=STATIC_ENTITIES, context=STATIC_CONTEXT)
+    for entity in entities:
+        entity_type = entity.__class__
+        state.entities[entity_type] = state.entities[entity_type].set(entity)
+    return state

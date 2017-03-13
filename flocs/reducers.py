@@ -5,7 +5,7 @@ from inspect import signature
 from . import entities
 from .state import State
 from .actions import ActionType
-from .entities import Student, TaskSession
+from .entities import Student, TaskSession, SeenInstruction
 
 
 def reduce_state(state, action):
@@ -115,6 +115,24 @@ def increase_given_up_count(stats, task_id):
     return stats.set(updated_task_stats)
 
 
+def create_or_update_seen_instruction(seen_instructions, seen_instruction_id,
+                                      student_id, instruction_id):
+    """ Create record of new seen instruction for student-instruction pair.
+        If it has already existed, nothing is changed (so seen_instruction_id
+        is ignored in this case).
+    """
+    records = seen_instructions.filter(student_id=student_id, instruction_id=instruction_id)
+    already_seen = len(records) > 0
+    if already_seen:
+        return seen_instructions
+    seen_instruction = SeenInstruction(
+        seen_instruction_id=seen_instruction_id,
+        student_id=student_id,
+        instruction_id=instruction_id,
+    )
+    updated_seen_instructions = seen_instructions.set(seen_instruction)
+    return updated_seen_instructions
+
 # --------------------------------------------------------------------------
 ALWAYS_IDENTITY = identity_defaultdict()
 
@@ -124,6 +142,9 @@ ENTITY_REDUCERS = {
     entities.Student: identity_defaultdict({
         ActionType.start_task: update_last_task_session_id,
         ActionType.create_student: create_student,
+    }),
+    entities.SeenInstruction: identity_defaultdict({
+        ActionType.see_instruction: create_or_update_seen_instruction,
     }),
     entities.TaskSession: identity_defaultdict({
         ActionType.start_task: create_task_session,

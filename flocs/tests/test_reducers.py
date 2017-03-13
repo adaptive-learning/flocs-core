@@ -1,11 +1,11 @@
 """Unit tests for reducers
 """
 from flocs import actions, reducers
-from flocs.entities import Student, TaskSession
+from flocs.entities import Student, TaskSession, SeenInstruction
 from flocs.reducers import reduce_state, extracting_data_context, extract_parameters
 from flocs.state import EntityMap
 from flocs.tests.fixtures_entities import ENTITIES, task_sessions_dict, task_stats_dict
-from flocs.tests.fixtures_states import STATES
+from flocs.tests.fixtures_states import STATES, create_state
 
 
 def test_extracting_data_context_signature():
@@ -130,6 +130,43 @@ def test_reduce_state():
 
 
 # ---------------------------------------------------------------------------
+
+def test_see_instruction():
+    s1 = create_state(Student(student_id=4, last_task_session_id=None))
+    action = actions.see_instruction(
+        student_id=4, instruction_id='block.fly', seen_instruction_id=1).at(s1)
+    next_state = reduce_state(s1, action)
+    s2 = create_state(
+        Student(student_id=1, last_task_session_id=None),
+        SeenInstruction(student_id=4, instruction_id='block.fly', seen_instruction_id=1))
+    assert next_state.entities[SeenInstruction] == s2.entities[SeenInstruction]
+
+
+def test_see_same_instruction_again():
+    s1 = create_state(Student(student_id=4, last_task_session_id=None))
+    action1 = actions.see_instruction(
+        student_id=4, instruction_id='block.fly', seen_instruction_id=1).at(s1)
+    action2 = actions.see_instruction(
+        student_id=4, instruction_id='block.fly', seen_instruction_id=2).at(s1)
+    next_state = reduce_state(reduce_state(s1, action1), action2)
+    s2 = create_state(
+        Student(student_id=1, last_task_session_id=None),
+        SeenInstruction(student_id=4, instruction_id='block.fly', seen_instruction_id=1))
+    assert next_state.entities[SeenInstruction] == s2.entities[SeenInstruction]
+
+
+def test_see_multiple_instructions():
+    s1 = create_state(Student(student_id=4, last_task_session_id=None))
+    action1 = actions.see_instruction(
+        student_id=4, instruction_id='block.fly', seen_instruction_id=1).at(s1)
+    action2 = actions.see_instruction(
+        student_id=4, instruction_id='block.shoot', seen_instruction_id=2).at(s1)
+    next_state = reduce_state(reduce_state(s1, action1), action2)
+    s2 = create_state(
+        Student(student_id=1, last_task_session_id=None),
+        SeenInstruction(student_id=4, instruction_id='block.fly', seen_instruction_id=1),
+        SeenInstruction(student_id=4, instruction_id='block.shoot', seen_instruction_id=1))
+    assert next_state.entities[SeenInstruction] == s2.entities[SeenInstruction]
 
 
 def test_increase_started_count():
