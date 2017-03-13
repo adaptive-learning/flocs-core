@@ -135,5 +135,10 @@ ENTITY_REDUCERS = {
         ActionType.solve_task: increase_solved_count,
         ActionType.give_up_task: increase_given_up_count,
     }),
+    entities.Block: ALWAYS_IDENTITY,
+    entities.Category: ALWAYS_IDENTITY,
+    entities.Instruction: ALWAYS_IDENTITY,
+    entities.Level: ALWAYS_IDENTITY,
+    entities.Toolbox: ALWAYS_IDENTITY,
     entities.Task: ALWAYS_IDENTITY,
 }

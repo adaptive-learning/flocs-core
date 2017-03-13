@@ -59,17 +59,15 @@ TaskStats = namedtuple('TaskStats', [
 ])
 
 
+Instruction = namedtuple('Instruction', [
+    'instruction_id',
+])
+
+
 #Concept = namedtuple('Concept', [
 #    'concept_id',
 #    'ref',
 #    'subconcepts',
-#])
-#
-#
-#Instruction = namedtuple('Instruction', [
-#    'instruction_id',
-#    'concept_id',
-#    'ref',
 #])
 #
 #

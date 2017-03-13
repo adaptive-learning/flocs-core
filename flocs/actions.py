@@ -47,6 +47,7 @@ class ActionType(str, Enum):
     start_task = 'start_task'
     solve_task = 'solve_task'
     give_up_task = 'give_up_task'
+    see_instruction = 'see_instruction'
 
 
 def create_student(student_id=None):
@@ -93,6 +94,19 @@ def give_up_task(task_session_id):
             'task_session_id': task_session_id,
         },
     )
+
+
+def see_instruction(student_id, instruction_id):
+    """ Student has seen instruction
+    """
+    return Action.create(
+        type=ActionType.see_instruction,
+        data={
+            'student_id': student_id,
+            'instruction_id': instruction_id,
+        },
+    )
+
 
 
 EMPTY_ACTION = Action.create()

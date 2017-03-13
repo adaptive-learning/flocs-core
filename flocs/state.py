@@ -4,8 +4,8 @@ import operator
 import re
 from collections import namedtuple, ChainMap
 from collections.abc import Mapping
-from .data import tasks
-from .entities import Student, Task, TaskSession
+from .data import blocks, instructions, levels, toolboxes, categories, tasks
+from .entities import Block, Instruction, Level, Toolbox, Category, Task, Student, TaskSession
 from .meta import META
 
 
@@ -132,6 +132,11 @@ def create_static_entities():
     return {
         Student: EntityMap(),
         TaskSession: EntityMap(),
+        Block: EntityMap.from_list(blocks),
+        Instruction: EntityMap.from_list(instructions),
+        Level: EntityMap.from_list(levels),
+        Toolbox: EntityMap.from_list(toolboxes),
+        Category: EntityMap.from_list(categories),
         Task: EntityMap.from_list(tasks),
     }
 
