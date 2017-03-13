@@ -1,8 +1,23 @@
 """ Pure functions extracting information from the world state
 """
+from collections import namedtuple
 from functools import partial
 import random
-from flocs.entities import Student, Task, TaskSession
+from flocs.entities import Student, Task, TaskSession, SeenInstruction
+
+
+StudentInfo = namedtuple('StudentInfo', [
+    'student_id',
+    'seen_instructions',
+    'task_sessions',
+])
+
+def select_student_info(state, student_id):
+    info = StudentInfo(
+        student_id=student_id,
+        seen_instructions=state.entities[SeenInstruction].filter(student_id=student_id),
+        task_sessions=state.entities[TaskSession].filter(student_id=student_id))
+    return info
 
 
 def select_random_task(state, student_id):
