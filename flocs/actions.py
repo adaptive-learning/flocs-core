@@ -43,11 +43,11 @@ class Action(namedtuple('Action', ['type', 'data', 'context', 'meta'])):
 class ActionType(str, Enum):
     """Namespace for available action types constants
     """
-    create_student = 'create_student'
-    start_task = 'start_task'
-    solve_task = 'solve_task'
-    give_up_task = 'give_up_task'
-    see_instruction = 'see_instruction'
+    create_student = 'create-student'
+    start_task = 'start-task'
+    solve_task = 'solve-task'
+    give_up_task = 'give-up-task'
+    see_instruction = 'see-instruction'
 
 
 def create_student(student_id=None):

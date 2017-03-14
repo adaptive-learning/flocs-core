@@ -165,7 +165,7 @@ def test_see_multiple_instructions():
     s2 = create_state(
         Student(student_id=1, last_task_session_id=None, credits=0),
         SeenInstruction(student_id=4, instruction_id='block.fly', seen_instruction_id=1),
-        SeenInstruction(student_id=4, instruction_id='block.shoot', seen_instruction_id=1))
+        SeenInstruction(student_id=4, instruction_id='block.shoot', seen_instruction_id=2))
     assert next_state.entities[SeenInstruction] == s2.entities[SeenInstruction]
 
 
