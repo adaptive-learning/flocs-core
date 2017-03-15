@@ -6,6 +6,7 @@ from collections import namedtuple
 Student = namedtuple('Student', [
     'student_id',
     'last_task_session_id',
+    'credits'
 ])
 
 

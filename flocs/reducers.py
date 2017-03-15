@@ -60,7 +60,9 @@ def identity_reducer(state):
 
 
 def create_student(students, student_id):
-    student = Student(student_id=student_id, last_task_session_id=None)
+    student = Student(student_id=student_id,
+                      last_task_session_id=None,
+                      credits=0)
     return students.set(student)
 
 

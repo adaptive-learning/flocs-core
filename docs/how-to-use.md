@@ -43,7 +43,7 @@ Basic example:
 
     >>> # stupid basic loading functions
     >>> def load_students():
-    ...     return EntityMap({2: Student(student_id=2, last_task_session_id=14)})
+    ...     return EntityMap({2: Student(student_id=2, last_task_session_id=14, credits=10)})
     >>> def load_task_sessions():
     ...     return EntityMap({14: TaskSession(
     ...         task_session_id=14,

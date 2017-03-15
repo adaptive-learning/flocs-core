@@ -4,9 +4,9 @@ from functools import partial, reduce
 import random
 import pytest
 from flocs.extractors import select_random_task, general_select_task_in_fixed_order, select_task_fixed_then_random
-from flocs.extractors import select_task_in_fixed_order
+from flocs.extractors import select_task_in_fixed_order, get_level, get_unspent_credits
 from flocs.reducers import reduce_state
-from flocs.entities import Task, TaskSession, Student
+from flocs.entities import Task, TaskSession, Student, Level
 from flocs import actions
 from flocs.tests.fixtures_entities import ENTITIES
 from flocs.tests.fixtures_states import STATES
@@ -130,3 +130,15 @@ def test_select_task_fixed_then_random():
         action2 = actions.solve_task(
             task_session_id=action1.data['task_session_id']).at(state)
         state = reduce(reduce_state, [action1, action2], state)
+
+
+def test_get_level():
+    student = ENTITIES['stud1']
+    level = get_level(student)
+    assert level == Level(level_id=3, credits=9)
+
+
+def test_get_unspent_credits():
+    student = ENTITIES['stud1']
+    unspent_credits = get_unspent_credits(student)
+    assert unspent_credits == 6

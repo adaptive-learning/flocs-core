@@ -3,7 +3,9 @@
 from collections import namedtuple
 from functools import partial
 import random
+from operator import attrgetter
 from flocs.entities import Student, Task, TaskSession, SeenInstruction
+from flocs.data.levels import levels
 
 
 StudentInfo = namedtuple('StudentInfo', [
@@ -11,6 +13,7 @@ StudentInfo = namedtuple('StudentInfo', [
     'seen_instructions',
     'task_sessions',
 ])
+
 
 def select_student_info(state, student_id):
     info = StudentInfo(
@@ -86,3 +89,14 @@ def select_task_fixed_then_random(state, student_id):
             task_ids.remove(last_task_id)
             selected_task_id = random.choice(task_ids)
             return selected_task_id
+
+
+def get_level(student):
+    level = max([level for level in levels if student.credits - level.credits >= 0],
+                key=attrgetter('credits'))
+    return level
+
+
+def get_unspent_credits(student):
+    level = get_level(student)
+    return student.credits - level.credits

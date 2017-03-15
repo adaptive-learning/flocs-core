@@ -17,7 +17,7 @@ Flocs is developed by [Adaptive Learning group][2] at Faculty of informatics, Ma
 >>> action = create_student(student_id=1)
 >>> store.stage_action(action)
 >>> print(dict(store.state.entities[Student]))
-{1: Student(student_id=1, last_task_session_id=None)}
+{1: Student(student_id=1, last_task_session_id=None, credits=0)}
 
 ```
 

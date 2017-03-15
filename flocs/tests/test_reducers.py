@@ -54,12 +54,12 @@ def test_identity_reducer():
 
 def test_create_student():
     students = EntityMap.from_list([
-        Student(student_id=13, last_task_session_id=81)
+        Student(student_id=13, last_task_session_id=81, credits=10)
     ])
     next_students = reducers.create_student(students, student_id=37)
     expected_students = EntityMap.from_list([
-        Student(student_id=13, last_task_session_id=81),
-        Student(student_id=37, last_task_session_id=None)
+        Student(student_id=13, last_task_session_id=81, credits=10),
+        Student(student_id=37, last_task_session_id=None, credits=0)
     ])
     assert next_students == expected_students
 
@@ -132,38 +132,38 @@ def test_reduce_state():
 # ---------------------------------------------------------------------------
 
 def test_see_instruction():
-    s1 = create_state(Student(student_id=4, last_task_session_id=None))
+    s1 = create_state(Student(student_id=4, last_task_session_id=None, credits=0))
     action = actions.see_instruction(
         student_id=4, instruction_id='block.fly', seen_instruction_id=1).at(s1)
     next_state = reduce_state(s1, action)
     s2 = create_state(
-        Student(student_id=1, last_task_session_id=None),
+        Student(student_id=1, last_task_session_id=None, credits=0),
         SeenInstruction(student_id=4, instruction_id='block.fly', seen_instruction_id=1))
     assert next_state.entities[SeenInstruction] == s2.entities[SeenInstruction]
 
 
 def test_see_same_instruction_again():
-    s1 = create_state(Student(student_id=4, last_task_session_id=None))
+    s1 = create_state(Student(student_id=4, last_task_session_id=None, credits=0))
     action1 = actions.see_instruction(
         student_id=4, instruction_id='block.fly', seen_instruction_id=1).at(s1)
     action2 = actions.see_instruction(
         student_id=4, instruction_id='block.fly', seen_instruction_id=2).at(s1)
     next_state = reduce_state(reduce_state(s1, action1), action2)
     s2 = create_state(
-        Student(student_id=1, last_task_session_id=None),
+        Student(student_id=1, last_task_session_id=None, credits=0),
         SeenInstruction(student_id=4, instruction_id='block.fly', seen_instruction_id=1))
     assert next_state.entities[SeenInstruction] == s2.entities[SeenInstruction]
 
 
 def test_see_multiple_instructions():
-    s1 = create_state(Student(student_id=4, last_task_session_id=None))
+    s1 = create_state(Student(student_id=4, last_task_session_id=None, credits=0))
     action1 = actions.see_instruction(
         student_id=4, instruction_id='block.fly', seen_instruction_id=1).at(s1)
     action2 = actions.see_instruction(
         student_id=4, instruction_id='block.shoot', seen_instruction_id=2).at(s1)
     next_state = reduce_state(reduce_state(s1, action1), action2)
     s2 = create_state(
-        Student(student_id=1, last_task_session_id=None),
+        Student(student_id=1, last_task_session_id=None, credits=0),
         SeenInstruction(student_id=4, instruction_id='block.fly', seen_instruction_id=1),
         SeenInstruction(student_id=4, instruction_id='block.shoot', seen_instruction_id=1))
     assert next_state.entities[SeenInstruction] == s2.entities[SeenInstruction]
