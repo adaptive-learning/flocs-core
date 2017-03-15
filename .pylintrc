@@ -1,7 +1,9 @@
 [MESSAGES CONTROL]
 disable=I,
     missing-docstring,
-    redefined-outer-name
+    redefined-outer-name,
+    redefined-builtin,
+    no-self-use
 
 [REPORTS]
 reports=no

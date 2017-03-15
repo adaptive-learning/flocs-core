@@ -1,31 +1,76 @@
-"""Context is a part of the world state changing continuously
+"""Context is a part of the world state changing (potentially) continuously
 """
-import random
-import sys
-from datetime import datetime
+from datetime import datetime, timedelta
+from itertools import count
+from random import randint
 from uuid import uuid4
+from flocs import __version__
 
 
-STATIC_CONTEXT = {
-    'time': datetime(1, 1, 1),
-    'randomness': 0,
-}
+class Context:
+    """ Base class providing (potentially dynamic) context like time and new IDs
+    """
+    def __init__(self):
+        self.version = __version__
+
+    def new_id(self):
+        return uuid4()
+
+    @property
+    def time(self):
+        return datetime.now()
+
+    @property
+    def randomness(self):
+        return randint(a=0, b=2**30)
 
 
-def static_context_generator():
-    while True:
-        yield STATIC_CONTEXT
+class StaticContext(Context):
+    """ Static context for tests with non-changing time
+    """
+    def __init__(self):
+        super().__init__()
+        self._id_generator = count()
+
+    def new_id(self):
+        return next(self._id_generator)
+
+    @property
+    def time(self):
+        return datetime(1, 1, 1)
+
+    @property
+    def randomness(self):
+        return 0
 
 
-def default_context_generator():
-    while True:
-        context = {
-            'time': datetime.now(),
-            'randomness': random.randint(0, sys.maxsize),
-        }
-        yield context
+
+class SimulationContext(StaticContext):
+    """ Context for simulations which allows to set initial time and time step
+    """
+    def __init__(self,
+                 randomness=0,
+                 initial_time=datetime(1, 1, 1, 0, 0, 0),
+                 time_step=timedelta(minutes=1)):
+        super().__init__()
+        self._time_step = time_step
+        self._time = initial_time
+        self._randomness = randomness
+
+    @property
+    def time(self):
+        self._time += self._time_step
+        return self._time
+
+    @property
+    def randomness(self):
+        return self._randomness
 
 
-def generate_id_if_not_set(maybe_id):
-    just_id = maybe_id if maybe_id is not None else uuid4()
+def generate_id_if_not_set(maybe_id, generator=uuid4):
+    just_id = maybe_id if maybe_id is not None else generator()
     return just_id
+
+
+# default dynamic context instance
+dynamic = Context()

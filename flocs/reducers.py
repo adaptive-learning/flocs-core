@@ -5,7 +5,7 @@ from inspect import signature
 from . import entities
 from .state import State
 from .actions import ActionType
-from .entities import Student, TaskSession, SeenInstruction
+from .entities import Action, Student, TaskSession, SeenInstruction
 
 
 def reduce_state(state, action):
@@ -13,8 +13,9 @@ def reduce_state(state, action):
     """
     return State(
         entities=reduce_entities(state.entities, action),
-        context=action.context,
-        meta=action.meta,
+        time=action.time,
+        randomness=action.randomness,
+        version=action.version,
     )
 
 
@@ -27,12 +28,14 @@ def reduce_entities(old_entities, action):
 
 
 def reduce_entity(entity_type, entity_dict, action):
+    if entity_type == Action:
+        return entity_dict.set(action)
     reducer = ENTITY_REDUCERS[entity_type][action.type]
     adapted_reducer = extracting_data_context(reducer)
     next_entity_dict = adapted_reducer(
         entity_dict=entity_dict,
         data=action.data,
-        context=action.context,
+        context={}  # TODO: find out how to pass context (if needed)
     )
     return next_entity_dict
 

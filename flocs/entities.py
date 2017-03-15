@@ -3,6 +3,16 @@
 from collections import namedtuple
 
 
+Action = namedtuple('Action', [
+    'action_id',
+    'type',
+    'data',
+    'time',
+    'randomness',
+    'version',
+])
+
+
 Student = namedtuple('Student', [
     'student_id',
     'last_task_session_id',

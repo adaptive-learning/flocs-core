@@ -5,44 +5,15 @@ Future actions include:
     - AttemptTask
     - ReportFlow
 """
-from collections import namedtuple
 from enum import Enum
-from flocs.context import generate_id_if_not_set
-from flocs.meta import META
-
-
-class Action(namedtuple('Action', ['type', 'data', 'context', 'meta'])):
-    """Action represents an event or an interaction in the world we model
-
-    Args:
-        type: one of the finitely many types (ActionType string or None)
-        data: deatils about this specific action
-        context: part of the state changing continuously (e.g. time)
-        meta: information about how to interpret the action (e.g. package version)
-    """
-    __slots__ = ()
-
-    @staticmethod
-    def create(type=None, data=None, context=None):
-        """Create an action with common meta information
-        """
-        # pylint:disable=redefined-builtin
-        return Action(type=type, data=data, context=context, meta=META.copy())
-
-    def at(self, state):
-        """Set action within the context of given state
-
-        >>> from .state import State
-        >>> state = State(entities='e', context='c', meta='m')
-        >>> Action('T', 'D', None, 'M').at(state)
-        Action(type='T', data='D', context='c', meta='M')
-        """
-        return self._replace(context=state.context)
+from flocs.context import dynamic, generate_id_if_not_set
+from flocs import entities
 
 
 class ActionType(str, Enum):
-    """Namespace for available action types constants
+    """ Namespace for available action types
     """
+    nothing_happens = 'nothing-happens'
     create_student = 'create-student'
     start_task = 'start-task'
     solve_task = 'solve-task'
@@ -50,64 +21,107 @@ class ActionType(str, Enum):
     see_instruction = 'see-instruction'
 
 
+def create(type=ActionType.nothing_happens, data=None, context=dynamic):
+    """ Create a new action
+
+    Usually, you will only want to pass type and data, but you can also
+    provide action_id and factories for time and randomness.
+    """
+    # TODO: check that type is valid
+    # TODO: enforce fixed actions structure (see CreateStudent below)
+    action = entities.Action(
+        action_id=context.new_id(),
+        type=type,
+        data=add_auto_fields(type, data, generate_id=context.new_id),
+        time=context.time,
+        randomness=context.randomness,
+        version=context.version,
+    )
+    return action
+
+
+def add_auto_fields(type, data, generate_id):
+    enriched_data = {**data} if data else {}
+    auto_fields = {
+        ActionType.nothing_happens: (),
+        ActionType.create_student: ('student_id',),
+        ActionType.start_task: ('task_session_id',),
+        ActionType.solve_task: (),
+        ActionType.give_up_task: (),
+        ActionType.see_instruction: ('seen_instruction_id',)
+    }[type]
+    for auto_field in auto_fields:
+        enriched_data[auto_field] = generate_id()
+    return enriched_data
+
+
+# Consider more rigid and explicit structure of data fields, sth like:
+#
+# class CreateStudent(Action):
+#     """A new student exists in the world
+#     """
+#     student_id = AutoField()
+
+
+# Follows legacy code, TODO: refactor tests and flocs-web, so that these are not needed
+
 def create_student(student_id=None):
     """A new student exists in the world
     """
-    return Action.create(
+    return create(
         type=ActionType.create_student,
         data={
             'student_id': generate_id_if_not_set(student_id),
-        },
-    )
+        })
 
 
 def start_task(student_id, task_id, task_session_id=None):
     """A student starts working on a task
     """
-    return Action.create(
+    return create(
         type=ActionType.start_task,
         data={
             'task_session_id': generate_id_if_not_set(task_session_id),
             'student_id': student_id,
             'task_id': task_id,
-        },
-    )
+        })
 
 
 def solve_task(task_session_id):
     """A student has solved a task
     """
-    return Action.create(
+    return create(
         type=ActionType.solve_task,
         data={
             'task_session_id': task_session_id,
-        },
-    )
+        })
 
 
 def give_up_task(task_session_id):
     """A student has given up a task
     """
-    return Action.create(
+    return create(
         type=ActionType.give_up_task,
         data={
             'task_session_id': task_session_id,
-        },
-    )
+        })
 
 
 def see_instruction(student_id, instruction_id, seen_instruction_id=None):
     """ Student has seen instruction
     """
-    return Action.create(
+    return create(
         type=ActionType.see_instruction,
         data={
             'seen_instruction_id': generate_id_if_not_set(seen_instruction_id),
             'student_id': student_id,
             'instruction_id': instruction_id,
-        },
-    )
+        })
 
 
-
-EMPTY_ACTION = Action.create()
+def nothing_happens():
+    """ Nothing particular happened (but time has passed)
+    """
+    return create(
+        type=ActionType.nothing_happens,
+        data={})

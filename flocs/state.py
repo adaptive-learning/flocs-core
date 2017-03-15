@@ -5,24 +5,14 @@ import re
 from collections import namedtuple, ChainMap
 from collections.abc import Mapping
 from .data import blocks, instructions, levels, toolboxes, categories, tasks
-from .entities import Block, Instruction, Level, Toolbox, Category, Task
+from .entities import Action, Block, Instruction, Level, Toolbox, Category, Task
 from .entities import Student, TaskSession, SeenInstruction
-from .meta import META
 
 
-class State(namedtuple('State', ['entities', 'context', 'meta'])):
-    """Represents state of the world at a specific moment
-
-    Attributes:
-        entities - nested mapping: entity type -> id -> entity
-        context - mapping for values changing continuously
-        meta - mapping for information how to interpret the state
+class State(namedtuple('State', ['entities', 'time', 'randomness', 'version'])):
+    """ State of the world at a specific moment
     """
     __slots__ = ()
-
-    @staticmethod
-    def create(entities, context=None):
-        return State(entities=entities, context=context, meta=META)
 
 
 class EntityMap(Mapping):
@@ -131,6 +121,7 @@ def get_operator(query_type):
 
 def create_static_entities():
     return {
+        Action: EntityMap(),
         Student: EntityMap(),
         SeenInstruction: EntityMap(),
         TaskSession: EntityMap(),
