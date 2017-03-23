@@ -2,7 +2,6 @@
 """
 
 from datetime import datetime, timedelta
-from random import randint
 from flocs.context import dynamic, Context, StaticContext, SimulationContext
 from flocs.context import generate_id_if_not_set
 
@@ -29,9 +28,24 @@ class TestStaticContext(TestContext):
     def test_fixed_time(self):
         assert self.context.time == self.context.time
 
-    def test_new_id_sequence(self):
+    def test_fixed_new_id(self):
         assert self.context.new_id() == 0
-        assert self.context.new_id() == 1
+        assert self.context.new_id() == 0
+
+
+class TestStaticContextWithParameters(TestContext):
+    context = StaticContext(time=0, randomness=1, new_id=2)
+
+    def test_fixed_time(self):
+        assert self.context.time == 0
+        assert self.context.time == 0
+
+    def test_fixed_randomness(self):
+        assert self.context.randomness == 1
+        assert self.context.randomness == 1
+
+    def test_fixed_new_id(self):
+        assert self.context.new_id() == 2
         assert self.context.new_id() == 2
 
 
@@ -49,6 +63,11 @@ class TestSimulationContext(TestContext):
         t1 = self.context.time
         t2 = self.context.time
         assert t2 - t1 == timedelta(minutes=10)
+
+    def test_new_id_sequence(self):
+        assert self.context.new_id() == 0
+        assert self.context.new_id() == 1
+        assert self.context.new_id() == 2
 
 
 def test_generate_id_if_not_set_when_set():

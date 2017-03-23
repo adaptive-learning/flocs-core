@@ -5,9 +5,10 @@ import re
 
 @singledispatch
 def camel_to_snake_case(name):
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    snake_case_name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-    return snake_case_name
+    partially_underscored = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    fully_underscored = re.sub('([a-z0-9])([A-Z])', r'\1_\2', partially_underscored)
+    return fully_underscored.lower()
+
 
 @camel_to_snake_case.register(dict)
 def _camel_to_snake_case(mapping):

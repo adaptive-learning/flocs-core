@@ -21,9 +21,6 @@ class Context:
     def __init__(self):
         self.version = __version__
 
-    def new_id(self):
-        return uuid4()
-
     @property
     def time(self):
         return datetime.now()
@@ -32,27 +29,31 @@ class Context:
     def randomness(self):
         return randint(a=0, b=2**30)
 
+    def new_id(self):
+        return uuid4()
+
 
 class StaticContext(Context):
     """ Static context for tests with non-changing time
     """
-    fixed_time = datetime(1, 1, 1)
-    fixed_randomness = 0
+    default_time = datetime(1, 1, 1)
 
-    def __init__(self):
+    def __init__(self, time=default_time, randomness=0, new_id=0):
         super().__init__()
-        self._id_generator = count()
-
-    def new_id(self):
-        return next(self._id_generator)
+        self._time = time
+        self._randomness = randomness
+        self._new_id = new_id
 
     @property
     def time(self):
-        return self.fixed_time
+        return self._time
 
     @property
     def randomness(self):
-        return self.fixed_randomness
+        return self._randomness
+
+    def new_id(self):
+        return self._new_id
 
 
 
@@ -67,6 +68,7 @@ class SimulationContext(StaticContext):
         self._time_step = time_step
         self._time = initial_time
         self._randomness = randomness
+        self._id_generator = count()
 
     @property
     def time(self):
@@ -77,11 +79,15 @@ class SimulationContext(StaticContext):
     def randomness(self):
         return self._randomness
 
+    def new_id(self):
+        return next(self._id_generator)
+
 
 def generate_id_if_not_set(maybe_id, generator=uuid4):
     just_id = maybe_id if maybe_id is not None else generator()
     return just_id
 
 
-# default dynamic context instance
+# default immutable context instances
 dynamic = Context()
+static = StaticContext()
