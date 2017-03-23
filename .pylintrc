@@ -3,7 +3,8 @@ disable=I,
     missing-docstring,
     redefined-outer-name,
     redefined-builtin,
-    no-self-use
+    no-self-use,
+    too-few-public-methods
 
 [REPORTS]
 reports=no

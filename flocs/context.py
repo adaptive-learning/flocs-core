@@ -9,6 +9,14 @@ from flocs import __version__
 
 class Context:
     """ Base class providing (potentially dynamic) context like time and new IDs
+
+    Attributes:
+        - version
+        - time
+        - randomness
+
+    Methods:
+        - new_id
     """
     def __init__(self):
         self.version = __version__
