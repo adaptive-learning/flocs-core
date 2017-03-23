@@ -36,6 +36,9 @@ class Context:
 class StaticContext(Context):
     """ Static context for tests with non-changing time
     """
+    fixed_time = datetime(1, 1, 1)
+    fixed_randomness = 0
+
     def __init__(self):
         super().__init__()
         self._id_generator = count()
@@ -45,11 +48,11 @@ class StaticContext(Context):
 
     @property
     def time(self):
-        return datetime(1, 1, 1)
+        return self.fixed_time
 
     @property
     def randomness(self):
-        return 0
+        return self.fixed_randomness
 
 
 
