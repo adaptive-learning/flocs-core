@@ -2,20 +2,28 @@
 """
 from collections import ChainMap
 from flocs.state import State
-from flocs.state import STATIC_ENTITIES
+from flocs.state import static_entities
 from flocs.context import STATIC_CONTEXT
 from flocs.entities import TaskSession, Task, Student
 from flocs.tests.fixtures_entities import task_sessions_dict, tasks_dict, students_dict
 
+w0 = State.build(
+    StaticContext(),
+    static_entities
+)
+
+
+w1 = w0.then(
+    task_sessions_dict('ts1', 'ts2'),
+)
 
 STATES = {
     's0': State.create(
-        entities=ChainMap({}, STATIC_ENTITIES),
-        context=STATIC_CONTEXT,
+        StaticContext(),
+        static_entities,
     ),
     's1': State.create(
         entities=ChainMap({
-            TaskSession: task_sessions_dict('ts1', 'ts2'),
         }, STATIC_ENTITIES),
         context=STATIC_CONTEXT,
     ),

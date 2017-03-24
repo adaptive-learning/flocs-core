@@ -5,6 +5,7 @@ lazy-object-proxy==1.2.2
 mccabe==0.5.2
 py==1.4.31
 pylint==1.6.4
+pyrsistent==0.12.1
 pytest==2.9.2
 six==1.10.0
 wrapt==1.10.8

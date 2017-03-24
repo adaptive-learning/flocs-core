@@ -3,20 +3,8 @@
 from collections import defaultdict, ChainMap
 from inspect import signature
 from . import entities
-from .state import State
 from .actions import ActionType
 from .entities import Action, Student, TaskSession, SeenInstruction
-
-
-def reduce_state(state, action):
-    """Reduce the whole state of the world
-    """
-    return State(
-        entities=reduce_entities(state.entities, action),
-        time=action.time,
-        randomness=action.randomness,
-        version=action.version,
-    )
 
 
 def reduce_entities(old_entities, action):

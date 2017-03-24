@@ -1,3 +1,4 @@
+from pyrsistent import pmap
 from flocs import entities
 from flocs.context import dynamic
 from flocs.utils.names import kebab_to_snake_case, camel_to_kebab_case
@@ -21,13 +22,20 @@ class BaseAction(entities.Action):
 
     @classmethod
     def from_data(cls, data, context=dynamic):
+        """  Creates entities.Action from data
+
+        Note that it only uses the specific action class as an action creator,
+        but it returns plain entities.Action eventually (which is necessary for
+        reducers to work). TODO: Make it explicit, that these classes are just
+        action-creators (deserializers), but not the actions themselves.
+        """
         snaked_data = kebab_to_snake_case(data)
         complete_data = cls.add_auto_fields(snaked_data, context)
         cls.validate_data(complete_data)
-        return cls(
+        return entities.Action(
             action_id=context.new_id(),
             type=cls.get_type_name(),
-            data=complete_data,
+            data=pmap(complete_data),
             time=context.time,
             randomness=context.randomness,
             version=context.version,

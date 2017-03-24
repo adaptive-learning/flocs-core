@@ -5,7 +5,7 @@ from functools import partial
 import random
 from operator import attrgetter
 from flocs.entities import Student, Task, TaskSession, SeenInstruction
-from flocs.data.levels import levels
+from flocs.data import levels
 
 
 StudentInfo = namedtuple('StudentInfo', [
@@ -26,8 +26,7 @@ def select_student_info(state, student_id):
 def select_random_task(state, student_id):
     del student_id  # intentionally unused argument
     tasks = state.entities[Task]
-    randomness_seed = state.context['randomness']
-    random.seed(randomness_seed)
+    random.seed(state.randomness)
     task_ids = list(tasks.keys())
     selected_task_id = random.choice(task_ids)
     return selected_task_id
@@ -78,8 +77,7 @@ def select_task_fixed_then_random(state, student_id):
             solved=True)
         solved_task_ids = [ts.task_id for ts in solved_task_sessions.values()]
         unsolved_task_ids = [t_id for t_id in task_ids if t_id not in solved_task_ids]
-        randomness_seed = state.context['randomness']
-        random.seed(randomness_seed)
+        random.seed(state.randomness)
         if unsolved_task_ids:
             selected_task_id = random.choice(unsolved_task_ids)
             return selected_task_id
