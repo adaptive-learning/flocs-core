@@ -1,11 +1,11 @@
 """ Unit tests for flocs.state
 """
 from collections import namedtuple
-from pyrsistent import pmap
 from flocs import actions
 from flocs.context import StaticContext
-from flocs.entities import Action, Student
-from flocs.state import empty, State
+from flocs.entities import Action, Student, TaskSession
+from flocs.entity_map import EntityMap
+from flocs.state import empty, State, reduce_entity_map, reduce_state
 
 
 # simple entity class for testing and a few instances
@@ -67,3 +67,24 @@ def test_build():
 #    assert state_a == State(entities=pmap({1: [11, 12]}))
 #    assert state_b == State(entities=pmap({1: [11, 13], 2: [25, 26]}))
 #    assert state_c == State(entities=pmap({1: [11, 12, 13], 2: [25, 26]}))
+
+
+def test_reduce_entity_map():
+    task_sessions = EntityMap.from_list([
+        TaskSession(task_session_id=14, student_id=37, task_id=67, solved=False, given_up=False)
+    ])
+    action = actions.create(type='solve-task', data={'task-session-id': 14})
+    next_entity_map = reduce_entity_map(TaskSession, task_sessions, action)
+    expected_entity_map = EntityMap.from_list([
+        TaskSession(task_session_id=14, student_id=37, task_id=67, solved=True, given_up=False)
+    ])
+    assert next_entity_map == expected_entity_map
+
+
+def test_reduce_state():
+    a1 = actions.create(type='create-student', data={'student-id': 20})
+    next_state = reduce_state(empty, a1)
+    assert set(next_state.entities[Action].values()) == {a1}
+    students = list(next_state.entities[Student].values())
+    assert len(students) == 1
+    assert students[0].student_id == 20

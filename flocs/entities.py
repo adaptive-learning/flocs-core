@@ -68,15 +68,6 @@ TaskSession = namedtuple('TaskSession', [
 ])
 
 
-TaskStats = namedtuple('TaskStats', [
-    'task_stats_id',
-    'task_id',
-    'started_count',
-    'solved_count',
-    'given_up_count',
-])
-
-
 Instruction = namedtuple('Instruction', [
     'instruction_id',
 ])

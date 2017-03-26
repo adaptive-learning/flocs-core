@@ -12,7 +12,15 @@ StudentInfo = namedtuple('StudentInfo', [
 ])
 
 
-def select_student_info(state, student_id):
+TaskStats = namedtuple('TaskStats', [
+    'task_id',
+    'started_count',
+    'solved_count',
+    'given_up_count',
+])
+
+
+def get_student_info(state, student_id):
     info = StudentInfo(
         student_id=student_id,
         seen_instructions=state.entities[SeenInstruction].filter(student_id=student_id),
@@ -32,3 +40,7 @@ def get_unspent_credits(state, student_id):
     student = state.entities[Student][student_id]
     level = get_level(state, student_id)
     return student.credits - level.credits
+
+
+def get_task_stats(state, task_id):
+    raise NotImplementedError

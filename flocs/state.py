@@ -1,22 +1,17 @@
 """ Representation of a world state
 
-State composition:
-    - state.empty
+State composition examples:
     - state.empty + context.static
     - state.empty + Student(...) + Action(...)
-    - state.static + SimulationContext()
-    - state.static + students
-    - etc.
-
+    - state.default_static + SimulationContext(...) + students
 """
 from collections import namedtuple, Iterable
 from pyrsistent import pmap
 from .data import blocks, instructions, levels, toolboxes, categories, tasks
-from .entities import Action, Block, Instruction, Level, Toolbox, Category, Task
+from .entities import Block, Instruction, Level, Toolbox, Category, Task
 from .entities import Action, Student, TaskSession, SeenInstruction
 from .entity_map import EntityMap
-from .reducers import reduce_entities
-from . import context
+from . import context, reducers
 
 
 class State(namedtuple('State', ['entities', 'time', 'randomness', 'version'])):
@@ -93,6 +88,22 @@ def reduce_state(state, action):
         randomness=action.randomness,
         version=action.version)
     return new_state
+
+
+def reduce_entities(old_entities, action):
+    new_entities = pmap({
+        entity_class: reduce_entity_map(entity_class, entity_map, action)
+        for entity_class, entity_map in old_entities.items()
+    })
+    return new_entities
+
+
+def reduce_entity_map(entity_class, entity_map, action):
+    if entity_class == Action:
+        return entity_map.set(action)
+    reducer = reducers.get(entity_class, action.type)
+    next_entity_map = reducer(entity_map, action)
+    return next_entity_map
 
 
 default_entities = pmap({

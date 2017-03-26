@@ -1,187 +1,157 @@
-"""Unit tests for reducers
+""" Unit tests for reducers
 """
+# pylint: disable=no-value-for-parameter, unused-argument
+
 from flocs import actions, reducers
-from flocs.entities import Student, TaskSession, SeenInstruction
-from flocs.reducers import reduce_state, extracting_data_context, extract_parameters
-from flocs.state import EntityMap
-from flocs.tests.fixtures_entities import ENTITIES, task_sessions_dict, task_stats_dict
-from flocs.tests.fixtures_states import STATES, create_state
+from flocs.actions import ActionType
+from flocs.entities import Action, Student, TaskSession, SeenInstruction
+from flocs.entity_map import EntityMap
+from flocs.reducers import reducer, extract_parameters
+#from flocs.tests.fixtures_entities import ENTITIES, task_sessions_dict, task_stats_dict
+#from flocs.tests.fixtures_states import STATES, create_state
 
 
-def test_extracting_data_context_signature():
-    @extracting_data_context
-    def subreducer(dummy_substate, dummy_arg1, dummy_arg2):
+def test_get():
+    assert reducers.get(Student, ActionType.create_student) == reducers.create_student
+
+
+def test_reducer_decorator_signature():
+    @reducer(None, None)
+    def subreducer(substate, arg1, arg2):
         pass
-    assert extract_parameters(subreducer, skip=1) == ('data', 'context')
+    assert extract_parameters(subreducer, skip=1) == ('action',)
 
 
-def test_extracting_data_context_values_from_data():
-    @extracting_data_context
-    def subreducer(some_substate, a, c):
-        return ('result', some_substate, a, c)
-    result = subreducer('S', data={'a': 1, 'b': 2, 'c': 3}, context={})
-    assert result == ('result', 'S', 1, 3)
+def test_reduce_decorator_passing_data():
+    @reducer(None, 't')
+    def subreducer(substate, a, c, context):
+        assert a == 1
+        assert c == 3
+        assert context.time == 10
+        assert context.randomness == 20
+        return substate
+    action = Action(action_id=1, type='t', data={'a': 1, 'b': 2, 'c': 3},
+                    time=10, randomness=20, version=30)
+    em = EntityMap()
+    result = subreducer(em, action)
+    assert result is em
 
 
 def test_extract_parameters():
     def tmp_function(students, student_id, last_task_session_id=0):
         pass
     fn = tmp_function
-    parameters = reducers.extract_parameters(fn, skip=1)
+    parameters = extract_parameters(fn, skip=1)
     expected_parameters = ('student_id', 'last_task_session_id')
     assert parameters == expected_parameters
 
 
-# --------------------------------------------------------------------------
-
-
-def test_identity_defaultdict():
-    def tmp_function():
-        return 5
-    initial_dict = {'a': 1}
-    processed_dict = reducers.identity_defaultdict(initial_dict)
-    assert processed_dict == initial_dict
-    assert processed_dict['b'](tmp_function) == tmp_function
-
-
-def test_identity_reducer():
-    state = STATES['s3']
-    assert reducers.identity_reducer(state) == state
-
-
-# --------------------------------------------------------------------------
-
-
 def test_create_student():
-    students = EntityMap.from_list([
-        Student(student_id=13, last_task_session_id=81, credits=10)
-    ])
-    next_students = reducers.create_student(students, student_id=37)
-    expected_students = EntityMap.from_list([
-        Student(student_id=13, last_task_session_id=81, credits=10),
-        Student(student_id=37, last_task_session_id=None, credits=0)
-    ])
+    # let
+    s1 = Student(student_id=13, last_task_session_id=81, credits=10)
+    students = EntityMap.from_list([s1])
+    # then
+    action = actions.create(type='create-student', data={'student-id': 37})
+    next_students = reducers.create_student(students, action)
+    # expect
+    s2 = Student(student_id=37, last_task_session_id=None, credits=0)
+    expected_students = EntityMap.from_list([s1, s2])
     assert next_students == expected_students
 
 
 def test_update_last_task_session_id():
-    s3 = STATES['s3']
-    stud = ENTITIES[94]
-    new_students = reducers.update_last_task_session_id(s3.entities[Student], 'new_ts_id', stud.student_id, 'some_task_id')
-    assert new_students[stud.student_id].last_task_session_id == 'new_ts_id'
+    students = EntityMap.from_list([
+        Student(student_id=13, last_task_session_id=81, credits=0),
+    ])
+    action = actions.create(type='start-task',
+                            data={'task-session-id': 92, 'student-id': 13, 'task-id': 20})
+    next_students = reducers.update_last_task_session_id(students, action)
+    expected_students = EntityMap.from_list([
+        Student(student_id=13, last_task_session_id=92, credits=0),
+    ])
+    assert next_students == expected_students
 
 
 def test_create_task_session():
-    ts3 = ENTITIES['ts3']
-    next_task_sessions = reducers.create_task_session(
-        task_sessions=task_sessions_dict('ts1', 'ts2'),
-        student_id=ts3.student_id,
-        task_id=ts3.task_id,
-        task_session_id=ts3.task_session_id,
-    )
-    assert next_task_sessions == task_sessions_dict('ts1', 'ts2', 'ts3')
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28, solved=False, given_up=False)
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=False, given_up=False)
+    task_sessions = EntityMap.from_list([ts1, ts2])
+    action = actions.create(type='start-task',
+                            data={'task-session-id': 92, 'student-id': 13, 'task-id': 50})
+    next_task_sessions = reducers.create_task_session(task_sessions, action)
+    expected_task_sessions = EntityMap.from_list([
+        ts1, ts2,
+        TaskSession(task_session_id=92, student_id=13, task_id=50, solved=False, given_up=False),
+    ])
+    assert next_task_sessions == expected_task_sessions
 
 
 def test_solve_task_session():
-    next_task_sessions = reducers.solve_task_session(
-        task_sessions=task_sessions_dict('ts1', 'ts2'),
-        task_session_id=ENTITIES['ts2'].task_session_id,
-    )
-    assert next_task_sessions == task_sessions_dict('ts1', 'ts2s')
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28, solved=False, given_up=False)
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=False, given_up=False)
+    task_sessions = EntityMap.from_list([ts1, ts2])
+    action = actions.create(type='solve-task', data={'task-session-id': 14})
+    next_task_sessions = reducers.solve_task_session(task_sessions, action)
+    ts2s = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=True, given_up=False)
+    expected_task_sessions = EntityMap.from_list([ts1, ts2s])
+    assert next_task_sessions == expected_task_sessions
 
 
 def test_give_up_task_session():
-    next_task_sessions = reducers.give_up_task_session(
-        task_sessions=task_sessions_dict('ts1', 'ts2'),
-        task_session_id=ENTITIES['ts2'].task_session_id,
-    )
-    assert next_task_sessions == task_sessions_dict('ts1', 'ts2g')
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28, solved=False, given_up=False)
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=False, given_up=False)
+    task_sessions = EntityMap.from_list([ts1, ts2])
+    action = actions.create(type='give-up-task', data={'task-session-id': 14})
+    next_task_sessions = reducers.give_up_task_session(task_sessions, action)
+    ts2g = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=False, given_up=True)
+    expected_task_sessions = EntityMap.from_list([ts1, ts2g])
+    assert next_task_sessions == expected_task_sessions
 
-
-# ---------------------------------------------------------------------------
-
-
-def test_reduce_entity():
-    ts2 = ENTITIES['ts2']
-    next_entity_dict = reducers.reduce_entity(
-        TaskSession,
-        task_sessions_dict('ts1', 'ts2'),
-        action=actions.solve_task(task_session_id=ts2.task_session_id),
-    )
-    assert next_entity_dict == task_sessions_dict('ts1', 'ts2s')
-
-
-def test_reduce_entities():
-    action = actions.solve_task(task_session_id=14)
-    next_entities = reducers.reduce_entities(STATES['s1'].entities, action)
-    assert next_entities == STATES['s2'].entities
-
-
-def test_reduce_entities_last_ts_id_updating():
-    action = actions.start_task(student_id=48, task_id=67, task_session_id=14)
-    next_entities = reducers.reduce_entities(STATES['s4'].entities, action)
-    assert next_entities[Student][48] == ENTITIES['s_not_new']
-
-
-def test_reduce_state():
-    action = actions.solve_task(task_session_id=14).at(STATES['s1'])
-    next_state = reduce_state(STATES['s1'], action)
-    assert next_state == STATES['s2']
-
-
-# ---------------------------------------------------------------------------
 
 def test_see_instruction():
-    s1 = create_state(Student(student_id=4, last_task_session_id=None, credits=0))
-    action = actions.see_instruction(
-        student_id=4, instruction_id='block.fly', seen_instruction_id=1).at(s1)
-    next_state = reduce_state(s1, action)
-    s2 = create_state(
-        Student(student_id=1, last_task_session_id=None, credits=0),
-        SeenInstruction(student_id=4, instruction_id='block.fly', seen_instruction_id=1))
-    assert next_state.entities[SeenInstruction] == s2.entities[SeenInstruction]
+    seen_instructions = EntityMap.from_list([
+        SeenInstruction(seen_instruction_id=10, student_id=1, instruction_id=2)
+    ])
+    action = actions.create(type='see-instruction',
+                            data={'seen-instruction-id': 15, 'student-id': 1, 'instruction-id': 7})
+    next_seen_instructions = reducers.create_or_update_seen_instruction(seen_instructions, action)
+    expected_seen_instructions = EntityMap.from_list([
+        SeenInstruction(seen_instruction_id=10, student_id=1, instruction_id=2),
+        SeenInstruction(seen_instruction_id=15, student_id=1, instruction_id=7),
+    ])
+    assert next_seen_instructions == expected_seen_instructions
+
+
+def test_see_instruction_more_students():
+    seen_instructions = EntityMap.from_list([
+        SeenInstruction(seen_instruction_id=10, student_id=1, instruction_id=2)
+    ])
+    action = actions.create(type='see-instruction',
+                            data={'seen-instruction-id': 15, 'student-id': 8, 'instruction-id': 2})
+    next_seen_instructions = reducers.create_or_update_seen_instruction(seen_instructions, action)
+    expected_seen_instructions = EntityMap.from_list([
+        SeenInstruction(seen_instruction_id=10, student_id=1, instruction_id=2),
+        SeenInstruction(seen_instruction_id=15, student_id=8, instruction_id=2),
+    ])
+    assert next_seen_instructions == expected_seen_instructions
 
 
 def test_see_same_instruction_again():
-    s1 = create_state(Student(student_id=4, last_task_session_id=None, credits=0))
-    action1 = actions.see_instruction(
-        student_id=4, instruction_id='block.fly', seen_instruction_id=1).at(s1)
-    action2 = actions.see_instruction(
-        student_id=4, instruction_id='block.fly', seen_instruction_id=2).at(s1)
-    next_state = reduce_state(reduce_state(s1, action1), action2)
-    s2 = create_state(
-        Student(student_id=1, last_task_session_id=None, credits=0),
-        SeenInstruction(student_id=4, instruction_id='block.fly', seen_instruction_id=1))
-    assert next_state.entities[SeenInstruction] == s2.entities[SeenInstruction]
+    si = SeenInstruction(seen_instruction_id=10, student_id=1, instruction_id=2)
+    seen_instructions = EntityMap.from_list([si])
+    action = actions.create(type='see-instruction',
+                            data={'seen-instruction-id': 15, 'student-id': 1, 'instruction-id': 2})
+    next_seen_instructions = reducers.create_or_update_seen_instruction(seen_instructions, action)
+    assert next_seen_instructions == seen_instructions
 
 
-def test_see_multiple_instructions():
-    s1 = create_state(Student(student_id=4, last_task_session_id=None, credits=0))
-    action1 = actions.see_instruction(
-        student_id=4, instruction_id='block.fly', seen_instruction_id=1).at(s1)
-    action2 = actions.see_instruction(
-        student_id=4, instruction_id='block.shoot', seen_instruction_id=2).at(s1)
-    next_state = reduce_state(reduce_state(s1, action1), action2)
-    s2 = create_state(
-        Student(student_id=1, last_task_session_id=None, credits=0),
-        SeenInstruction(student_id=4, instruction_id='block.fly', seen_instruction_id=1),
-        SeenInstruction(student_id=4, instruction_id='block.shoot', seen_instruction_id=2))
-    assert next_state.entities[SeenInstruction] == s2.entities[SeenInstruction]
+def test_identity_defaultdict():
+    initial_dict = {'a': 1}
+    processed_dict = reducers.identity_defaultdict(initial_dict)
+    assert processed_dict == initial_dict
+    assert processed_dict['b']('S', 'a') == 'S'
 
 
-def test_increase_started_count():
-    stats = task_stats_dict('stat1', 'stat2')
-    new_stats = reducers.increase_started_count(stats=stats, task_id=28)
-    assert new_stats == task_stats_dict('stat1st', 'stat2')
-
-
-def test_increase_solved_count():
-    stats = task_stats_dict('stat1', 'stat2')
-    new_stats = reducers.increase_solved_count(stats=stats, task_id=28)
-    assert new_stats == task_stats_dict('stat1so', 'stat2')
-
-
-def test_increase_given_up_count():
-    stats = task_stats_dict('stat1', 'stat2')
-    new_stats = reducers.increase_given_up_count(stats=stats, task_id=28)
-    assert new_stats == task_stats_dict('stat1g', 'stat2')
+def test_identity_reducer():
+    state = {'x': [10, 20]}
+    assert reducers.identity_reducer(state, 'action') == {'x': [10, 20]}
