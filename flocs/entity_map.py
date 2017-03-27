@@ -7,12 +7,13 @@ from .utils.names import camel_to_snake_case
 class EntityMap(Mapping):
     """ Collection of all entities of given type (i.e., 1 entity table)
     """
-    def __init__(self, *maps, state=None):
+    def __init__(self, *maps, state=None, ordering=None):
         """ Initialize with provided map(s)
             Reference to state is only needed for complex filtering tasks that
             uses entities of other types
         """
         self.chain_map = ChainMap(*maps)
+        self.ordering = ordering
         self.state = state
 
     @classmethod
@@ -23,13 +24,22 @@ class EntityMap(Mapping):
         return self.chain_map[entity_id]
 
     def __iter__(self):
-        return iter(self.chain_map)
+        if self.ordering is None:
+            return iter(self.chain_map)
+        key = lambda pk: getattr(self[pk], self.ordering)
+        return iter(sorted(self.chain_map, key=key))
 
     def __len__(self):
         return len(self.chain_map)
 
     def __repr__(self):
         return 'EntityMap({data})'.format(data=self.chain_map)
+
+    def __str__(self):
+        msg = '{entity_class} entities:\n{entities}'.format(
+            entity_class=self.entity_class.__name__,
+            entities='\n'.join('* ' + str(e) for e in self.values()))
+        return msg
 
     @property
     def entity_class(self):
@@ -77,6 +87,9 @@ class EntityMap(Mapping):
             if self._test_entity(entity, **kwargs)
         }
         return EntityMap(filtered_dict)
+
+    def order_by(self, field):
+        return EntityMap(self, ordering=field)
 
     def _test_entity(self, entity, **kwargs):
         """ Return True if a given entity satisfies condition by **kwargs

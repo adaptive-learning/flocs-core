@@ -97,3 +97,9 @@ class TestEntityMap:
     def test_entity_class_property(self):
         entity_map = self.create_entity_map(e1, e2, e3)
         assert entity_map.entity_class == Entity
+
+    def test_order_by(self):
+        entity_map = self.create_entity_map(e2, e3).order_by('a')
+        assert list(entity_map) == ['k', 'j']
+        entity_map = self.create_entity_map(e2, e3).order_by('b')
+        assert list(entity_map) == ['j', 'k']

@@ -36,7 +36,6 @@ class Store:
     def stage_action(self, action):
         action_with_context = action.add_context(self.context)
         self.actions.append(action_with_context)
-        print('action with context', action_with_context)
         return action_with_context
 
     def commit(self):
