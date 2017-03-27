@@ -7,8 +7,6 @@ from flocs.actions import ActionType
 from flocs.entities import Action, Student, TaskSession, SeenInstruction
 from flocs.entity_map import EntityMap
 from flocs.reducers import reducer, extract_parameters
-#from flocs.tests.fixtures_entities import ENTITIES, task_sessions_dict, task_stats_dict
-#from flocs.tests.fixtures_states import STATES, create_state
 
 
 def test_get():

@@ -3,8 +3,7 @@
 from contextlib import contextmanager
 from functools import reduce
 from .context import dynamic
-from .reducers import reduce_state
-from .state import State
+from .state import empty, reduce_state
 
 
 class Store:
@@ -13,14 +12,9 @@ class Store:
     State is changing due to time (context) and actions (entities),
     store describes how the state evolves and how it looks right now
     """
-    def __init__(self, entities=None, context=dynamic, hooks=None):
+    def __init__(self, state=empty, context=dynamic, hooks=None):
         self.context = context
-        self.initial_state = State(
-            entities=entities or {},
-            time=context.time,
-            randomness=context.randomness,
-            version=context.version,
-        )
+        self.initial_state = state + context
         self.actions = []
         self.hooks = hooks or self.Hooks()
 
@@ -40,7 +34,10 @@ class Store:
         return compute_diff(self.initial_state, self.state)
 
     def stage_action(self, action):
-        self.actions.append(action)
+        action_with_context = action.add_context(self.context)
+        self.actions.append(action_with_context)
+        print('action with context', action_with_context)
+        return action_with_context
 
     def commit(self):
         """Squash all actions to create new initial state

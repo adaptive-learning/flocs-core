@@ -19,8 +19,8 @@ class State(namedtuple('State', ['entities', 'time', 'randomness', 'version'])):
     """
     __slots__ = ()
 
-    def __new__(cls, entities=pmap(), time=None, randomness=None, version=None):
-        return super().__new__(cls, entities, time, randomness, version)
+    def __new__(cls, entities=None, time=None, randomness=None, version=None):
+        return super().__new__(cls, pmap(entities), time, randomness, version)
 
     @classmethod
     def build(cls, *components):

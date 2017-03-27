@@ -3,14 +3,19 @@
 from collections import namedtuple
 
 
-Action = namedtuple('Action', [
-    'action_id',
-    'type',
-    'data',
-    'time',
-    'randomness',
-    'version',
-])
+
+class Action(namedtuple('Action', ['action_id', 'type', 'data',
+                                   'time', 'randomness', 'version'])):
+    """ Describes an atomic event in the world we model
+    """
+    __slots__ = ()
+
+    def add_context(self, context):
+        action_with_context = self._replace(
+            time=context.time,
+            randomness=context.randomness,
+            version=context.version)
+        return action_with_context
 
 
 Student = namedtuple('Student', [

@@ -83,3 +83,6 @@ class ActionType(str, Enum):
             'give-up-task': GiveUpTask,
             'see-instruction': SeeInstruction,
         }[self.value]
+
+
+empty = create(type='nothing-happens', data={})

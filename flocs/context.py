@@ -66,14 +66,15 @@ class SimulationContext(StaticContext):
                  time_step=timedelta(minutes=1)):
         super().__init__()
         self._time_step = time_step
-        self._time = initial_time
+        self._next_time = initial_time
         self._randomness = randomness
         self._id_generator = count()
 
     @property
     def time(self):
-        self._time += self._time_step
-        return self._time
+        current_time = self._next_time
+        self._next_time += self._time_step
+        return current_time
 
     @property
     def randomness(self):

@@ -1,6 +1,6 @@
 """Entities objects for testing purposes
 """
-from flocs.entities import Task, TaskSession, Student, TaskStats
+from flocs.entities import Task, TaskSession, Student
 from flocs.state import EntityMap
 
 s1 = Student(student_id=1, last_task_session_id=None, credits=0)
@@ -104,41 +104,6 @@ ENTITIES = {
         student_id=94,
         last_task_session_id=None,
         credits=0,
-    ),
-    'stat1': TaskStats(
-        task_stats_id=28,
-        task_id=28,
-        started_count=3,
-        solved_count=1,
-        given_up_count=1,
-    ),
-    'stat1st': TaskStats(
-        task_stats_id=28,
-        task_id=28,
-        started_count=4,
-        solved_count=1,
-        given_up_count=1,
-    ),
-    'stat1so': TaskStats(
-        task_stats_id=28,
-        task_id=28,
-        started_count=3,
-        solved_count=2,
-        given_up_count=1,
-    ),
-    'stat1g': TaskStats(
-        task_stats_id=28,
-        task_id=28,
-        started_count=3,
-        solved_count=1,
-        given_up_count=2,
-    ),
-    'stat2': TaskStats(
-        task_stats_id=67,
-        task_id=67,
-        started_count=5,
-        solved_count=4,
-        given_up_count=0,
     ),
 }
 
