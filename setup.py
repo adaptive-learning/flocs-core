@@ -15,6 +15,7 @@ def main():
             'flocs.tests',
         ],
         install_requires=[
+            'pyrsistent>=0.12<0.13',
         ],
         license='MIT',
     )
