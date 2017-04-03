@@ -9,7 +9,7 @@ from collections import namedtuple, Iterable
 from pyrsistent import pmap
 from .data import blocks, instructions, levels, toolboxes, categories, tasks
 from .entities import Block, Instruction, Level, Toolbox, Category, Task
-from .entities import Action, Student, TaskSession, SeenInstruction
+from .entities import Action, Student, TaskSession, SeenInstruction, Session
 from .entity_map import EntityMap
 from . import context, reducers
 
@@ -97,6 +97,10 @@ class State(namedtuple('State', ['entities', 'time', 'randomness', 'version'])):
         return self.entities[SeenInstruction]
 
     @property
+    def sessions(self):
+        return self.entities[Session]
+
+    @property
     def students(self):
         return self.entities[Student]
 
@@ -149,6 +153,7 @@ default_entities = pmap({
     Student: EntityMap(),
     TaskSession: EntityMap(),
     SeenInstruction: EntityMap(),
+    Session: EntityMap(),
 })
 
 
@@ -164,6 +169,7 @@ empty = State(entities=pmap({
     Student: EntityMap(),
     TaskSession: EntityMap(),
     SeenInstruction: EntityMap(),
+    Session: EntityMap(),
 }))
 default_static = State(entities=default_entities).add_context(context.static)
 default_dynamic = State(entities=default_entities).add_context(context.dynamic)

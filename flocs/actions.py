@@ -40,6 +40,7 @@ class StartTask(BaseAction):
     """
     auto_fields = ['task_session_id']
     required_fields = ['student_id', 'task_id']
+    # TODO: session_id field <-- state.sessions.filter(student_id=student_id).order_by('time_end').last()
 
 
 class SolveTask(BaseAction):

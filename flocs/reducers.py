@@ -5,7 +5,7 @@ from inspect import signature
 from . import entities
 from .actions import ActionType
 from .context import StaticContext
-from .entities import Student, TaskSession, SeenInstruction
+from .entities import Session, Student, TaskSession, SeenInstruction
 
 
 def get(entity_class, action_type):
@@ -23,7 +23,8 @@ def reducer(entity_class, action_type):
     def reducer_decorator(fn):
         # Don't use @wraps, because it would retract new function signature
         def fn_wrapped(entity_map, action):
-            assert action.type == action_type
+            action_types = [action_type] if isinstance(action_type, ActionType) else action_type
+            assert action.type in action_types
             assert entity_map.entity_class == entity_class or not entity_map.entity_class
             context = StaticContext(time=action.time, randomness=action.randomness)
             data_context = ChainMap(action.data, {'context': context})
@@ -38,6 +39,25 @@ def reducer(entity_class, action_type):
 
 def extract_parameters(fn, skip=0):
     return tuple(signature(fn).parameters)[skip:]
+
+
+@reducer(entities.Session, ActionType.start_session)
+def create_session(sessions, session_id, student_id, context):
+    session = Session(
+        session_id=session_id,
+        student_id=student_id,
+        start_time=context.time,
+        end_time=context.time,
+    )
+    return sessions.set(session)
+
+
+##TODO: @reducer(entities.Session, [ActionType.start_task, ActionType.solve_task,
+##                            ActionType.give_up_task, ActionType.see_instruction])
+#@reducer(entities.Session, ActionType.start_task)
+#def prolong_session(sessions, session_id, context):
+#    session = sessions[session_id]._replace(end_time=context.time)
+#    return sessions.set(session)
 
 
 @reducer(entities.Student, ActionType.start_session)
@@ -119,6 +139,13 @@ ALWAYS_IDENTITY = identity_defaultdict()
 # it is made explitic which entities are not changing to get a guarantee that
 # an entity key corresponds to an actual entity (e.g. not just a string)
 _entity_reducer_map = {
+    entities.Session: identity_defaultdict({
+        ActionType.start_session: create_session,
+        # ActionType.start_task: prolong_session,
+        # ActionType.solve_task: prolong_session,
+        # ActionType.give_up_task: prolong_session,
+        # ActionType.see_instruction: prolong_session,
+    }),
     entities.Student: identity_defaultdict({
         ActionType.start_task: update_last_task_session_id,
         ActionType.start_session: create_student_if_new,

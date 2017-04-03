@@ -3,7 +3,6 @@
 from collections import namedtuple
 
 
-
 class Action(namedtuple('Action', ['action_id', 'type', 'data',
                                    'time', 'randomness', 'version'])):
     """ Describes an atomic event in the world we model
@@ -16,6 +15,14 @@ class Action(namedtuple('Action', ['action_id', 'type', 'data',
             randomness=context.randomness,
             version=context.version)
         return action_with_context
+
+
+Session = namedtuple('Session', [
+    'session_id',
+    'student_id',
+    'start_time',
+    'end_time',
+])
 
 
 Student = namedtuple('Student', [
