@@ -4,7 +4,6 @@ Basic example:
 
 ```python
 >>> from flocs import actions
->>> from flocs.entities import Action, TaskSession
 >>> from flocs.store import Store
 >>> from flocs.state import default_dynamic
 
@@ -25,12 +24,12 @@ Action(action_id=UUID(...), type='create-student', ...)
 Action(action_id=UUID(...), type='start-task', ...)
 
 >>> # current state is computed on demand by applying all staged actions to initial state
->>> print(store.state.entities[TaskSession])
+>>> print(store.state.task_sessions)
 TaskSession entities:
 * TaskSession(task_session_id=UUID('...'), student_id=UUID('...'), task_id='three-steps-forward', solved=False, ...)
 
 >>> # entity maps can by filtered and ordered
->>> print(store.state.entities[Action].order_by('time'))
+>>> print(store.state.actions.order_by('time'))
 Action entities:
 * Action(action_id=UUID(...), type='create-student', ...)
 * Action(action_id=UUID(...), type='start-task', ...)

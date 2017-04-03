@@ -6,7 +6,6 @@ Task recommender protocol:
 """
 from collections import namedtuple
 import random
-from .entities import Student, Task, TaskSession
 
 
 Criterion = namedtuple('Criterion', ['weight', 'fn'])
@@ -24,9 +23,8 @@ def randomly(state, student_id):
     """ Select task completely at random
     """
     del student_id  # intentionally unused argument
-    tasks = state.entities[Task]
     random.seed(state.randomness)
-    task_ids = list(tasks.keys())
+    task_ids = list(state.tasks.keys())
     selected_task_id = random.choice(task_ids)
     return selected_task_id
 
@@ -45,11 +43,10 @@ def multicriteria(state, student_id, criteria):
     )
     ```
     """
-    task_ids = state.entities[Task]
     score_task = lambda task_id: sum(
         criterion.weight * criterion.fn(state, student_id, task_id)
         for criterion in criteria)
-    best_task_id = max(task_ids, key=score_task)
+    best_task_id = max(state.tasks, key=score_task)
     return best_task_id
 
 
@@ -63,7 +60,7 @@ def fixed_order(state, student_id, order=default_fixed_order):
     Additional args:
         - order: list of task IDs
     """
-    solved_task_sessions = state.entities[TaskSession].filter(
+    solved_task_sessions = state.task_sessions.filter(
         student_id=student_id,
         solved=True)
     solved_task_ids = {ts.task_id for ts in solved_task_sessions.values()}
@@ -81,8 +78,8 @@ def fixed_then_random(state, student_id):
     try:
         return fixed_order(state, student_id)
     except ValueError:
-        task_ids = [t.task_id for t in state.entities[Task].values()]
-        solved_task_sessions = state.entities[TaskSession].filter(
+        task_ids = list(state.tasks.keys())
+        solved_task_sessions = state.task_sessions.filter(
             student_id=student_id,
             solved=True)
         solved_task_ids = [ts.task_id for ts in solved_task_sessions.values()]
@@ -92,8 +89,8 @@ def fixed_then_random(state, student_id):
             selected_task_id = random.choice(unsolved_task_ids)
             return selected_task_id
         else:
-            last_ts_id = state.entities[Student][student_id].last_task_session_id
-            last_task_id = state.entities[TaskSession][last_ts_id].task_id
+            last_ts_id = state.students[student_id].last_task_session_id
+            last_task_id = state.task_sessions[last_ts_id].task_id
             task_ids.remove(last_task_id)
             selected_task_id = random.choice(task_ids)
             return selected_task_id

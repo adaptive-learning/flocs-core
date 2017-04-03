@@ -4,7 +4,7 @@ from functools import partial
 import pytest
 from flocs import recommendation
 from flocs.context import StaticContext
-from flocs.entities import Task, TaskSession, Student
+from flocs.entities import TaskSession, Student
 from flocs.state import State, empty, default_static
 from .fixtures_entities import s1, t2, t3, t5, t9
 
@@ -63,8 +63,8 @@ def test_default_fixed_order():
 
 def test_fixed_then_random():
     state = default_static + s1
-    unsolved = {task_id for task_id in state.entities[Task]}
-    m = len(state.entities[Task])
+    unsolved = {task_id for task_id in state.tasks}
+    m = len(state.tasks)
     for k in range(m):
         next_task = recommendation.fixed_then_random(state, student_id=1)
         assert next_task in unsolved

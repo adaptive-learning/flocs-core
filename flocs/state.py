@@ -80,6 +80,38 @@ class State(namedtuple('State', ['entities', 'time', 'randomness', 'version'])):
     def reduce(self, action):
         return reduce_state(state=self, action=action)
 
+    @property
+    def actions(self):
+        return self.entities[Action]
+
+    @property
+    def levels(self):
+        return self.entities[Level]
+
+    @property
+    def instructions(self):
+        return self.entities[Instruction]
+
+    @property
+    def seen_instructions(self):
+        return self.entities[SeenInstruction]
+
+    @property
+    def students(self):
+        return self.entities[Student]
+
+    @property
+    def tasks(self):
+        return self.entities[Task]
+
+    @property
+    def task_sessions(self):
+        return self.entities[TaskSession]
+
+    @property
+    def toolboxes(self):
+        return self.entities[Toolbox]
+
 
 def reduce_state(state, action):
     new_state = State(

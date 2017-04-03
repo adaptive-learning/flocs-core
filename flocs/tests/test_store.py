@@ -76,7 +76,8 @@ def test_store_integration(mock_hooks):
         (Student, 1,
          Student(student_id=1, last_task_session_id=0, credits=0)),
         (TaskSession, 0,
-         TaskSession(task_session_id=0, student_id=1, task_id=1, time_start=static.time, time_end=static.time)),
+         TaskSession(task_session_id=0, student_id=1, task_id=1,
+                     time_start=static.time, time_end=static.time)),
     ]
     assert len(mock_hooks.calls) == 1
     assert mock_hooks.calls[0][0] == 'post_commit'
@@ -100,5 +101,5 @@ def test_reducing_action_without_optional_parameters():
     with Store.open(state=empty) as store:
         action = actions.create(type='create-student', data={}, context=static)
         store.stage_action(action)
-    student = list(store.state.entities[Student].values())[0]
+    student = list(store.state.students.values())[0]
     assert student.last_task_session_id is None

@@ -3,7 +3,7 @@
 from collections import namedtuple
 from flocs import actions
 from flocs.context import StaticContext
-from flocs.entities import Action, Student, TaskSession
+from flocs.entities import TaskSession
 from flocs.entity_map import EntityMap
 from flocs.state import empty, State, reduce_entity_map, reduce_state
 
@@ -43,8 +43,8 @@ def test_add_action():
     a1 = actions.create(type='create-student', data={'student-id': 20})
     state = empty + a1
     assert Entity not in empty.entities
-    assert set(state.entities[Action].values()) == {a1}
-    students = list(state.entities[Student].values())
+    assert set(state.actions.values()) == {a1}
+    students = list(state.students.values())
     assert len(students) == 1
     assert students[0].student_id == 20
 
@@ -84,7 +84,7 @@ def test_reduce_entity_map():
 def test_reduce_state():
     a1 = actions.create(type='create-student', data={'student-id': 20})
     next_state = reduce_state(empty, a1)
-    assert set(next_state.entities[Action].values()) == {a1}
-    students = list(next_state.entities[Student].values())
+    assert set(next_state.actions.values()) == {a1}
+    students = list(next_state.students.values())
     assert len(students) == 1
     assert students[0].student_id == 20

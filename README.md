@@ -9,7 +9,6 @@ Flocs is developed by [Adaptive Learning group][2] at Faculty of informatics, Ma
 
 ```python
 >>> from flocs import actions
->>> from flocs.entities import Action, TaskSession
 >>> from flocs.store import Store
 >>> from flocs.state import default_dynamic
 
@@ -21,10 +20,10 @@ Action(action_id=UUID(...), type='create-student', ...)
 >>> a2 = actions.create(type='start-task', data={'student-id': student_id, 'task-id': 'three-steps-forward'})
 >>> store.stage_action(a2)
 Action(action_id=UUID(...), type='start-task', ...)
->>> print(store.state.entities[TaskSession])
+>>> print(store.state.task_sessions)
 TaskSession entities:
 * TaskSession(task_session_id=UUID('...'), student_id=UUID('...'), task_id='three-steps-forward', solved=False, ...)
->>> print(store.state.entities[Action].order_by('time'))
+>>> print(store.state.actions.order_by('time'))
 Action entities:
 * Action(action_id=UUID(...), type='create-student', ...)
 * Action(action_id=UUID(...), type='start-task', ...)
