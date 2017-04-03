@@ -23,15 +23,15 @@ def test_create_nothing_happens_action():
     assert action == expected_action
 
 
-def test_create_create_student_action():
+def test_create_start_session_action():
     action = actions.create(
-        type='create-student',
+        type='start-session',
         data={},
         context=static)
     expected_action = Action(
         action_id=0,
-        type='create-student',
-        data={'student_id': 0},
+        type='start-session',
+        data={'session_id': 0, 'student_id': 0},
         time=static.default_time,
         randomness=0,
         version=__version__,
@@ -120,13 +120,13 @@ def test_create_action_redundant_data():
 
 def test_create_action_with_autofields_provided():
     action = actions.create(
-        type='create-student',
+        type='start-session',
         data={'student-id': 22},
         context=static)
     expected_action = Action(
         action_id=0,
-        type='create-student',
-        data={'student_id': 22},
+        type='start-session',
+        data={'session_id': 0, 'student_id': 22},
         time=static.default_time,
         randomness=0,
         version=__version__,

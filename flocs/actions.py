@@ -28,10 +28,10 @@ class NothingHappens(BaseAction):
     required_fields = []
 
 
-class CreateStudent(BaseAction):
-    """ New student appears in the system
+class StartSession(BaseAction):
+    """ Student starts interacting with the learning system
     """
-    auto_fields = ['student_id']
+    auto_fields = ['session_id', 'student_id']
     required_fields = []
 
 
@@ -67,7 +67,7 @@ class ActionType(str, Enum):
     """ Available action types and associated action creators
     """
     nothing_happens = 'nothing-happens'
-    create_student = 'create-student'
+    start_session = 'start-session'
     start_task = 'start-task'
     solve_task = 'solve-task'
     give_up_task = 'give-up-task'
@@ -77,7 +77,7 @@ class ActionType(str, Enum):
     def creator(self):
         return {
             'nothing-happens': NothingHappens,
-            'create-student': CreateStudent,
+            'start-session': StartSession,
             'start-task': StartTask,
             'solve-task': SolveTask,
             'give-up-task': GiveUpTask,

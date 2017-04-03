@@ -40,7 +40,7 @@ def test_add_entities_dont_modify_original_state():
 
 
 def test_add_action():
-    a1 = actions.create(type='create-student', data={'student-id': 20})
+    a1 = actions.create(type='start-session', data={'student-id': 20})
     state = empty + a1
     assert Entity not in empty.entities
     assert set(state.actions.values()) == {a1}
@@ -82,7 +82,7 @@ def test_reduce_entity_map():
 
 
 def test_reduce_state():
-    a1 = actions.create(type='create-student', data={'student-id': 20})
+    a1 = actions.create(type='start-session', data={'student-id': 20})
     next_state = reduce_state(empty, a1)
     assert set(next_state.actions.values()) == {a1}
     students = list(next_state.students.values())

@@ -40,8 +40,8 @@ def extract_parameters(fn, skip=0):
     return tuple(signature(fn).parameters)[skip:]
 
 
-@reducer(entities.Student, ActionType.create_student)
-def create_student(students, student_id):
+@reducer(entities.Student, ActionType.start_session)
+def create_student_if_new(students, student_id):
     student = Student(student_id=student_id, last_task_session_id=None, credits=0)
     return students.set(student)
 
@@ -121,7 +121,7 @@ ALWAYS_IDENTITY = identity_defaultdict()
 _entity_reducer_map = {
     entities.Student: identity_defaultdict({
         ActionType.start_task: update_last_task_session_id,
-        ActionType.create_student: create_student,
+        ActionType.start_session: create_student_if_new,
     }),
     entities.SeenInstruction: identity_defaultdict({
         ActionType.see_instruction: create_or_update_seen_instruction,

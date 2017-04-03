@@ -11,7 +11,7 @@ from flocs.reducers import reducer, extract_parameters
 
 
 def test_get():
-    assert reducers.get(Student, ActionType.create_student) == reducers.create_student
+    assert reducers.get(Student, ActionType.start_session) == reducers.create_student_if_new
 
 
 def test_reducer_decorator_signature():
@@ -45,13 +45,13 @@ def test_extract_parameters():
     assert parameters == expected_parameters
 
 
-def test_create_student():
+def test_create_student_if_new():
     # let
     s1 = Student(student_id=13, last_task_session_id=81, credits=10)
     students = EntityMap.from_list([s1])
     # then
-    action = actions.create(type='create-student', data={'student-id': 37})
-    next_students = reducers.create_student(students, action)
+    action = actions.create(type='start-session', data={'student-id': 37})
+    next_students = reducers.create_student_if_new(students, action)
     # expect
     s2 = Student(student_id=37, last_task_session_id=None, credits=0)
     expected_students = EntityMap.from_list([s1, s2])

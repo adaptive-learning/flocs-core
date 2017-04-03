@@ -99,7 +99,7 @@ def test_reducing_action_without_optional_parameters():
     See https://github.com/adaptive-learning/flocs-core/issues/52
     """
     with Store.open(state=empty) as store:
-        action = actions.create(type='create-student', data={}, context=static)
+        action = actions.create(type='start-session', data={}, context=static)
         store.stage_action(action)
     student = list(store.state.students.values())[0]
     assert student.last_task_session_id is None
