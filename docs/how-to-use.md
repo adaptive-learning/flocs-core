@@ -27,7 +27,7 @@ Action(action_id=UUID(...), type='start-task', ...)
 >>> # current state is computed on demand by applying all staged actions to initial state
 >>> print(store.state.entities[TaskSession])
 TaskSession entities:
-* TaskSession(task_session_id=UUID('...'), student_id=UUID('...'), task_id='three-steps-forward', solved=False, given_up=False)
+* TaskSession(task_session_id=UUID('...'), student_id=UUID('...'), task_id='three-steps-forward', solved=False, ...)
 
 >>> # entity maps can by filtered and ordered
 >>> print(store.state.entities[Action].order_by('time'))

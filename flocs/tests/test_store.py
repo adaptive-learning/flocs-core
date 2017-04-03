@@ -76,7 +76,7 @@ def test_store_integration(mock_hooks):
         (Student, 1,
          Student(student_id=1, last_task_session_id=0, credits=0)),
         (TaskSession, 0,
-         TaskSession(task_session_id=0, student_id=1, task_id=1, solved=False, given_up=False)),
+         TaskSession(task_session_id=0, student_id=1, task_id=1, time_start=static.time, time_end=static.time)),
     ]
     assert len(mock_hooks.calls) == 1
     assert mock_hooks.calls[0][0] == 'post_commit'

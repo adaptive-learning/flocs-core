@@ -103,3 +103,27 @@ class TestEntityMap:
         assert list(entity_map) == ['k', 'j']
         entity_map = self.create_entity_map(e2, e3).order_by('b')
         assert list(entity_map) == ['j', 'k']
+
+    def test_exists_true(self):
+        entity_map = self.create_entity_map(e1, e2, e3)
+        assert entity_map.exists()
+
+    def test_exists_false(self):
+        entity_map = self.create_entity_map()
+        assert not entity_map.exists()
+
+    def test_first(self):
+        entity_map = self.create_entity_map(e2, e3).order_by('entity_id')
+        assert entity_map.first() == e2
+
+    def test_first_none(self):
+        entity_map = self.create_entity_map()
+        assert entity_map.first() is None
+
+    def test_last(self):
+        entity_map = self.create_entity_map(e2, e3).order_by('entity_id')
+        assert entity_map.last() == e3
+
+    def test_last_none(self):
+        entity_map = self.create_entity_map()
+        assert entity_map.last() is None

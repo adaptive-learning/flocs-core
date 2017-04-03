@@ -71,12 +71,12 @@ def test_build():
 
 def test_reduce_entity_map():
     task_sessions = EntityMap.from_list([
-        TaskSession(task_session_id=14, student_id=37, task_id=67, solved=False, given_up=False)
+        TaskSession(task_session_id=14, student_id=37, task_id=67)
     ])
     action = actions.create(type='solve-task', data={'task-session-id': 14})
     next_entity_map = reduce_entity_map(TaskSession, task_sessions, action)
     expected_entity_map = EntityMap.from_list([
-        TaskSession(task_session_id=14, student_id=37, task_id=67, solved=True, given_up=False)
+        TaskSession(task_session_id=14, student_id=37, task_id=67, solved=True)
     ])
     assert next_entity_map == expected_entity_map
 

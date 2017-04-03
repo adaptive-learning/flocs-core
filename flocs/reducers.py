@@ -54,13 +54,15 @@ def update_last_task_session_id(students, task_session_id, student_id):
 
 
 @reducer(entities.TaskSession, ActionType.start_task)
-def create_task_session(task_sessions, task_session_id, student_id, task_id):
+def create_task_session(task_sessions, task_session_id, student_id, task_id, context):
     task_session = TaskSession(
         task_session_id=task_session_id,
         student_id=student_id,
         task_id=task_id,
         solved=False,
         given_up=False,
+        time_start=context.time,
+        time_end=context.time,
     )
     return task_sessions.set(task_session)
 

@@ -36,6 +36,8 @@ class EntityMap(Mapping):
         return 'EntityMap({data})'.format(data=self.chain_map)
 
     def __str__(self):
+        if len(self) == 0:
+            return 'Empty EntityMap'
         msg = '{entity_class} entities:\n{entities}'.format(
             entity_class=self.entity_class.__name__,
             entities='\n'.join('* ' + str(e) for e in self.values()))
@@ -68,6 +70,11 @@ class EntityMap(Mapping):
         """
         return ChainMap(*self.chain_map.maps[:-1])
 
+    def exists(self):
+        """ Return True iff there is at least 1 entity in the map
+        """
+        return len(self) >= 1
+
     def filter(self, **kwargs):
         """ Return a new map filtered according to given query given by kwargs
 
@@ -90,6 +97,18 @@ class EntityMap(Mapping):
 
     def order_by(self, field):
         return EntityMap(self, ordering=field)
+
+    def first(self):
+        try:
+            return next(iter(self.values()))
+        except StopIteration:
+            return None
+
+    def last(self):
+        try:
+            return list(self.values())[-1]
+        except IndexError:
+            return None
 
     def _test_entity(self, entity, **kwargs):
         """ Return True if a given entity satisfies condition by **kwargs

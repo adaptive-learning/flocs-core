@@ -23,7 +23,7 @@ Action(action_id=UUID(...), type='create-student', ...)
 Action(action_id=UUID(...), type='start-task', ...)
 >>> print(store.state.entities[TaskSession])
 TaskSession entities:
-* TaskSession(task_session_id=UUID('...'), student_id=UUID('...'), task_id='three-steps-forward', solved=False, given_up=False)
+* TaskSession(task_session_id=UUID('...'), student_id=UUID('...'), task_id='three-steps-forward', solved=False, ...)
 >>> print(store.state.entities[Action].order_by('time'))
 Action entities:
 * Action(action_id=UUID(...), type='create-student', ...)

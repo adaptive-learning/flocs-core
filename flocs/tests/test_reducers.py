@@ -4,6 +4,7 @@
 
 from flocs import actions, reducers
 from flocs.actions import ActionType
+from flocs.context import StaticContext
 from flocs.entities import Action, Student, TaskSession, SeenInstruction
 from flocs.entity_map import EntityMap
 from flocs.reducers import reducer, extract_parameters
@@ -71,37 +72,38 @@ def test_update_last_task_session_id():
 
 
 def test_create_task_session():
-    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28, solved=False, given_up=False)
-    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=False, given_up=False)
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28)
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67)
     task_sessions = EntityMap.from_list([ts1, ts2])
     action = actions.create(type='start-task',
-                            data={'task-session-id': 92, 'student-id': 13, 'task-id': 50})
+                            data={'task-session-id': 92, 'student-id': 13, 'task-id': 50},
+                            context=StaticContext(time=7))
     next_task_sessions = reducers.create_task_session(task_sessions, action)
     expected_task_sessions = EntityMap.from_list([
         ts1, ts2,
-        TaskSession(task_session_id=92, student_id=13, task_id=50, solved=False, given_up=False),
+        TaskSession(task_session_id=92, student_id=13, task_id=50, solved=False, given_up=False, time_start=7, time_end=7),
     ])
     assert next_task_sessions == expected_task_sessions
 
 
 def test_solve_task_session():
-    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28, solved=False, given_up=False)
-    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=False, given_up=False)
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28, time_start=10, time_end=20)
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67, time_start=30, time_end=40)
     task_sessions = EntityMap.from_list([ts1, ts2])
     action = actions.create(type='solve-task', data={'task-session-id': 14})
     next_task_sessions = reducers.solve_task_session(task_sessions, action)
-    ts2s = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=True, given_up=False)
+    ts2s = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=True, given_up=False, time_start=30, time_end=40)
     expected_task_sessions = EntityMap.from_list([ts1, ts2s])
     assert next_task_sessions == expected_task_sessions
 
 
 def test_give_up_task_session():
-    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28, solved=False, given_up=False)
-    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=False, given_up=False)
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28, time_start=10, time_end=20)
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67, time_start=30, time_end=40)
     task_sessions = EntityMap.from_list([ts1, ts2])
     action = actions.create(type='give-up-task', data={'task-session-id': 14})
     next_task_sessions = reducers.give_up_task_session(task_sessions, action)
-    ts2g = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=False, given_up=True)
+    ts2g = TaskSession(task_session_id=14, student_id=37, task_id=67, solved=False, given_up=True, time_start=30, time_end=40)
     expected_task_sessions = EntityMap.from_list([ts1, ts2g])
     assert next_task_sessions == expected_task_sessions
 
