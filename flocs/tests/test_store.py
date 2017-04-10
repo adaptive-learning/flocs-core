@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta
 import pytest
 from flocs import actions
+from flocs.actions import StartTask
 from flocs.context import static, SimulationContext
 from flocs.entities import Action, Student, Task, TaskSession
 from flocs.state import empty
@@ -31,32 +32,29 @@ def test_store_hooks_called(mock_hooks):
 
 
 def test_context_is_changing():
-    initial_time = datetime(1, 1, 1, 0, 0, 0)
-    time_step = timedelta(minutes=1)
-    simulation_context = SimulationContext(initial_time=initial_time, time_step=time_step)
+    simulation_context = SimulationContext(time=datetime(1, 1, 1, 0, 0, 0))
     store = Store(context=simulation_context)
-    time1 = store.state.time
-    store.stage_action(actions.empty)
-    time2 = store.state.time
-    assert time1 == initial_time
-    assert time2 == initial_time + time_step
+    assert store.state.context.time == datetime(1, 1, 1, 0, 0, 0)
+    store.context.time += timedelta(minutes=20)
+    store.add(actions.empty)
+    assert store.state.context.time == datetime(1, 1, 1, 0, 20, 0)
 
 
 def test_current_state():
     state = empty + s1 + t1
     store = Store(state=state, context=static)
-    action = actions.create(type='start-task', data={'student-id': 1, 'task-id': 1})
-    store.stage_action(action)
-    expected_state = state.reduce(action.add_context(static))
+    action = StartTask(student_id=1, task_id=1)
+    store.add(action)
+    expected_state = state.reduce(action)
     assert store.state == expected_state
 
 
 def test_commmit():
     store = Store(state=empty + s1 + t1, context=static)
-    action = actions.create(type='start-task', data={'student-id': 1, 'task-id': 1})
-    store.stage_action(action)
+    action = StartTask(student_id=1, task_id=1)
+    store.add(action)
     store.commit()
-    expected_state = (empty + static + s1 + t1).reduce(action.add_context(static))
+    expected_state = (empty + s1 + t1).reduce(action)
     assert store.actions == []
     assert store.state == expected_state
 
@@ -65,15 +63,10 @@ def test_store_integration(mock_hooks):
     """ Test integretion of store, state, context and actions
     """
     with Store.open(state=empty + s1 + t1, context=static, hooks=mock_hooks) as store:
-        action = actions.create(
-            type='start-task',
-            data={'student-id': 1, 'task-id': 1},
-            context=static)
-        store.stage_action(action)
-    expected_state = (empty + static + s1 + t1).reduce(action.add_context(static))
+        action = store.add(StartTask(student_id=1, task_id=1))
+    expected_state = (empty + s1 + t1).reduce(action)
     expected_diff = [
-        (Action, 0,
-         action.add_context(static)),
+        (Action, 0, action),
         (Student, 1,
          Student(student_id=1, last_task_session_id=0, credits=0)),
         (TaskSession, 0,
@@ -100,7 +93,7 @@ def test_reducing_action_without_optional_parameters():
     See https://github.com/adaptive-learning/flocs-core/issues/52
     """
     with Store.open(state=empty) as store:
-        action = actions.create(type='start-session', data={}, context=static)
-        store.stage_action(action)
+        action = actions.create(type='start-session', data={})
+        store.add(action)
     student = list(store.state.students.values())[0]
     assert student.last_task_session_id is None

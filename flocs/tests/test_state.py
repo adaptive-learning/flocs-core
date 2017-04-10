@@ -2,7 +2,7 @@
 """
 from collections import namedtuple
 from flocs import actions
-from flocs.context import StaticContext
+from flocs.context import Context
 from flocs.entities import TaskSession
 from flocs.entity_map import EntityMap
 from flocs.state import empty, State, reduce_entity_map, reduce_state
@@ -16,9 +16,9 @@ e3 = Entity(entity_id='k', a=3)
 
 
 def test_add_context():
-    state = empty + StaticContext(time=1, randomness=2)
-    assert state.time == 1
-    assert state.randomness == 2
+    state = empty + Context(time=1, randomness=2)
+    assert state.context.time == 1
+    assert state.context.randomness == 2
 
 
 def test_add_entity():
@@ -73,7 +73,7 @@ def test_reduce_entity_map():
     task_sessions = EntityMap.from_list([
         TaskSession(task_session_id=14, student_id=37, task_id=67)
     ])
-    action = actions.create(type='solve-task', data={'task-session-id': 14})
+    action = actions.SolveTask(task_session_id=14).at(empty)
     next_entity_map = reduce_entity_map(TaskSession, task_sessions, action)
     expected_entity_map = EntityMap.from_list([
         TaskSession(task_session_id=14, student_id=37, task_id=67, solved=True)
@@ -82,9 +82,9 @@ def test_reduce_entity_map():
 
 
 def test_reduce_state():
-    a1 = actions.create(type='start-session', data={'student-id': 20})
+    a1 = actions.StartSession(student_id=20)
     next_state = reduce_state(empty, a1)
-    assert set(next_state.actions.values()) == {a1}
+    assert set(next_state.actions.values()) == {a1.at(empty)}
     students = list(next_state.students.values())
     assert len(students) == 1
     assert students[0].student_id == 20
