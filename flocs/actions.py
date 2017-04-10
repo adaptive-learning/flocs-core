@@ -39,17 +39,12 @@ class StartSession(ActionIntent):
     ]
 
     def discard_action(self, state):
-        print('consider discarding')
         last_session_id = get_current_session_id(state, self.data['student_id'])
         if not last_session_id:
             return False
         last_time = state.sessions[last_session_id].end_time
-        print('last time', last_time)
         interval = state.context.time - last_time
-        print('now', state.context.time)
-        print('interval', interval)
         discarded = interval < timedelta(hours=5)
-        print('discarded', discarded)
         return discarded
 
 

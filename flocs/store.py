@@ -4,7 +4,6 @@ from contextlib import contextmanager
 from functools import reduce
 from .context import dynamic
 from .state import empty, reduce_state
-from . import actions
 
 
 class Store:
@@ -35,7 +34,6 @@ class Store:
         return compute_diff(self.initial_state, self.state)
 
     def add(self, action):
-        print('context snapshot', self.context.snapshot)
         action = action.at(self.state + self.context.snapshot)
         if action:
             self.actions.append(action)
