@@ -23,7 +23,7 @@ def randomly(state, student_id):
     """ Select task completely at random
     """
     del student_id  # intentionally unused argument
-    random.seed(state.randomness)
+    random.seed(state.context.randomness)
     task_ids = list(state.tasks.keys())
     selected_task_id = random.choice(task_ids)
     return selected_task_id
@@ -84,7 +84,7 @@ def fixed_then_random(state, student_id):
             solved=True)
         solved_task_ids = [ts.task_id for ts in solved_task_sessions.values()]
         unsolved_task_ids = [t_id for t_id in task_ids if t_id not in solved_task_ids]
-        random.seed(state.randomness)
+        random.seed(state.context.randomness)
         if unsolved_task_ids:
             selected_task_id = random.choice(unsolved_task_ids)
             return selected_task_id

@@ -5,13 +5,13 @@ from flocs.extractors import get_level, get_active_credits, get_recommendation
 from flocs.extractors import get_student_instructions, StudentInstruction
 from flocs.extractors import get_student_tasks, StudentTask
 from flocs.extractors import get_practice_overview, PracticeOverview
-from flocs.state import default_static, empty, State
+from flocs.state import default, empty, State
 from flocs.entities import Student, Instruction, SeenInstruction, TaskSession
 from .fixtures_entities import s1, t2, t3
 
 
 def test_get_recommendation():
-    state = default_static + s1
+    state = default + s1
     recommendation = get_recommendation(state, student_id=1)
     assert recommendation.available
     assert recommendation.task_id == 'one-step-forward'
@@ -138,14 +138,14 @@ def test_get_student_instructions_all_seen():
 
 def test_get_level():
     student = Student(student_id=1, last_task_session_id=None, credits=15)
-    state = default_static + student
+    state = default + student
     level = get_level(state, student_id=1)
     assert level.level_id == 3
 
 
 def test_get_active_credits():
     student = Student(student_id=1, last_task_session_id=None, credits=15)
-    state = default_static + student
+    state = default + student
     assert get_active_credits(state, student_id=1) == 6
 
 
@@ -163,7 +163,7 @@ def test_get_practice_overview_empty():
 
 
 def test_get_practice_overview_level_and_credits():
-    state = default_static + s1._replace(credits=10)
+    state = default + s1._replace(credits=10)
     overview = get_practice_overview(state, student_id=1)
     assert overview.level == 3
     assert overview.credits == 10

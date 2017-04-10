@@ -4,14 +4,24 @@ import pytest
 from flocs import actions
 from flocs.context import static
 from flocs.entities import Action
+from flocs.state import empty
 from flocs import __version__
 
 
+def test_create():
+    action = actions.create(type='nothing-happens', data={})
+    expected_action = actions.NothingHappens()
+    assert action == expected_action
+
+
+def test_create_with_data():
+    action = actions.create(type='start-task', data={'student-id': 145, 'task-id': 782})
+    expected_action = actions.StartTask(student_id=145, task_id=782)
+    assert action == expected_action
+
+
 def test_create_nothing_happens_action():
-    action = actions.create(
-        type='nothing-happens',
-        data={},
-        context=static)
+    action = actions.NothingHappens().at(empty + static)
     expected_action = Action(
         action_id=0,
         type='nothing-happens',
@@ -24,10 +34,7 @@ def test_create_nothing_happens_action():
 
 
 def test_create_start_session_action():
-    action = actions.create(
-        type='start-session',
-        data={},
-        context=static)
+    action = actions.StartSession().at(empty + static)
     expected_action = Action(
         action_id=0,
         type='start-session',
@@ -40,14 +47,11 @@ def test_create_start_session_action():
 
 
 def test_create_start_task_action():
-    action = actions.create(
-        type='start-task',
-        data={'student-id': 145, 'task-id': 782},
-        context=static)
+    action = actions.StartTask(student_id=145, task_id=782).at(empty + static)
     expected_action = Action(
         action_id=0,
         type='start-task',
-        data={'student_id': 145, 'task_id': 782, 'task_session_id': 0},
+        data={'student_id': 145, 'task_id': 782, 'task_session_id': 0, 'session_id': None},
         time=static.default_time,
         randomness=0,
         version=__version__,
@@ -56,10 +60,7 @@ def test_create_start_task_action():
 
 
 def test_create_solve_task_action():
-    action = actions.create(
-        type='solve-task',
-        data={'task-session-id': 201},
-        context=static)
+    action = actions.SolveTask(task_session_id=201).at(empty + static)
     expected_action = Action(
         action_id=0,
         type='solve-task',
@@ -71,27 +72,10 @@ def test_create_solve_task_action():
     assert action == expected_action
 
 
-def test_create_give_up_task_action():
-    action = actions.create(
-        type='give-up-task',
-        data={'task-session-id': 201},
-        context=static)
-    expected_action = Action(
-        action_id=0,
-        type='give-up-task',
-        data={'task_session_id': 201},
-        time=static.default_time,
-        randomness=0,
-        version=__version__,
-    )
-    assert action == expected_action
 
 
 def test_create_see_instruction_action():
-    action = actions.create(
-        type='see-instruction',
-        data={'student-id': 745, 'instruction-id': 23},
-        context=static)
+    action = actions.SeeInstruction(student_id=745, instruction_id=23).at(empty + static)
     expected_action = Action(
         action_id=0,
         type='see-instruction',
@@ -119,10 +103,7 @@ def test_create_action_redundant_data():
 
 
 def test_create_action_with_autofields_provided():
-    action = actions.create(
-        type='start-session',
-        data={'student-id': 22},
-        context=static)
+    action = actions.create(type='start-session', data={'student-id': 22}).at(empty + static)
     expected_action = Action(
         action_id=0,
         type='start-session',

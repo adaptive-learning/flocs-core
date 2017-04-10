@@ -4,7 +4,7 @@
 
 from flocs import actions, reducers
 from flocs.actions import ActionType
-from flocs.context import StaticContext
+from flocs.context import Context
 from flocs.entities import Action, Student, TaskSession, SeenInstruction
 from flocs.entity_map import EntityMap
 from flocs.reducers import reducer, extract_parameters
@@ -77,7 +77,7 @@ def test_create_task_session():
     task_sessions = EntityMap.from_list([ts1, ts2])
     action = actions.create(type='start-task',
                             data={'task-session-id': 92, 'student-id': 13, 'task-id': 50},
-                            context=StaticContext(time=7))
+                            context=Context(time=7))
     next_task_sessions = reducers.create_task_session(task_sessions, action)
     expected_task_sessions = EntityMap.from_list([
         ts1, ts2,

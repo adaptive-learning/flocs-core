@@ -2,7 +2,8 @@
 """
 
 from datetime import datetime, timedelta
-from flocs.context import dynamic, Context, StaticContext, SimulationContext
+import pytest
+from flocs.context import static, dynamic, Context, SimulationContext
 from flocs.context import generate_id_if_not_set
 
 class TestContext:
@@ -13,6 +14,10 @@ class TestContext:
         assert hasattr(self.context, 'time')
         assert hasattr(self.context, 'randomness')
         assert hasattr(self.context, 'new_id')
+        assert hasattr(self.context, 'snapshot')
+
+    def test_snapshot_returns_context(self):
+        assert isinstance(self.context.snapshot, Context)
 
 
 class TestDynamicContext(TestContext):
@@ -20,7 +25,7 @@ class TestDynamicContext(TestContext):
 
 
 class TestStaticContext(TestContext):
-    context = StaticContext()
+    context = static
 
     def test_fixed_randomness(self):
         assert self.context.randomness == self.context.randomness
@@ -29,12 +34,18 @@ class TestStaticContext(TestContext):
         assert self.context.time == self.context.time
 
     def test_fixed_new_id(self):
-        assert self.context.new_id() == 0
-        assert self.context.new_id() == 0
+        assert self.context.new_id == self.context.new_id == 0
+
+    def test_immutability(self):
+        with pytest.raises(AttributeError):
+            static.randomness = 4
+
+    def test_snapshot(self):
+        assert static.snapshot == static
 
 
-class TestStaticContextWithParameters(TestContext):
-    context = StaticContext(time=0, randomness=1, new_id=2)
+class TestContextWithParameters(TestContext):
+    context = Context(time=0, randomness=1, new_id=2)
 
     def test_fixed_time(self):
         assert self.context.time == 0
@@ -45,15 +56,15 @@ class TestStaticContextWithParameters(TestContext):
         assert self.context.randomness == 1
 
     def test_fixed_new_id(self):
-        assert self.context.new_id() == 2
-        assert self.context.new_id() == 2
+        assert self.context.new_id == 2
+        assert self.context.new_id == 2
+
+    def test_snapshot(self):
+        assert self.context.snapshot == Context(time=0, randomness=1, new_id=2)
 
 
 class TestSimulationContext(TestContext):
-    context = SimulationContext(
-        randomness=4,
-        initial_time=datetime(1, 2, 3, 0, 55, 0),
-        time_step=timedelta(minutes=10))
+    context = SimulationContext(randomness=4, time=datetime(1, 2, 3, 0, 55, 0))
 
     def test_fixed_randomness(self):
         assert self.context.randomness == 4
@@ -61,13 +72,10 @@ class TestSimulationContext(TestContext):
 
     def test_simulation_time(self):
         t1 = self.context.time
+        assert t1 == datetime(1, 2, 3, 0, 55, 0)
+        self.context.time += timedelta(hours=10)
         t2 = self.context.time
-        assert t2 - t1 == timedelta(minutes=10)
-
-    def test_new_id_sequence(self):
-        assert self.context.new_id() == 0
-        assert self.context.new_id() == 1
-        assert self.context.new_id() == 2
+        assert t2 == datetime(1, 2, 3, 10, 55, 0)
 
 
 def test_generate_id_if_not_set_when_set():

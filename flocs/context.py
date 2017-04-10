@@ -1,25 +1,40 @@
-"""Context is a part of the world state changing (potentially) continuously
+""" Context is a part of the world state changing (potentially) continuously
 """
 from datetime import datetime, timedelta
 from itertools import count
 from random import randint
 from uuid import uuid4
+from pyrsistent import PClass, field
 from flocs import __version__
 
 
-class Context:
-    """ Base class providing (potentially dynamic) context like time and new IDs
+class Context(PClass):
+    """ Base class providing context like time and randomness seed
 
     Attributes:
-        - version
-        - time
-        - randomness
+        - version: flocs version string
+        - time: current datetime
+        - randomness: seed for randomized algorithms
+        - new_id: number or 'uuid' or 'seq'
+    """
+    default_time = datetime(1, 1, 1)
 
-    Methods:
-        - new_id
+    version = __version__
+    time = field(initial=default_time)
+    randomness = field(initial=0)
+    new_id = field(initial=0)
+
+    @property
+    def snapshot(self):
+        return self
+
+
+class DynamicContext:
+    """ Dynamic context
     """
     def __init__(self):
         self.version = __version__
+        self.new_id = 'uuid'
 
     @property
     def time(self):
@@ -29,66 +44,46 @@ class Context:
     def randomness(self):
         return randint(a=0, b=2**30)
 
-    def new_id(self):
-        return uuid4()
+    @property
+    def snapshot(self):
+        return Context(time=self.time, randomness=self.randomness, new_id=self.new_id)
 
 
-class StaticContext(Context):
-    """ Static context for tests with non-changing time
+class SimulationContext:
+    """ Mutable simulation context
     """
-    default_time = datetime(1, 1, 1)
-
-    def __init__(self, time=default_time, randomness=0, new_id=0):
-        super().__init__()
-        self._time = time
-        self._randomness = randomness
-        self._new_id = new_id
+    def __init__(self, time=datetime(1, 1, 1, 0, 0, 0), randomness=0, new_id='seq'):
+        self.version = __version__
+        self.time = time
+        self.randomness = randomness
+        self.new_id = new_id
 
     @property
-    def time(self):
-        return self._time
-
-    @property
-    def randomness(self):
-        return self._randomness
-
-    def new_id(self):
-        return self._new_id
+    def snapshot(self):
+        return Context(time=self.time, randomness=self.randomness, new_id=self.new_id)
 
 
+static = Context()
+dynamic = DynamicContext()
 
-class SimulationContext(StaticContext):
-    """ Context for simulations which allows to set initial time and time step
-    """
-    def __init__(self,
-                 randomness=0,
-                 initial_time=datetime(1, 1, 1, 0, 0, 0),
-                 time_step=timedelta(minutes=1)):
-        super().__init__()
-        self._time_step = time_step
-        self._next_time = initial_time
-        self._randomness = randomness
-        self._id_generator = count()
 
-    @property
-    def time(self):
-        current_time = self._next_time
-        self._next_time += self._time_step
-        return current_time
+#def is_context(instance):
+#    return all(hasattr(instance, attr) for attr in ['version', 'time', 'randomness', 'new_id'])
 
-    @property
-    def randomness(self):
-        return self._randomness
 
-    def new_id(self):
-        return next(self._id_generator)
+#def static(time=Context.default_time, randomness=0, new_id='seq'):
+#    return Context(time=time, randomness=randomness, new_id=new_id)
+
+
+#def dynamic():
+#    context = Context(
+#        time=datetime.now(),
+#        randomness=randint(a=0, b=2**30),
+#        new_id='uuid',
+#    )
+#    return context
 
 
 def generate_id_if_not_set(maybe_id, generator=uuid4):
     just_id = maybe_id if maybe_id is not None else generator()
     return just_id
-
-
-# default immutable context instances
-dynamic = Context()
-static = StaticContext()

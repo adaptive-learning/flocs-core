@@ -39,14 +39,14 @@ def test_add_entities_dont_modify_original_state():
     assert set(state_2.entities[Entity].values()) == {e1, e2}
 
 
-def test_add_action():
-    a1 = actions.create(type='start-session', data={'student-id': 20})
-    state = empty + a1
-    assert Entity not in empty.entities
-    assert set(state.actions.values()) == {a1}
-    students = list(state.students.values())
-    assert len(students) == 1
-    assert students[0].student_id == 20
+#def test_add_action():
+#    a1 = actions.create(type='start-session', data={'student-id': 20})
+#    state = empty + a1
+#    assert Entity not in empty.entities
+#    assert set(state.actions.values()) == {a1}
+#    students = list(state.students.values())
+#    assert len(students) == 1
+#    assert students[0].student_id == 20
 
 
 def test_add():

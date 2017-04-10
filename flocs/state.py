@@ -1,26 +1,28 @@
 """ Representation of a world state
 
 State composition examples:
-    - state.empty + context.static
     - state.empty + Student(...) + Action(...)
-    - state.default_static + SimulationContext(...) + students
+    - state.default + SimulationContext(...) + students
 """
 from collections import namedtuple, Iterable
 from pyrsistent import pmap
+from .action_factory import ActionIntent
+from .context import static, Context
 from .data import blocks, instructions, levels, toolboxes, categories, tasks
 from .entities import Block, Instruction, Level, Toolbox, Category, Task
 from .entities import Action, Student, TaskSession, SeenInstruction, Session
 from .entity_map import EntityMap
-from . import context, reducers
+from . import reducers
 
 
-class State(namedtuple('State', ['entities', 'time', 'randomness', 'version'])):
-    """ State of the world at a specific moment
+class State(namedtuple('State', ['entities', 'context'])):
+    """ State of the world at a specific moment (immutable snapshot)
     """
     __slots__ = ()
 
-    def __new__(cls, entities=None, time=None, randomness=None, version=None):
-        return super().__new__(cls, pmap(entities), time, randomness, version)
+    def __new__(cls, entities=None, context=static):
+        entities = pmap(entities)
+        return super().__new__(cls, entities=entities, context=context)
 
     @classmethod
     def build(cls, *components):
@@ -43,13 +45,15 @@ class State(namedtuple('State', ['entities', 'time', 'randomness', 'version'])):
         Component can be a state, entity, action, context or even iterable of
         nested components.
         """
-        if isinstance(component, context.Context):
+        #if isinstance(component, DynamicContext):
+        #    return self.add_context(context=component.snapshot)
+        if isinstance(component, Context):
             return self.add_context(context=component)
         #if isinstance(component, State):
         #    return self.add_state(state=component)
-        if isinstance(component, Action):
-            return self.reduce(action=component)
-        if isinstance(component, tuple):
+        #if isinstance(component, Action):
+        #    return self.reduce(action=component)
+        if isinstance(component, tuple):  # TODO: test for Entity base class
             return self.add_entity(entity=component)
         if isinstance(component, Iterable):
             return self.add(*component)
@@ -61,11 +65,7 @@ class State(namedtuple('State', ['entities', 'time', 'randomness', 'version'])):
     #    return new_state
 
     def add_context(self, context):
-        new_state = self._replace(
-            time=context.time,
-            randomness=context.randomness,
-            version=context.version)
-        return new_state
+        return self._replace(context=context)
 
     def add_entity(self, entity):
         if entity.__class__ in self.entities:
@@ -78,7 +78,11 @@ class State(namedtuple('State', ['entities', 'time', 'randomness', 'version'])):
         return new_state
 
     def reduce(self, action):
+        # TODO: allow to reduce multiple actions at once
         return reduce_state(state=self, action=action)
+
+    def total_entities(self):
+        return sum(len(entity_map) for entity_map in self.entities.values())
 
     @property
     def actions(self):
@@ -118,11 +122,10 @@ class State(namedtuple('State', ['entities', 'time', 'randomness', 'version'])):
 
 
 def reduce_state(state, action):
-    new_state = State(
-        entities=reduce_entities(state.entities, action),
-        time=action.time,
-        randomness=action.randomness,
-        version=action.version)
+    if isinstance(action, ActionIntent):
+        action = action.at(state)
+    new_entities = reduce_entities(state.entities, action)
+    new_state = State(entities=new_entities, context=action.context)
     return new_state
 
 
@@ -142,22 +145,8 @@ def reduce_entity_map(entity_class, entity_map, action):
     return next_entity_map
 
 
-default_entities = pmap({
-    Block: EntityMap.from_list(blocks),
-    Instruction: EntityMap.from_list(instructions),
-    Level: EntityMap.from_list(levels),
-    Toolbox: EntityMap.from_list(toolboxes),
-    Category: EntityMap.from_list(categories),
-    Task: EntityMap.from_list(tasks),
-    Action: EntityMap(),
-    Student: EntityMap(),
-    TaskSession: EntityMap(),
-    SeenInstruction: EntityMap(),
-    Session: EntityMap(),
-})
+# some prepared immutable states
 
-
-# some prepared immutable instances
 empty = State(entities=pmap({
     Block: EntityMap(),
     Instruction: EntityMap(),
@@ -170,6 +159,18 @@ empty = State(entities=pmap({
     TaskSession: EntityMap(),
     SeenInstruction: EntityMap(),
     Session: EntityMap(),
-}))
-default_static = State(entities=default_entities).add_context(context.static)
-default_dynamic = State(entities=default_entities).add_context(context.dynamic)
+}), context=static)
+
+default = State(entities=pmap({
+    Block: EntityMap.from_list(blocks),
+    Instruction: EntityMap.from_list(instructions),
+    Level: EntityMap.from_list(levels),
+    Toolbox: EntityMap.from_list(toolboxes),
+    Category: EntityMap.from_list(categories),
+    Task: EntityMap.from_list(tasks),
+    Action: EntityMap(),
+    Student: EntityMap(),
+    TaskSession: EntityMap(),
+    SeenInstruction: EntityMap(),
+    Session: EntityMap(),
+}), context=static)

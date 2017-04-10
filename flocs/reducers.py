@@ -4,7 +4,6 @@ from collections import ChainMap, defaultdict
 from inspect import signature
 from . import entities
 from .actions import ActionType
-from .context import StaticContext
 from .entities import Session, Student, TaskSession, SeenInstruction
 
 
@@ -26,8 +25,7 @@ def reducer(entity_class, action_type):
             action_types = [action_type] if isinstance(action_type, ActionType) else action_type
             assert action.type in action_types
             assert entity_map.entity_class == entity_class or not entity_map.entity_class
-            context = StaticContext(time=action.time, randomness=action.randomness)
-            data_context = ChainMap(action.data, {'context': context})
+            data_context = ChainMap(action.data, {'context': action.context})
             kwarg_names = extract_parameters(fn, skip=1)
             kwargs = {name: data_context[name] for name in kwarg_names}
             return fn(entity_map, **kwargs)

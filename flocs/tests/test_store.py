@@ -43,10 +43,11 @@ def test_context_is_changing():
 
 
 def test_current_state():
-    store = Store(state=empty + s1 + t1, context=static)
+    state = empty + s1 + t1
+    store = Store(state=state, context=static)
     action = actions.create(type='start-task', data={'student-id': 1, 'task-id': 1})
     store.stage_action(action)
-    expected_state = empty + static + s1 + t1 + action.add_context(static)
+    expected_state = state.reduce(action.add_context(static))
     assert store.state == expected_state
 
 
@@ -55,7 +56,7 @@ def test_commmit():
     action = actions.create(type='start-task', data={'student-id': 1, 'task-id': 1})
     store.stage_action(action)
     store.commit()
-    expected_state = empty + static + s1 + t1 + action.add_context(static)
+    expected_state = (empty + static + s1 + t1).reduce(action.add_context(static))
     assert store.actions == []
     assert store.state == expected_state
 
@@ -69,7 +70,7 @@ def test_store_integration(mock_hooks):
             data={'student-id': 1, 'task-id': 1},
             context=static)
         store.stage_action(action)
-    expected_state = empty + static + s1 + t1 + action.add_context(static)
+    expected_state = (empty + static + s1 + t1).reduce(action.add_context(static))
     expected_diff = [
         (Action, 0,
          action.add_context(static)),

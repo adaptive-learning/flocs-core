@@ -3,15 +3,15 @@
 from functools import partial
 import pytest
 from flocs import recommendation
-from flocs.context import StaticContext
+from flocs.context import Context
 from flocs.entities import TaskSession, Student
-from flocs.state import State, empty, default_static
+from flocs.state import State, empty, default
 from .fixtures_entities import s1, t2, t3, t5, t9
 
 
 def test_randomly():
-    state_a = State.build(StaticContext(randomness=0), s1, t2, t5, t9)
-    state_b = State.build(StaticContext(randomness=1), s1, t2, t5, t9)
+    state_a = State.build(Context(randomness=0), s1, t2, t5, t9)
+    state_b = State.build(Context(randomness=1), s1, t2, t5, t9)
     task_a = recommendation.randomly(state_a, student_id=1)
     task_b = recommendation.randomly(state_b, student_id=1)
     assert task_a in {2, 5, 9}
@@ -55,14 +55,14 @@ def test_select_same_task_until_solved():
 
 
 def test_default_fixed_order():
-    state = default_static + s1
+    state = default + s1
     state += TaskSession(task_session_id=1, student_id=1, task_id='one-step-forward',
                          solved=True, given_up=False)
     assert recommendation.fixed_order(state, student_id=1) == 'diamond-on-right'
 
 
 def test_fixed_then_random():
-    state = default_static + s1
+    state = default + s1
     unsolved = {task_id for task_id in state.tasks}
     m = len(state.tasks)
     for k in range(m):

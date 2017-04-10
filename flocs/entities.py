@@ -1,6 +1,7 @@
 """ Type definitions for domain entities
 """
 from collections import namedtuple
+from .context import Context
 
 
 class Action(namedtuple('Action', ['action_id', 'type', 'data',
@@ -9,12 +10,16 @@ class Action(namedtuple('Action', ['action_id', 'type', 'data',
     """
     __slots__ = ()
 
-    def add_context(self, context):
+    def set_context(self, context):
         action_with_context = self._replace(
             time=context.time,
             randomness=context.randomness,
             version=context.version)
         return action_with_context
+
+    @property
+    def context(self):
+        return Context(time=self.time, randomness=self.randomness)
 
 
 Session = namedtuple('Session', [

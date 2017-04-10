@@ -2,6 +2,7 @@
 """
 from collections import namedtuple
 from operator import attrgetter
+from uuid import uuid4
 from flocs.entities import Level
 from flocs import recommendation
 
@@ -39,6 +40,21 @@ TaskStats = namedtuple('TaskStats', [
     'started_count',
     'solved_count',
 ])
+
+
+def new_id(state):
+    if state.context.new_id == 'uuid':
+        return uuid4()
+    if state.context.new_id == 'seq':
+        return state.total_entities()
+    return state.context.new_id
+
+
+def get_current_session_id(state, student_id):
+    print('current state', state.sessions, student_id)
+    session = state.sessions.filter(student_id=student_id).order_by('end_time').last()
+    # TODO: check if not too old
+    return session.session_id if session else None
 
 
 def get_recommendation(state, student_id):

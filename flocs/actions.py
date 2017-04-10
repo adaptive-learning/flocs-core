@@ -1,67 +1,92 @@
 """ Actions represent events and interactions in the world we want to model
 """
+from datetime import timedelta
 from enum import Enum
-from flocs.base_action import BaseAction
-from flocs.context import dynamic
+from flocs.action_factory import ActionIntent
+from flocs.extractors import new_id, get_current_session_id
 
 
-def create(type='nothing-happens', data=None, context=dynamic):
-    """ Create a new action of given type, with given data, in given context
+def create(type='nothing-happens', data=None):
+    """ Create a new action of given type and with given data
 
     Args:
         type: one of flocs.actions.ActionTypes
         data: dictionary of data for given action type (using kebab-case keys)
-        context: factory for getting time, randomness, version and new IDs
 
     Return:
         flocs.entities.Action
     """
     action_type = ActionType(type)
-    action = action_type.creator.from_data(data, context)
+    data_dict = data or {}
+    action = action_type.creator(**data_dict)
     return action
 
 
-class NothingHappens(BaseAction):
+class NothingHappens(ActionIntent):
     """ Nothing particular happened (but time has passed)
     """
     auto_fields = []
     required_fields = []
 
 
-class StartSession(BaseAction):
+class StartSession(ActionIntent):
     """ Student starts interacting with the learning system
     """
-    auto_fields = ['session_id', 'student_id']
     required_fields = []
+    auto_fields = [
+        ('session_id', new_id),
+        ('student_id', new_id),
+    ]
+
+    def discard_action(self, state):
+        print('consider discarding')
+        last_session_id = get_current_session_id(state, self.data['student_id'])
+        if not last_session_id:
+            return False
+        last_time = state.sessions[last_session_id].end_time
+        print('last time', last_time)
+        interval = state.context.time - last_time
+        print('now', state.context.time)
+        print('interval', interval)
+        discarded = interval < timedelta(hours=5)
+        print('discarded', discarded)
+        return discarded
 
 
-class StartTask(BaseAction):
+class StartTask(ActionIntent):
     """ Student starts working on a task
     """
-    auto_fields = ['task_session_id']
-    required_fields = ['student_id', 'task_id']
-    # TODO: session_id field <-- state.sessions.filter(student_id=student_id).order_by('time_end').last()
+    required_fields = [
+        'student_id',
+        'task_id',
+    ]
+    auto_fields = [
+        ('task_session_id', new_id),
+        ('session_id', get_current_session_id, 'student_id'),
+    ]
 
 
-class SolveTask(BaseAction):
+class SolveTask(ActionIntent):
     """ Student has solved a task
     """
-    auto_fields = []
     required_fields = ['task_session_id']
+    auto_fields = []
 
 
-class GiveUpTask(BaseAction):
+class GiveUpTask(ActionIntent):
     """ Student has given up a task
     """
-    auto_fields = []
     required_fields = ['task_session_id']
+    auto_fields = []
 
 
-class SeeInstruction(BaseAction):
+class SeeInstruction(ActionIntent):
     """ Student has seen an instruction
     """
-    auto_fields = ['seen_instruction_id']
     required_fields = ['student_id', 'instruction_id']
+    auto_fields = [
+        ('seen_instruction_id', new_id)
+    ]
 
 
 class ActionType(str, Enum):
