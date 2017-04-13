@@ -1,9 +1,11 @@
 """ Unit tests for flocs.actions
 """
+from datetime import datetime
 import pytest
 from flocs import actions
-from flocs.context import static
-from flocs.entities import Action
+from flocs.actions import StartSession
+from flocs.context import static, Context
+from flocs.entities import Action, Session
 from flocs.state import empty
 from flocs import __version__
 
@@ -44,6 +46,21 @@ def test_create_start_session_action():
         version=__version__,
     )
     assert action == expected_action
+
+
+def test_discarding_start_session_action():
+    session = Session(session_id=1, student_id=1, start=None, end=datetime(1, 1, 1, 0))
+    state = empty + session + Context(time=datetime(1, 1, 1, 0))
+    action = StartSession(student_id=1).at(state)
+    assert action is None
+
+
+def test_not_discarding_start_session_action():
+    session1 = Session(session_id=1, student_id=1, start=None, end=datetime(1, 1, 1, 0))
+    session2 = Session(session_id=2, student_id=2, start=None, end=datetime(1, 1, 2, 0))
+    state = empty + session1 + session2 + Context(time=datetime(1, 1, 2, 0))
+    action = StartSession(student_id=1).at(state)
+    assert action is not None
 
 
 def test_create_start_task_action():
