@@ -72,9 +72,7 @@ Action entities:
 
     ```
 
-### Tips
-
-* As you are likely to use the same state creator and hooks together many times, you may wish to factor out the creation of store context manager into a separate function:
+4. As you are likely to use the same state creator and hooks together many times, you may wish to factor out the creation of store context manager into a separate function:
 
     ```python
     def open_my_persistent_store():
@@ -85,4 +83,76 @@ Action entities:
         store.stage_action(action)
     ```
 
-* If your persistent state is shared by several threads (e.g. web application), then it is probably good idea to wrap your store operations in an atomic context to avoid inconsistencies.
+5. If your persistent state is shared by several threads (e.g. web application), then it is probably good idea to wrap your store operations in an atomic context to avoid inconsistencies.
+
+
+## Simulation
+
+Flocs can be also used for simulations.
+Just use `SimulationContext`, set randomness seed (or use the default one) and change time as needed.
+
+    >>> from flocs.context import SimulationContext
+    >>> from flocs.state import default
+    >>> from flocs.store import Store
+    >>> from flocs.actions import StartSession, StartTask
+
+    >>> context = SimulationContext()
+    >>> store = Store(state=default, context=context)
+
+    >>> a1 = store.add(StartSession(student_id=1))
+    >>> a2 = store.add(StartTask(student_id=1, task_id='ladder'))
+    >>> a1.data.session_id == a2.data.session_id
+    True
+    >>> a3 = store.add(StartSession(student_id=1))
+    >>> not a3  # not enough time since last action in the current session
+    True
+
+    >>> # move time forward
+    >>> from datetime import timedelta
+    >>> store.context.time += timedelta(hours=10)
+    >>> # now it is possible to create new session
+    >>> a4 = store.add(StartSession(student_id=1))
+    >>> a4.data.session_id != a1.data.session_id
+    True
+    >>> a4.time
+    datetime.datetime(1, 1, 1, 10, 0)
+
+    >>> print(store.state.students)
+    Student entities:
+    * Student(student_id=1, last_task_session_id=None, credits=0)
+
+    >>> print(store.state.sessions)
+    Session entities:
+    * Session(..., student_id=1, ..., end_time=datetime.datetime(1, 1, 1, 0, 0))
+    * Session(..., student_id=1, ..., end_time=datetime.datetime(1, 1, 1, 10, 0))
+
+    >>> print(store.state.task_sessions)
+    TaskSession entities:
+    * TaskSession(..., student_id=1, task_id='ladder', ...)
+
+    >>> print(store.state.actions)
+    Action entities:
+    * Action(..., type='start-session', ...)
+    * Action(..., type='start-task', ...)
+    * Action(..., type='start-session', ...)
+
+
+## Tests
+
+Test cases can be created easily using convenient State builder and reducer.
+
+    >>> from datetime import datetime
+    >>> from flocs.state import empty
+    >>> from flocs.context import Context
+    >>> from flocs.entities import Session
+    >>> from flocs.actions import StartSession
+    >>> from flocs.tests.fixtures_entities import s1, t1, t2
+
+    >>> # create new state with 1 student, 2 tasks and specific time
+    >>> state = empty + s1 + t1 + t2 + Context(time=datetime(2017, 1, 1, 12))
+    >>> # reduce an action
+    >>> next_state = state.reduce(StartSession(student_id=3))
+    >>> # assert something about new state
+    >>> new_session = Session(session_id=0, student_id=3, start_time=datetime(2017, 1, 1, 12, 0), end_time=datetime(2017, 1, 1, 12, 0))
+    >>> expected_sessions = (state + new_session).sessions
+    >>> assert next_state.sessions == expected_sessions
