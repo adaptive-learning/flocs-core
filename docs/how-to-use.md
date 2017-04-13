@@ -123,8 +123,8 @@ Just use `SimulationContext`, set randomness seed (or use the default one) and c
 
     >>> print(store.state.sessions)
     Session entities:
-    * Session(..., student_id=1, ..., end_time=datetime.datetime(1, 1, 1, 0, 0))
-    * Session(..., student_id=1, ..., end_time=datetime.datetime(1, 1, 1, 10, 0))
+    * Session(..., student_id=1, ..., end=datetime.datetime(1, 1, 1, 0, 0))
+    * Session(..., student_id=1, ..., end=datetime.datetime(1, 1, 1, 10, 0))
 
     >>> print(store.state.task_sessions)
     TaskSession entities:
@@ -153,6 +153,6 @@ Test cases can be created easily using convenient State builder and reducer.
     >>> # reduce an action
     >>> next_state = state.reduce(StartSession(student_id=3))
     >>> # assert something about new state
-    >>> new_session = Session(session_id=0, student_id=3, start_time=datetime(2017, 1, 1, 12, 0), end_time=datetime(2017, 1, 1, 12, 0))
+    >>> new_session = Session(session_id=0, student_id=3, start=datetime(2017, 1, 1, 12, 0), end=datetime(2017, 1, 1, 12, 0))
     >>> expected_sessions = (state + new_session).sessions
     >>> assert next_state.sessions == expected_sessions

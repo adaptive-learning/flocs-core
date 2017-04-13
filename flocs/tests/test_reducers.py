@@ -56,7 +56,7 @@ def test_create_student_if_new():
 
 def test_update_last_task_session_id():
     student = Student(student_id=13, last_task_session_id=81, credits=0)
-    session = Session(session_id=2, student_id=13, start_time=0, end_time=5)
+    session = Session(session_id=2, student_id=13, start=0, end=5)
     state = State() + student + session + Context(new_id=92)
     next_state = state.reduce(StartTask(student_id=13, task_id=50))
     updated_student = student._replace(last_task_session_id=92)
@@ -66,17 +66,17 @@ def test_update_last_task_session_id():
 def test_create_task_session():
     ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28)
     ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67)
-    session = Session(session_id=2, student_id=13, start_time=0, end_time=5)
+    session = Session(session_id=2, student_id=13, start=0, end=5)
     state = State() + session +  ts1 + ts2 + Context(time=7, new_id=92)
     next_state = state.reduce(StartTask(student_id=13, task_id=50))
-    ts3 = TaskSession(task_session_id=92, student_id=13, task_id=50, time_start=7, time_end=7)
+    ts3 = TaskSession(task_session_id=92, student_id=13, task_id=50, start=7, end=7)
     expected_task_sessions = EntityMap.from_list([ts1, ts2, ts3])
     assert next_state.task_sessions == expected_task_sessions
 
 
 def test_solve_task_session():
-    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28, time_start=10, time_end=20)
-    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67, time_start=30, time_end=40)
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28, start=10, end=20)
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67, start=30, end=40)
     state = empty + ts1 + ts2
     next_state = state.reduce(SolveTask(task_session_id=14))
     ts2s = ts2._replace(solved=True)

@@ -25,8 +25,8 @@ class Action(namedtuple('Action', ['action_id', 'type', 'data',
 Session = namedtuple('Session', [
     'session_id',
     'student_id',
-    'start_time',
-    'end_time',
+    'start',
+    'end',
 ])
 
 
@@ -79,23 +79,23 @@ Block = namedtuple('Block', [
 class TaskSession(namedtuple('TaskSession', [
         'task_session_id', 'student_id', 'task_id',
         'solved', 'given_up',
-        'time_start', 'time_end'])):
+        'start', 'end'])):
     __slots__ = ()
 
     def __new__(cls, task_session_id=None, student_id=None, task_id=None,
-                     solved=False, given_up=False, time_start=None, time_end=None):
+                     solved=False, given_up=False, start=None, end=None):
         return super().__new__(cls,
             task_session_id=task_session_id,
             student_id=student_id,
             task_id=task_id,
             solved=solved,
             given_up=given_up,
-            time_start=time_start,
-            time_end=time_end)
+            start=start,
+            end=end)
 
     @property
     def time_spent(self):
-        return self.time_end - self.time_start
+        return self.end - self.start
 
 
 Instruction = namedtuple('Instruction', [

@@ -29,7 +29,7 @@ def test_get_student_tasks_no_task_sessions():
 
 def test_get_student_tasks_with_solved_task_session():
     state = empty + s1 + t2 + t3 \
-        + TaskSession(task_session_id=1, student_id=1, task_id=2, solved=True, time_start=30, time_end=40)
+        + TaskSession(task_session_id=1, student_id=1, task_id=2, solved=True, start=30, end=40)
     student_tasks = get_student_tasks(state, student_id=1)
     expected_student_tasks = {
         StudentTask(task_id=2, solved=True, time=10),
@@ -40,7 +40,7 @@ def test_get_student_tasks_with_solved_task_session():
 
 def test_get_student_tasks_with_unsolved_task_session():
     state = empty + s1 + t2 + t3 \
-        + TaskSession(task_session_id=1, student_id=1, task_id=2, time_start=30, time_end=40)
+        + TaskSession(task_session_id=1, student_id=1, task_id=2, start=30, end=40)
     student_tasks = get_student_tasks(state, student_id=1)
     expected_student_tasks = {
         StudentTask(task_id=2, solved=False, time=10),
@@ -52,10 +52,10 @@ def test_get_student_tasks_with_unsolved_task_session():
 def test_get_student_tasks_best_solved_time():
     state = State.build(
         s1, t2, t3,
-        TaskSession(task_session_id=1, student_id=1, task_id=2, solved=True, time_start=10, time_end=18),
-        TaskSession(task_session_id=2, student_id=1, task_id=2, solved=True, time_start=20, time_end=25),
-        TaskSession(task_session_id=3, student_id=1, task_id=2, solved=True, time_start=30, time_end=39),
-        TaskSession(task_session_id=3, student_id=1, task_id=2, solved=False, time_start=40, time_end=41),
+        TaskSession(task_session_id=1, student_id=1, task_id=2, solved=True, start=10, end=18),
+        TaskSession(task_session_id=2, student_id=1, task_id=2, solved=True, start=20, end=25),
+        TaskSession(task_session_id=3, student_id=1, task_id=2, solved=True, start=30, end=39),
+        TaskSession(task_session_id=3, student_id=1, task_id=2, solved=False, start=40, end=41),
     )
     student_tasks = get_student_tasks(state, student_id=1)
     expected_student_tasks = {
@@ -69,11 +69,11 @@ def test_get_student_tasks_best_solved_datetime():
     state = State.build(
         s1, t2,
         TaskSession(task_session_id=1, student_id=1, task_id=2, solved=True,
-            time_start=datetime(2017, 1, 10, 5, 30, 10),
-            time_end=datetime(2017, 1, 10, 5, 30, 17)),
+            start=datetime(2017, 1, 10, 5, 30, 10),
+            end=datetime(2017, 1, 10, 5, 30, 17)),
         TaskSession(task_session_id=1, student_id=1, task_id=2, solved=True,
-            time_start=datetime(2017, 1, 10, 5, 30, 20),
-            time_end=datetime(2017, 1, 10, 5, 30, 23))
+            start=datetime(2017, 1, 10, 5, 30, 20),
+            end=datetime(2017, 1, 10, 5, 30, 23))
     )
     student_tasks = get_student_tasks(state, student_id=1)
     expected_student_tasks = {
@@ -85,9 +85,9 @@ def test_get_student_tasks_best_solved_datetime():
 def test_get_student_tasks_last_unsolved_time():
     state = State.build(
         s1, t2, t3,
-        TaskSession(task_session_id=1, student_id=1, task_id=2, solved=False, time_start=10, time_end=18),
-        TaskSession(task_session_id=2, student_id=1, task_id=2, solved=False, time_start=20, time_end=25),
-        TaskSession(task_session_id=3, student_id=1, task_id=2, solved=False, time_start=30, time_end=32),
+        TaskSession(task_session_id=1, student_id=1, task_id=2, solved=False, start=10, end=18),
+        TaskSession(task_session_id=2, student_id=1, task_id=2, solved=False, start=20, end=25),
+        TaskSession(task_session_id=3, student_id=1, task_id=2, solved=False, start=30, end=32),
     )
     student_tasks = get_student_tasks(state, student_id=1)
     expected_student_tasks = {
@@ -177,6 +177,6 @@ def test_get_practice_overview_with_instructions():
 
 
 def test_get_practice_overview_with_tasks():
-    state = State.build(s1, t2, TaskSession(student_id=1, task_id=2, solved=True, time_start=30, time_end=40))
+    state = State.build(s1, t2, TaskSession(student_id=1, task_id=2, solved=True, start=30, end=40))
     overview = get_practice_overview(state, student_id=1)
     assert overview.tasks == [StudentTask(task_id=2, solved=True, time=10)]

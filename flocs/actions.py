@@ -42,7 +42,7 @@ class StartSession(ActionIntent):
         last_session_id = get_current_session_id(state, self.data['student_id'])
         if not last_session_id:
             return False
-        last_time = state.sessions[last_session_id].end_time
+        last_time = state.sessions[last_session_id].end
         interval = state.context.time - last_time
         discarded = interval < timedelta(hours=5)
         return discarded

@@ -3,7 +3,6 @@
 from itertools import accumulate, chain
 from collections import namedtuple
 from math import inf
-from operator import attrgetter
 from uuid import uuid4
 from flocs.entities import Level
 from flocs import recommendation
@@ -53,7 +52,7 @@ def new_id(state):
 
 
 def get_current_session_id(state, student_id):
-    session = state.sessions.filter(student_id=student_id).order_by('end_time').last()
+    session = state.sessions.filter(student_id=student_id).order_by('end').last()
     # TODO: check if not too old
     return session.session_id if session else None
 
@@ -116,7 +115,7 @@ def get_time(state, student_id, task_id):
     if solved_task_sessions.exists():
         times = [ts.time_spent for ts in solved_task_sessions.values()]
         return min(times)
-    last_task_session = task_sessions.order_by('time_end').last()
+    last_task_session = task_sessions.order_by('end').last()
     return last_task_session.time_spent if last_task_session else None
 
 

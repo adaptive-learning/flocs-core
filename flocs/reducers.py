@@ -44,8 +44,8 @@ def create_session(sessions, session_id, student_id, context):
     session = Session(
         session_id=session_id,
         student_id=student_id,
-        start_time=context.time,
-        end_time=context.time,
+        start=context.time,
+        end=context.time,
     )
     return sessions.set(session)
 
@@ -54,7 +54,7 @@ def create_session(sessions, session_id, student_id, context):
 ##                            ActionType.give_up_task, ActionType.see_instruction])
 #@reducer(entities.Session, ActionType.start_task)
 #def prolong_session(sessions, session_id, context):
-#    session = sessions[session_id]._replace(end_time=context.time)
+#    session = sessions[session_id]._replace(end=context.time)
 #    return sessions.set(session)
 
 
@@ -79,8 +79,8 @@ def create_task_session(task_sessions, task_session_id, student_id, task_id, con
         task_id=task_id,
         solved=False,
         given_up=False,
-        time_start=context.time,
-        time_end=context.time,
+        start=context.time,
+        end=context.time,
     )
     return task_sessions.set(task_session)
 
