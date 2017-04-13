@@ -68,7 +68,7 @@ def test_create_start_task_action():
     expected_action = Action(
         action_id=0,
         type='start-task',
-        data={'student_id': 145, 'task_id': 782, 'task_session_id': 0, 'session_id': None},
+        data={'student_id': 145, 'task_id': 782, 'task_session_id': 0, 'session_id': 0},
         time=static.default_time,
         randomness=0,
         version=__version__,

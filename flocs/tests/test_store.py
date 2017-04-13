@@ -5,7 +5,7 @@ import pytest
 from flocs import actions
 from flocs.actions import StartTask
 from flocs.context import static, SimulationContext
-from flocs.entities import Action, Student, Task, TaskSession
+from flocs.entities import Action, Student, Task, TaskSession, Session
 from flocs.state import empty
 from flocs.store import Store, compute_entities_diff
 from .fixtures_entities import s1, t1, t2, t3
@@ -72,6 +72,8 @@ def test_store_integration(mock_hooks):
         (TaskSession, 0,
          TaskSession(task_session_id=0, student_id=1, task_id=1,
                      start=static.time, end=static.time)),
+        (Session, 0,
+         Session(session_id=0, student_id=1, start=static.time, end=static.time)),
     ]
     assert len(mock_hooks.calls) == 1
     assert mock_hooks.calls[0][0] == 'post_commit'

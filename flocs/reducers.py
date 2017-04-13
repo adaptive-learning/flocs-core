@@ -50,12 +50,20 @@ def create_session(sessions, session_id, student_id, context):
     return sessions.set(session)
 
 
-##TODO: @reducer(entities.Session, [ActionType.start_task, ActionType.solve_task,
-##                            ActionType.give_up_task, ActionType.see_instruction])
-#@reducer(entities.Session, ActionType.start_task)
-#def prolong_session(sessions, session_id, context):
-#    session = sessions[session_id]._replace(end=context.time)
-#    return sessions.set(session)
+@reducer(entities.Session, ActionType.start_task)
+def create_or_update_session(sessions, session_id, student_id, context):
+    if session_id in sessions:
+        session = sessions[session_id]._replace(end=context.time)
+    else:
+        session = Session(
+            session_id=session_id,
+            student_id=student_id,
+            start=context.time,
+            end=context.time,
+        )
+    # TODO: dry using create_session reducer (nontrivial because its signature
+    # is modified by the @reducer decorator)
+    return sessions.set(session)
 
 
 @reducer(entities.Student, ActionType.start_session)
@@ -139,10 +147,8 @@ ALWAYS_IDENTITY = identity_defaultdict()
 _entity_reducer_map = {
     entities.Session: identity_defaultdict({
         ActionType.start_session: create_session,
-        # ActionType.start_task: prolong_session,
-        # ActionType.solve_task: prolong_session,
-        # ActionType.give_up_task: prolong_session,
-        # ActionType.see_instruction: prolong_session,
+        ActionType.start_task: create_or_update_session,
+        # TODO: ActionType.solve_task: update_session_of_task_session,
     }),
     entities.Student: identity_defaultdict({
         ActionType.start_task: update_last_task_session_id,

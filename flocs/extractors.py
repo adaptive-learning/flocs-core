@@ -54,7 +54,7 @@ def new_id(state):
 def get_current_session_id(state, student_id):
     session = state.sessions.filter(student_id=student_id).order_by('end').last()
     # TODO: check if not too old
-    return session.session_id if session else None
+    return session.session_id if session else new_id(state)
 
 
 def get_recommendation(state, student_id):
