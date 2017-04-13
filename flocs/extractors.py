@@ -1,6 +1,8 @@
 """ Pure functions extracting information from the world state
 """
+from itertools import accumulate, chain
 from collections import namedtuple
+from math import inf
 from operator import attrgetter
 from uuid import uuid4
 from flocs.entities import Level
@@ -122,16 +124,34 @@ def get_level(state, student_id):
     if not state.levels:
         return Level(level_id=0, credits=0)
     student = state.students[student_id]
-    level = max([level for level in state.levels.values()
-                 if student.credits - level.credits >= 0],
-                key=attrgetter('credits'))
-    return level
+    level = Level(level_id=0, credits=0)
+    levels = levels_with_total_credits(state)
+    for next_level, needed_credits in chain(levels, [(None, inf)]):
+        if student.credits >= needed_credits:
+            level = next_level
+        else:
+            return level
 
 
 def get_active_credits(state, student_id):
     student = state.students[student_id]
     level = get_level(state, student_id)
-    return student.credits - level.credits
+    level_total_credits = get_level_total_credits(state, level.level_id)
+    return student.credits - level_total_credits
+
+
+def get_level_total_credits(state, level_id):
+    for level, credits in levels_with_total_credits(state):
+        if level.level_id == level_id:
+            return credits
+    return 0
+
+
+def levels_with_total_credits(state):
+    levels = state.levels.order_by('level_id').values()
+    total_credits = accumulate(chain([0], levels), lambda c, l: c + l.credits)
+    next(total_credits)  # omit the added 0
+    return zip(levels, total_credits)
 
 
 def get_task_stats(state, task_id):
