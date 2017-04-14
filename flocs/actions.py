@@ -57,6 +57,22 @@ class StartTask(ActionIntent):
         ('session_id', get_current_session_id, 'student_id'),
     ]
 
+    def discard_action(self, state):
+        """ Don't start task if the task was already started in this session
+        """
+        student_id = self.data['student_id']
+        task_id = self.data['task_id']
+        session_id = get_current_session_id(state, student_id, new_if_none=False)
+        if session_id is None:
+            return False
+        session = state.sessions[session_id]
+        task_session = state.task_sessions \
+            .filter(student_id=student_id, task_id=task_id).order_by('start').last()
+        if not task_session:
+            return False
+        discarded = task_session.start >= session.start
+        return discarded
+
 
 class SolveTask(ActionIntent):
     """ Student has solved a task

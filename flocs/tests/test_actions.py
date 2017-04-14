@@ -3,11 +3,12 @@
 from datetime import datetime
 import pytest
 from flocs import actions
-from flocs.actions import StartSession
+from flocs.actions import StartSession, StartTask
 from flocs.context import static, Context
 from flocs.entities import Action, Session
 from flocs.state import empty
 from flocs import __version__
+from .fixtures_entities import s1, t2
 
 
 def test_create():
@@ -76,6 +77,24 @@ def test_create_start_task_action():
     assert action == expected_action
 
 
+def test_discarding_start_task_action():
+    """ StartTask should be discarded if the task was already started in the
+        current session
+    """
+    state = empty + s1 + t2 + Context(time=datetime(1, 1, 1))
+    state = state.reduce(StartTask(student_id=1, task_id=2))
+    action = StartTask(student_id=1, task_id=2).at(state)
+    assert action is None
+
+
+def test_not_discarding_start_task_action():
+    state = empty + s1 + t2 + Context(time=datetime(1, 1, 1))
+    state = state.reduce(StartTask(student_id=1, task_id=2))
+    state += Context(time=datetime(1, 1, 2))
+    action = StartTask(student_id=1, task_id=2).at(state)
+    assert action is not None
+
+
 def test_create_solve_task_action():
     action = actions.SolveTask(task_session_id=201).at(empty + static)
     expected_action = Action(
@@ -87,8 +106,6 @@ def test_create_solve_task_action():
         version=__version__,
     )
     assert action == expected_action
-
-
 
 
 def test_create_see_instruction_action():

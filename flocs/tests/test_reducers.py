@@ -74,9 +74,7 @@ def test_start_task_creating_task_session():
 
 
 def test_start_task_creating_first_session():
-    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28)
-    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67)
-    state = empty + s1 + t2 + ts1 + ts2 + Context(time=datetime(1, 1, 2, 0), new_id=92)
+    state = empty + s1 + t2 + Context(time=datetime(1, 1, 2, 0), new_id=92)
     next_state = state.reduce(StartTask(student_id=1, task_id=2))
     session = Session(session_id=92, student_id=1,
                       start=datetime(1, 1, 2, 0), end=datetime(1, 1, 2, 0))
@@ -85,10 +83,8 @@ def test_start_task_creating_first_session():
 
 
 def test_start_task_creating_new_session():
-    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28)
-    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67)
     session1 = Session(session_id=1, student_id=1, start=None, end=datetime(1, 1, 1, 0))
-    state = empty + s1 + t2 + ts1 + ts2 + session1 + Context(time=datetime(1, 1, 2, 0), new_id=92)
+    state = empty + s1 + t2 + session1 + Context(time=datetime(1, 1, 2, 0), new_id=92)
     next_state = state.reduce(StartTask(student_id=1, task_id=2))
     session2 = Session(session_id=92, student_id=1,
                        start=datetime(1, 1, 2, 0), end=datetime(1, 1, 2, 0))
@@ -98,10 +94,8 @@ def test_start_task_creating_new_session():
 
 
 def test_start_task_not_creating_session():
-    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28)
-    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67)
     session1 = Session(session_id=1, student_id=1, start=None, end=datetime(1, 1, 1, 0))
-    state = empty + s1 + t2 + ts1 + ts2 + session1 + Context(time=datetime(1, 1, 1, 0), new_id=92)
+    state = empty + s1 + t2 + session1 + Context(time=datetime(1, 1, 1, 0), new_id=92)
     next_state = state.reduce(StartTask(student_id=1, task_id=2))
     expected_sessions = EntityMap.from_list([session1])
     assert next_state.sessions == expected_sessions
