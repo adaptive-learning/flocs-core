@@ -1,9 +1,10 @@
 """ Actions represent events and interactions in the world we want to model
 """
-from datetime import timedelta
 from enum import Enum
 from flocs.action_factory import ActionIntent
 from flocs.extractors import new_id, get_current_session_id
+from flocs.extractors import get_student_id_for_task_session
+from flocs.extractors import get_task_id_for_task_session
 
 
 def create(type='nothing-happens', data=None):
@@ -78,7 +79,11 @@ class SolveTask(ActionIntent):
     """ Student has solved a task
     """
     required_fields = ['task_session_id']
-    auto_fields = []
+    auto_fields = [
+        ('student_id', get_student_id_for_task_session, 'task_session_id'),
+        ('task_id', get_task_id_for_task_session, 'task_session_id'),
+        ('session_id', get_current_session_id, 'student_id'),
+    ]
 
 
 class GiveUpTask(ActionIntent):

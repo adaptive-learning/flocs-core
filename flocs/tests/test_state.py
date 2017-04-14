@@ -3,7 +3,7 @@
 from collections import namedtuple
 from flocs import actions
 from flocs.context import Context
-from flocs.entities import TaskSession
+from flocs.entities import Action, TaskSession
 from flocs.entity_map import EntityMap
 from flocs.state import empty, State, reduce_entity_map, reduce_state
 
@@ -73,7 +73,8 @@ def test_reduce_entity_map():
     task_sessions = EntityMap.from_list([
         TaskSession(task_session_id=14, student_id=37, task_id=67)
     ])
-    action = actions.SolveTask(task_session_id=14).at(empty)
+    action = Action(action_id=0, type='solve-task', data={'task_session_id': 14},
+                    time=0, randomness=0, version=0)
     next_entity_map = reduce_entity_map(TaskSession, task_sessions, action)
     expected_entity_map = EntityMap.from_list([
         TaskSession(task_session_id=14, student_id=37, task_id=67, solved=True)

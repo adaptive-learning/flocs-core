@@ -3,9 +3,9 @@
 from datetime import datetime
 import pytest
 from flocs import actions
-from flocs.actions import StartSession, StartTask
+from flocs.actions import StartSession, StartTask, SolveTask
 from flocs.context import static, Context
-from flocs.entities import Action, Session
+from flocs.entities import Action, Session, TaskSession
 from flocs.state import empty
 from flocs import __version__
 from .fixtures_entities import s1, t2
@@ -96,12 +96,16 @@ def test_not_discarding_start_task_action():
 
 
 def test_create_solve_task_action():
-    action = actions.SolveTask(task_session_id=201).at(empty + static)
+    session = Session(session_id=58, student_id=22, start=0, end=datetime(1, 1, 1, 0))
+    ts = TaskSession(task_session_id=35, student_id=22, task_id=2, start=0,
+                     end=datetime(1, 1, 1, 0))
+    state = empty + session + ts + Context(time=datetime(1, 1, 1, 0), new_id=4)
+    action = SolveTask(task_session_id=35).at(state)
     expected_action = Action(
-        action_id=0,
+        action_id=4,
         type='solve-task',
-        data={'task_session_id': 201},
-        time=static.default_time,
+        data={'task_session_id': 35, 'student_id': 22, 'task_id': 2, 'session_id': 58},
+        time=datetime(1, 1, 1, 0),
         randomness=0,
         version=__version__,
     )

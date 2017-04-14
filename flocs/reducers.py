@@ -66,6 +66,14 @@ def create_or_update_session(sessions, session_id, student_id, context):
     return sessions.set(session)
 
 
+@reducer(entities.Session, ActionType.solve_task)
+def update_session_end(sessions, session_id, context):
+    if session_id not in sessions:
+        return sessions
+    session = sessions[session_id]._replace(end=context.time)
+    return sessions.set(session)
+
+
 @reducer(entities.Student, ActionType.start_session)
 def create_student_if_new(students, student_id):
     student = Student(student_id=student_id, last_task_session_id=None, credits=0)
@@ -148,7 +156,7 @@ _entity_reducer_map = {
     entities.Session: identity_defaultdict({
         ActionType.start_session: create_session,
         ActionType.start_task: create_or_update_session,
-        # TODO: ActionType.solve_task: update_session_of_task_session,
+        ActionType.solve_task: update_session_end,
     }),
     entities.Student: identity_defaultdict({
         ActionType.start_task: update_last_task_session_id,

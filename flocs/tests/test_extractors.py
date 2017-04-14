@@ -7,6 +7,7 @@ from flocs.extractors import get_student_instructions, StudentInstruction
 from flocs.extractors import get_student_tasks, StudentTask
 from flocs.extractors import get_practice_overview, PracticeOverview
 from flocs.extractors import get_current_session_id
+from flocs.extractors import get_student_id_for_task_session
 from flocs.state import default, empty, State
 from flocs.entities import Student, Instruction, SeenInstruction, TaskSession, Session
 from .fixtures_entities import s1, t2, t3
@@ -219,3 +220,9 @@ def test_get_current_session_old_session():
     state = empty + session + Context(time=datetime(1, 1, 3, 0), new_id=17)
     session_id = get_current_session_id(state, student_id=21)
     assert session_id == 17
+
+
+def test_get_student_id_for_task_session():
+    state = empty + TaskSession(task_session_id=35, student_id=22, task_id=2, start=0, end=0)
+    student_id = get_student_id_for_task_session(state, 35)
+    assert student_id == 22

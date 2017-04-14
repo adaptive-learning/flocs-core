@@ -52,6 +52,16 @@ def new_id(state):
     return state.context.new_id
 
 
+def get_student_id_for_task_session(state, task_session_id):
+    task_session = state.task_sessions[task_session_id]
+    return task_session.student_id
+
+
+def get_task_id_for_task_session(state, task_session_id):
+    task_session = state.task_sessions[task_session_id]
+    return task_session.task_id
+
+
 def get_current_session_id(state, student_id, new_if_none=True):
     session = state.sessions.filter(student_id=student_id).order_by('end').last()
     if not session or session_too_old(session, state.context.time):

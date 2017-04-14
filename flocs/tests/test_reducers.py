@@ -92,7 +92,6 @@ def test_start_task_creating_new_session():
     assert next_state.sessions == expected_sessions
 
 
-
 def test_start_task_not_creating_session():
     session1 = Session(session_id=1, student_id=1, start=None, end=datetime(1, 1, 1, 0))
     state = empty + s1 + t2 + session1 + Context(time=datetime(1, 1, 1, 0), new_id=92)
@@ -108,6 +107,17 @@ def test_solve_task_session():
     next_state = state.reduce(SolveTask(task_session_id=14))
     ts2s = ts2._replace(solved=True)
     assert next_state.task_sessions == EntityMap.from_list([ts1, ts2s])
+
+
+def test_solve_task_updating_session():
+    session = Session(session_id=1, student_id=1, start=None, end=datetime(1, 1, 1, 0))
+    ts = TaskSession(task_session_id=21, student_id=1, task_id=2,
+                     start=datetime(1, 1, 1, 0), end=datetime(1, 1, 1, 0))
+    state = empty + s1 + t2 + ts + session + Context(time=datetime(1, 1, 1, 0, 5))
+    next_state = state.reduce(SolveTask(task_session_id=21))
+    updated_session = session._replace(end=datetime(1, 1, 1, 0, 5))
+    expected_sessions = EntityMap.from_list([updated_session])
+    assert next_state.sessions == expected_sessions
 
 
 def test_see_instruction():
