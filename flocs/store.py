@@ -2,6 +2,7 @@
 """
 from contextlib import contextmanager
 from functools import reduce
+from .action_factory import DuplicateAction
 from .context import dynamic
 from .state import empty, reduce_state
 
@@ -34,10 +35,13 @@ class Store:
         return compute_diff(self.initial_state, self.state)
 
     def add(self, action):
-        action = action.at(self.state + self.context.snapshot)
-        if action:
+        try:
+            action = action.at(self.state + self.context.snapshot)
+        except DuplicateAction as exc:
+            return exc.action
+        else:
             self.actions.append(action)
-        return action
+            return action
 
     def commit(self):
         """Squash all actions to create new initial state

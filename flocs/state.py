@@ -124,8 +124,6 @@ class State(namedtuple('State', ['entities', 'context'])):
 def reduce_state(state, action):
     if isinstance(action, ActionIntent):
         action = action.at(state)
-    if not action:
-        return state
     new_entities = reduce_entities(state.entities, action)
     new_state = State(entities=new_entities, context=action.context)
     return new_state

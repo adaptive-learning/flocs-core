@@ -1,3 +1,4 @@
+from collections import ChainMap
 from pyrsistent import pmap
 from flocs import entities
 from flocs.utils.names import kebab_to_snake_case, camel_to_kebab_case
@@ -43,13 +44,33 @@ class ActionIntent:
     def discard_action(self, state):
         return False
 
+    def check_duplicate(self, state):
+        """ Raise DuplicateAction exception if this intent is a duplicate
+
+        Concrete actions can override this method and call
+        self.raise_duplicate_action() if they find that this intent should
+        be discarded as (near) duplicate of an already stored action
+        """
+        pass
+
+    def raise_duplicate_action(self, **duplicate_data):
+        # TODO: it should probably pass the original action, but current
+        # application design does not support efficient action search, so
+        # instead, we just pass a fake Action with possibly needed data
+        action = entities.Action(
+            action_id=None, time=None, randomness=None, version=None,
+            type=self.get_type_name(),
+            data=pmap(ChainMap(duplicate_data, self.data)),
+        )
+        raise DuplicateAction(action=action)
+
+
     def at(self, state):
         """ Create an Action from this intent, filling missing data from state
         """
         self.complete_data(state)
-        if self.discard_action(state):
-            return None
-        return entities.Action(
+        self.check_duplicate(state)
+        action = entities.Action(
             action_id=new_id(state),
             type=self.get_type_name(),
             data=pmap(self.data),
@@ -57,9 +78,16 @@ class ActionIntent:
             randomness=state.context.randomness,
             version=state.context.version,
         )
+        return action
 
     def __eq__(self, other):
         return self.get_type_name() == other.get_type_name() and self.data == other.data
 
     def __repr__(self):
         return '<{type} {data}>'.format(type=self.__class__.__name__, data=self.data)
+
+
+class DuplicateAction(Exception):
+    def __init__(self, action):
+        super().__init__('This action is discarded as duplicate of {}'.format(action))
+        self.action = action

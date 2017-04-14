@@ -104,7 +104,12 @@ Just use `SimulationContext`, set randomness seed (or use the default one) and c
     >>> a1.data.session_id == a2.data.session_id
     True
     >>> a3 = store.add(StartSession(student_id=1))
-    >>> not a3  # not enough time since last action in the current session
+    >>> # not enough time passed since last action in the current session,
+    >>> # so this action intent is ignored and fake action with current
+    >>> # session id is returned
+    >>> a3.action_id is None
+    True
+    >>> a1.data == a3.data
     True
 
     >>> # move time forward

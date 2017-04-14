@@ -39,11 +39,13 @@ class StartSession(ActionIntent):
         ('student_id', new_id),
     ]
 
-    def discard_action(self, state):
+    def check_duplicate(self, state):
+        """ Don't start session if another session is still active
+        """
         student_id = self.data['student_id']
         current_session_id = get_current_session_id(state, student_id, new_if_none=False)
-        discarded = current_session_id is not None
-        return discarded
+        if current_session_id is not None:
+            self.raise_duplicate_action(session_id=current_session_id)
 
 
 class StartTask(ActionIntent):
@@ -58,21 +60,19 @@ class StartTask(ActionIntent):
         ('session_id', get_current_session_id, 'student_id'),
     ]
 
-    def discard_action(self, state):
-        """ Don't start task if the task was already started in this session
+    def check_duplicate(self, state):
+        """ Don't start task if it was already started in this session
         """
         student_id = self.data['student_id']
         task_id = self.data['task_id']
         session_id = get_current_session_id(state, student_id, new_if_none=False)
         if session_id is None:
-            return False
+            return
         session = state.sessions[session_id]
         task_session = state.task_sessions \
             .filter(student_id=student_id, task_id=task_id).order_by('start').last()
-        if not task_session:
-            return False
-        discarded = task_session.start >= session.start
-        return discarded
+        if task_session and task_session.start >= session.start:
+            self.raise_duplicate_action(task_session_id=task_session.task_session_id)
 
 
 class SolveTask(ActionIntent):
