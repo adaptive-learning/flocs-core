@@ -39,15 +39,9 @@ class StartSession(ActionIntent):
     ]
 
     def discard_action(self, state):
-        last_session_id = get_current_session_id(state, self.data['student_id'])
-        if not last_session_id:
-            return False
-        try:
-            last_time = state.sessions[last_session_id].end
-        except KeyError:
-            return False
-        interval = state.context.time - last_time
-        discarded = interval < timedelta(hours=5)
+        student_id = self.data['student_id']
+        current_session_id = get_current_session_id(state, student_id, new_if_none=False)
+        discarded = current_session_id is not None
         return discarded
 
 

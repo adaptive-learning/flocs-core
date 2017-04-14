@@ -5,11 +5,11 @@
 from flocs import reducers
 from flocs.actions import ActionType, StartSession, StartTask, SolveTask, SeeInstruction
 from flocs.context import Context
-from flocs.entities import Action, Student, TaskSession, SeenInstruction, Session
+from flocs.entities import Action, Student, TaskSession, SeenInstruction
 from flocs.entity_map import EntityMap
 from flocs.reducers import reducer, extract_parameters
-from flocs.state import empty, State
-from .fixtures_entities import s1
+from flocs.state import empty
+from .fixtures_entities import s1, t1, t2
 
 
 def test_get():
@@ -56,9 +56,8 @@ def test_create_student_if_new():
 
 def test_update_last_task_session_id():
     student = Student(student_id=13, last_task_session_id=81, credits=0)
-    session = Session(session_id=2, student_id=13, start=0, end=5)
-    state = State() + student + session + Context(new_id=92)
-    next_state = state.reduce(StartTask(student_id=13, task_id=50))
+    state = empty + t1 + student + Context(new_id=92)
+    next_state = state.reduce(StartTask(student_id=13, task_id=1))
     updated_student = student._replace(last_task_session_id=92)
     assert next_state.students == EntityMap.from_list([updated_student])
 
@@ -66,10 +65,9 @@ def test_update_last_task_session_id():
 def test_create_task_session():
     ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28)
     ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67)
-    session = Session(session_id=2, student_id=13, start=0, end=5)
-    state = State() + session +  ts1 + ts2 + Context(time=7, new_id=92)
-    next_state = state.reduce(StartTask(student_id=13, task_id=50))
-    ts3 = TaskSession(task_session_id=92, student_id=13, task_id=50, start=7, end=7)
+    state = empty + s1 + t2 + ts1 + ts2 + Context(time=7, new_id=92)
+    next_state = state.reduce(StartTask(student_id=1, task_id=2))
+    ts3 = TaskSession(task_session_id=92, student_id=1, task_id=2, start=7, end=7)
     expected_task_sessions = EntityMap.from_list([ts1, ts2, ts3])
     assert next_state.task_sessions == expected_task_sessions
 

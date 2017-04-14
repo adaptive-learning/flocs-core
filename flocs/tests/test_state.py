@@ -88,3 +88,8 @@ def test_reduce_state():
     students = list(next_state.students.values())
     assert len(students) == 1
     assert students[0].student_id == 20
+
+
+def test_reduce_state_by_discarded_action():
+    state = reduce_state(empty, None)
+    assert state == empty

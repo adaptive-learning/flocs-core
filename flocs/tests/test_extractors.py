@@ -1,12 +1,14 @@
 """ Unit tests for extractors
 """
 from datetime import datetime, timedelta
+from flocs.context import Context
 from flocs.extractors import get_level, get_active_credits, get_recommendation
 from flocs.extractors import get_student_instructions, StudentInstruction
 from flocs.extractors import get_student_tasks, StudentTask
 from flocs.extractors import get_practice_overview, PracticeOverview
+from flocs.extractors import get_current_session_id
 from flocs.state import default, empty, State
-from flocs.entities import Student, Instruction, SeenInstruction, TaskSession
+from flocs.entities import Student, Instruction, SeenInstruction, TaskSession, Session
 from .fixtures_entities import s1, t2, t3
 
 
@@ -180,3 +182,40 @@ def test_get_practice_overview_with_tasks():
     state = State.build(s1, t2, TaskSession(student_id=1, task_id=2, solved=True, start=30, end=40))
     overview = get_practice_overview(state, student_id=1)
     assert overview.tasks == [StudentTask(task_id=2, solved=True, time=10)]
+
+
+def test_get_current_session_id_single_session():
+    session = Session(session_id=17, student_id=21, start=None, end=datetime(1, 1, 1, 0))
+    state = empty + session + Context(time=datetime(1, 1, 1, 0))
+    session_id = get_current_session_id(state, student_id=21)
+    assert session_id == 17
+
+
+def test_get_current_session_id_latest():
+    session1 = Session(session_id=17, student_id=21, start=None, end=datetime(1, 1, 1, 0))
+    session2 = Session(session_id=15, student_id=21, start=None, end=datetime(1, 1, 1, 9))
+    state = empty + session1 + session2 + Context(time=datetime(1, 1, 1, 9))
+    session_id = get_current_session_id(state, student_id=21)
+    assert session_id == 15
+
+
+def test_get_current_session_id_multiple_students():
+    session1 = Session(session_id=17, student_id=21, start=None, end=datetime(1, 1, 1, 8, 50))
+    session2 = Session(session_id=15, student_id=22, start=None, end=datetime(1, 1, 1, 9))
+    state = empty + session1 + session2 + Context(time=datetime(1, 1, 1, 9))
+    session_id = get_current_session_id(state, student_id=21)
+    assert session_id == 17
+
+
+def test_get_current_session_first_session():
+    session = Session(session_id=15, student_id=22, start=None, end=datetime(1, 1, 1, 9))
+    state = empty + session + Context(time=datetime(1, 1, 1, 9), new_id=17)
+    session_id = get_current_session_id(state, student_id=21)
+    assert session_id == 17
+
+
+def test_get_current_session_old_session():
+    session = Session(session_id=15, student_id=21, start=None, end=datetime(1, 1, 1, 0))
+    state = empty + session + Context(time=datetime(1, 1, 3, 0), new_id=17)
+    session_id = get_current_session_id(state, student_id=21)
+    assert session_id == 17
