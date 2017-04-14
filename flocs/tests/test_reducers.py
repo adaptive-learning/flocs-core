@@ -2,10 +2,11 @@
 """
 # pylint: disable=no-value-for-parameter, unused-argument
 
+from datetime import datetime
 from flocs import reducers
 from flocs.actions import ActionType, StartSession, StartTask, SolveTask, SeeInstruction
 from flocs.context import Context
-from flocs.entities import Action, Student, TaskSession, SeenInstruction
+from flocs.entities import Action, Student, TaskSession, SeenInstruction, Session
 from flocs.entity_map import EntityMap
 from flocs.reducers import reducer, extract_parameters
 from flocs.state import empty
@@ -62,7 +63,7 @@ def test_update_last_task_session_id():
     assert next_state.students == EntityMap.from_list([updated_student])
 
 
-def test_create_task_session():
+def test_start_task_creating_task_session():
     ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28)
     ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67)
     state = empty + s1 + t2 + ts1 + ts2 + Context(time=7, new_id=92)
@@ -70,6 +71,40 @@ def test_create_task_session():
     ts3 = TaskSession(task_session_id=92, student_id=1, task_id=2, start=7, end=7)
     expected_task_sessions = EntityMap.from_list([ts1, ts2, ts3])
     assert next_state.task_sessions == expected_task_sessions
+
+
+def test_start_task_creating_first_session():
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28)
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67)
+    state = empty + s1 + t2 + ts1 + ts2 + Context(time=datetime(1, 1, 2, 0), new_id=92)
+    next_state = state.reduce(StartTask(student_id=1, task_id=2))
+    session = Session(session_id=92, student_id=1,
+                      start=datetime(1, 1, 2, 0), end=datetime(1, 1, 2, 0))
+    expected_sessions = EntityMap.from_list([session])
+    assert next_state.sessions == expected_sessions
+
+
+def test_start_task_creating_new_session():
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28)
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67)
+    session1 = Session(session_id=1, student_id=1, start=None, end=datetime(1, 1, 1, 0))
+    state = empty + s1 + t2 + ts1 + ts2 + session1 + Context(time=datetime(1, 1, 2, 0), new_id=92)
+    next_state = state.reduce(StartTask(student_id=1, task_id=2))
+    session2 = Session(session_id=92, student_id=1,
+                       start=datetime(1, 1, 2, 0), end=datetime(1, 1, 2, 0))
+    expected_sessions = EntityMap.from_list([session1, session2])
+    assert next_state.sessions == expected_sessions
+
+
+
+def test_start_task_not_creating_session():
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28)
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67)
+    session1 = Session(session_id=1, student_id=1, start=None, end=datetime(1, 1, 1, 0))
+    state = empty + s1 + t2 + ts1 + ts2 + session1 + Context(time=datetime(1, 1, 1, 0), new_id=92)
+    next_state = state.reduce(StartTask(student_id=1, task_id=2))
+    expected_sessions = EntityMap.from_list([session1])
+    assert next_state.sessions == expected_sessions
 
 
 def test_solve_task_session():
