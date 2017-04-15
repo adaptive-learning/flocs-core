@@ -4,7 +4,8 @@ disable=I,
     redefined-outer-name,
     redefined-builtin,
     no-self-use,
-    too-few-public-methods
+    too-few-public-methods,
+    too-many-public-methods
 
 [REPORTS]
 reports=no

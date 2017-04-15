@@ -127,3 +127,11 @@ class TestEntityMap:
     def test_last_none(self):
         entity_map = self.create_entity_map()
         assert entity_map.last() is None
+
+    def test_contains_true(self):
+        entity_map = self.create_entity_map(e1, e2, e3)
+        assert 'i' in entity_map
+
+    def test_contains_false(self):
+        entity_map = self.create_entity_map(e1, e2, e3)
+        assert 'a' not in entity_map
