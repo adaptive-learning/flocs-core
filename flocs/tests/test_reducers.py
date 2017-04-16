@@ -10,7 +10,7 @@ from flocs.entities import Action, Student, TaskSession, SeenInstruction, Sessio
 from flocs.entity_map import EntityMap
 from flocs.reducers import reducer, extract_parameters
 from flocs.state import empty
-from .fixtures_entities import s1, t1, t2
+from .fixtures_entities import s1, t2
 
 
 def test_get():
@@ -40,27 +40,19 @@ def test_reduce_decorator_passing_data():
 
 
 def test_extract_parameters():
-    def tmp_function(students, student_id, last_task_session_id=0):
+    def tmp_function(students, student_id):
         pass
     fn = tmp_function
     parameters = extract_parameters(fn, skip=1)
-    expected_parameters = ('student_id', 'last_task_session_id')
+    expected_parameters = ('student_id',)
     assert parameters == expected_parameters
 
 
 def test_create_student_if_new():
     state = empty + s1
     next_state = state.reduce(StartSession(student_id=37))
-    s2 = Student(student_id=37, last_task_session_id=None, credits=0)
+    s2 = Student(student_id=37, credits=0)
     assert next_state.students == EntityMap.from_list([s1, s2])
-
-
-def test_update_last_task_session_id():
-    student = Student(student_id=13, last_task_session_id=81, credits=0)
-    state = empty + t1 + student + Context(new_id=92)
-    next_state = state.reduce(StartTask(student_id=13, task_id=1))
-    updated_student = student._replace(last_task_session_id=92)
-    assert next_state.students == EntityMap.from_list([updated_student])
 
 
 def test_start_task_creating_task_session():

@@ -76,15 +76,8 @@ def update_session_end(sessions, session_id, context):
 
 @reducer(entities.Student, ActionType.start_session)
 def create_student_if_new(students, student_id):
-    student = Student(student_id=student_id, last_task_session_id=None, credits=0)
+    student = Student(student_id=student_id, credits=0)
     return students.set(student)
-
-
-@reducer(entities.Student, ActionType.start_task)
-def update_last_task_session_id(students, task_session_id, student_id):
-    student = students[student_id]
-    updated_student = student._replace(last_task_session_id=task_session_id)
-    return students.set(updated_student)
 
 
 @reducer(entities.TaskSession, ActionType.start_task)
@@ -159,7 +152,6 @@ _entity_reducer_map = {
         ActionType.solve_task: update_session_end,
     }),
     entities.Student: identity_defaultdict({
-        ActionType.start_task: update_last_task_session_id,
         ActionType.start_session: create_student_if_new,
     }),
     entities.SeenInstruction: identity_defaultdict({

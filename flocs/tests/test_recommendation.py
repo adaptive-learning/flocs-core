@@ -70,8 +70,8 @@ def test_fixed_then_random():
         assert next_task in unsolved
         unsolved.discard(next_task)
         state += TaskSession(task_session_id=k, student_id=1, task_id=next_task,
-                             solved=True, given_up=False)
-        state += Student(student_id=1, last_task_session_id=k, credits=0)
+                             solved=True, given_up=False, end=k)
+        state += Student(student_id=1, credits=0)
 
     # after all tasks were solved, it can pick any task, but should avoid the
     # task which was just solved
@@ -81,8 +81,8 @@ def test_fixed_then_random():
         assert next_task != last_task
         last_task = next_task
         state += TaskSession(task_session_id=k, student_id=1, task_id=next_task,
-                             solved=True, given_up=False)
-        state += Student(student_id=1, last_task_session_id=k, credits=0)
+                             solved=True, given_up=False, end=k)
+        state += Student(student_id=1, credits=0)
 
 
 def test_multicriteria_single_task():

@@ -124,7 +124,7 @@ Just use `SimulationContext`, set randomness seed (or use the default one) and c
 
     >>> print(store.state.students)
     Student entities:
-    * Student(student_id=1, last_task_session_id=None, credits=0)
+    * Student(student_id=1, credits=0)
 
     >>> print(store.state.sessions)
     Session entities:

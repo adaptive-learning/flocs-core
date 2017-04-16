@@ -2,7 +2,7 @@
 """
 from flocs.entities import Task, Student
 
-s1 = Student(student_id=1, last_task_session_id=None, credits=0)
+s1 = Student(student_id=1, credits=0)
 
 t1 = Task(task_id=1, category_id=None, setting=None, solution=None)
 t2 = Task(task_id=2, category_id=None, setting=None, solution=None)

@@ -140,14 +140,14 @@ def test_get_student_instructions_all_seen():
 
 
 def test_get_level():
-    student = Student(student_id=1, last_task_session_id=None, credits=20)
+    student = Student(student_id=1, credits=20)
     state = default + student
     level = get_level(state, student_id=1)
     assert level.level_id == 3
 
 
 def test_get_active_credits():
-    student = Student(student_id=1, last_task_session_id=None, credits=20)
+    student = Student(student_id=1, credits=20)
     state = default + student
     assert get_active_credits(state, student_id=1) == 7
 

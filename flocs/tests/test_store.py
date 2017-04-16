@@ -67,8 +67,6 @@ def test_store_integration(mock_hooks):
     expected_state = (empty + s1 + t1).reduce(action)
     expected_diff = [
         (Action, 0, action),
-        (Student, 1,
-         Student(student_id=1, last_task_session_id=0, credits=0)),
         (TaskSession, 0,
          TaskSession(task_session_id=0, student_id=1, task_id=1,
                      start=static.time, end=static.time)),
@@ -98,4 +96,5 @@ def test_reducing_action_without_optional_parameters():
         action = actions.create(type='start-session', data={})
         store.add(action)
     student = list(store.state.students.values())[0]
-    assert student.last_task_session_id is None
+    assert student.student_id is not None
+    assert student.credits == 0
