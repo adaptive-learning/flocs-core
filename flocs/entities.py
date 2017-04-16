@@ -21,6 +21,11 @@ class Action(namedtuple('Action', ['action_id', 'type', 'data',
     def context(self):
         return Context(time=self.time, randomness=self.randomness)
 
+    def _asdict(self):
+        d = super()._asdict()
+        d['data'] = dict(d['data'])
+        return d
+
 
 Session = namedtuple('Session', [
     'session_id',
