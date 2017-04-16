@@ -9,18 +9,19 @@ from flocs.entities import Level
 from flocs import recommendation
 
 
-Recommendation = namedtuple('Recommendation', [
-    'available',
-    'task_id',
-])
-
-
 PracticeOverview = namedtuple('PracticeOverview', [
     'level',
     'credits',
     'active_credits',
     'instructions',
     'tasks',
+    'recommendation',
+])
+
+
+Recommendation = namedtuple('Recommendation', [
+    'available',
+    'task_id',
 ])
 
 
@@ -88,6 +89,7 @@ def get_practice_overview(state, student_id):
         active_credits=get_active_credits(state, student_id),
         instructions=get_student_instructions(state, student_id),
         tasks=get_student_tasks(state, student_id),
+        recommendation=get_recommendation(state, student_id),
     )
     return overview
 

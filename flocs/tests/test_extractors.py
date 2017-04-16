@@ -5,7 +5,7 @@ from flocs.context import Context
 from flocs.extractors import get_level, get_active_credits, get_recommendation
 from flocs.extractors import get_student_instructions, StudentInstruction
 from flocs.extractors import get_student_tasks, StudentTask
-from flocs.extractors import get_practice_overview, PracticeOverview
+from flocs.extractors import get_practice_overview, PracticeOverview, Recommendation
 from flocs.extractors import get_current_session_id
 from flocs.extractors import get_student_id_for_task_session
 from flocs.state import default, empty, State
@@ -161,6 +161,7 @@ def test_get_practice_overview_empty():
         active_credits=0,
         instructions=[],
         tasks=[],
+        recommendation=Recommendation(available=True, task_id='one-step-forward')
     )
     assert overview == expected_overview
 
