@@ -93,11 +93,13 @@ def test_start_task_not_creating_session():
 
 
 def test_solve_task_session():
-    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28, start=10, end=20)
-    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67, start=30, end=40)
-    state = empty + ts1 + ts2
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28,
+                      start=datetime(1, 1, 1, 10), end=datetime(1, 1, 1, 11))
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67,
+                      start=datetime(1, 1, 1, 12), end=datetime(1, 1, 1, 12))
+    state = empty + ts1 + ts2 + Context(time=datetime(1, 1, 1, 13))
     next_state = state.reduce(SolveTask(task_session_id=14))
-    ts2s = ts2._replace(solved=True)
+    ts2s = ts2._replace(solved=True, end=datetime(1, 1, 1, 13))
     assert next_state.task_sessions == EntityMap.from_list([ts1, ts2s])
 
 

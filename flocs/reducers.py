@@ -95,9 +95,9 @@ def create_task_session(task_sessions, task_session_id, student_id, task_id, con
 
 
 @reducer(entities.TaskSession, ActionType.solve_task)
-def solve_task_session(task_sessions, task_session_id):
+def solve_task_session(task_sessions, task_session_id, context):
     task_session = task_sessions[task_session_id]
-    updated_task_session = task_session._replace(solved=True)
+    updated_task_session = task_session._replace(solved=True, end=context.time)
     return task_sessions.set(updated_task_session)
 
 

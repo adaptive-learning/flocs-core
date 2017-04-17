@@ -74,10 +74,10 @@ def test_reduce_entity_map():
         TaskSession(task_session_id=14, student_id=37, task_id=67)
     ])
     action = Action(action_id=0, type='solve-task', data={'task_session_id': 14},
-                    time=0, randomness=0, version=0)
+                    time=10, randomness=0, version=0)
     next_entity_map = reduce_entity_map(TaskSession, task_sessions, action)
     expected_entity_map = EntityMap.from_list([
-        TaskSession(task_session_id=14, student_id=37, task_id=67, solved=True)
+        TaskSession(task_session_id=14, student_id=37, task_id=67, end=10, solved=True)
     ])
     assert next_entity_map == expected_entity_map
 
