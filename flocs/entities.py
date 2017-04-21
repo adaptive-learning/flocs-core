@@ -1,6 +1,7 @@
 """ Type definitions for domain entities
 """
 from collections import namedtuple
+from datetime import timedelta
 from .context import Context
 
 
@@ -100,7 +101,10 @@ class TaskSession(namedtuple('TaskSession', [
 
     @property
     def time_spent(self):
-        return self.end - self.start
+        delta = self.end - self.start
+        rounded_time = delta - timedelta(microseconds=delta.microseconds)
+        time = max(rounded_time, timedelta(seconds=1))
+        return time
 
 
 Instruction = namedtuple('Instruction', [
