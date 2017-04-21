@@ -77,6 +77,7 @@ Toolbox = namedtuple('Toolbox', [
 
 Block = namedtuple('Block', [
     'block_id',
+    'order',
 ])
 
 
