@@ -19,7 +19,7 @@
 |k |k |kS|kA|kW|k |k |
 ```
 
-- actionsLimit: 5
+- length: 5
 
 ## Solution
 

@@ -15,7 +15,7 @@
 |k |kA|kS|kA|k |
 ```
 - energy: 4
-- actionsLimit: 2
+- length: 2
 
 ## Solution
 

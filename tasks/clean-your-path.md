@@ -18,7 +18,7 @@
 |k |k |k |k |k |kS|k |
 ```
 
-- actionsLimit: 5
+- length: 5
 
 ## Solution
 

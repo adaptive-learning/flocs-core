@@ -21,7 +21,7 @@
 |k |kS|k |k |kW|k |
 ```
 
-- actionsLimit: 7
+- length: 7
 
 ## Solution
 

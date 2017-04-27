@@ -16,7 +16,7 @@
 |kS|k |k |k |kW|
 ```
 
-- actionsLimit: 5
+- length: 5
 
 ## Solution
 

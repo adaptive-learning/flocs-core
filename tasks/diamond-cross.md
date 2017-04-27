@@ -12,7 +12,7 @@
 |kW|k |k |k |kS|
 ```
 
-- actionsLimit: 3
+- length: 3
 
 ## Solution
 

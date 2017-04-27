@@ -19,7 +19,7 @@
 |k |k |kS|k |k |
 ```
 
-- actionsLimit: 4
+- length: 4
 
 ## Solution
 

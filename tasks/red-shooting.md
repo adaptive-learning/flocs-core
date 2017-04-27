@@ -15,7 +15,7 @@
 |kS|k |k |kW|k |k |
 ```
 
-- actionsLimit: 3
+- length: 3
 - energy: 2
 
 ## Solution
