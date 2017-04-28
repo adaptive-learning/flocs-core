@@ -18,7 +18,7 @@
 |kS|k |k |k |kW|k |
 ```
 - energy: 2
-- length: 6
+- length: 10
 
 ## Solution
 

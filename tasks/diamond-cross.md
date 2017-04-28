@@ -12,7 +12,7 @@
 |kW|k |k |k |kS|
 ```
 
-- length: 3
+- length: 5
 
 ## Solution
 

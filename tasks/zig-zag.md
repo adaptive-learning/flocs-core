@@ -14,7 +14,7 @@
 |kA|k |kA|k |kA|
 |k |k |kS|k |k |
 ```
-- length: 2
+- length: 3
 
 ## Solution
 

@@ -16,7 +16,7 @@
 |k |kS|k |kW|k |
 ```
 
-- length: 1
+- length: 2
 
 ## Solution
 

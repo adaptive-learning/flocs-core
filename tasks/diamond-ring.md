@@ -22,7 +22,7 @@
 |k |k |kS|kW|k |k |
 ```
 
-- length: 3
+- length: 6
 
 ## Solution
 

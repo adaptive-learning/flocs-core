@@ -13,7 +13,7 @@
 |kS|k |k |k |k |
 ```
 
-- length: 3
+- length: 4
 
 ## Solution
 
@@ -22,5 +22,5 @@ fly()
 repeat 4:
     right()
 fly()
-        
+
 ```

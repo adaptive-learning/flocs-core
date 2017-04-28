@@ -20,7 +20,7 @@
 |k |kS|k |k |k |
 ```
 
-- length: 4
+- length: 9
 
 ## Solution
 

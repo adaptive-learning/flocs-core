@@ -15,7 +15,7 @@
 |k |kA|kS|kA|k |
 ```
 - energy: 4
-- length: 2
+- length: 3
 
 ## Solution
 
