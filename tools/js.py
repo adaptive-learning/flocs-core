@@ -4,9 +4,7 @@ import json
 from subprocess import Popen, PIPE
 import os.path
 from flocs.utils.names import camel_to_snake_case
-from .config import VISUALIZATION_DIR
-
-JS_ROOT_PATH = os.path.join(VISUALIZATION_DIR, 'node_modules', '.bin')
+from .config import JS_NODE_PATH, JS_TOOLS_DIR
 
 
 def parse_task_source_to_dict(text):
@@ -16,8 +14,8 @@ def parse_task_source_to_dict(text):
 
 def run_js_script(script_name, input_text):
     # TODO: better error handling
-    path = os.path.join(JS_ROOT_PATH, script_name)
-    with Popen(["node", path], stdout=PIPE, stdin=PIPE, stderr=PIPE) as js_process:
+    path = os.path.join(JS_TOOLS_DIR, script_name)
+    with Popen([JS_NODE_PATH, path], stdout=PIPE, stdin=PIPE, stderr=PIPE) as js_process:
         enc_stdout, enc_stderr = js_process.communicate(input=input_text.encode())
     stdout = enc_stdout.decode()
     stderr = enc_stderr.decode()
