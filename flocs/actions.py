@@ -5,6 +5,7 @@ from flocs.action_factory import ActionIntent
 from flocs.extractors import new_id, get_current_session_id
 from flocs.extractors import get_student_id_for_task_session
 from flocs.extractors import get_task_id_for_task_session
+from flocs.extractors import get_next_snapshot_order
 
 
 def create(type='nothing-happens', data=None):
@@ -75,6 +76,39 @@ class StartTask(ActionIntent):
             self.raise_duplicate_action(task_session_id=task_session.task_session_id)
 
 
+class EditProgram(ActionIntent):
+    """ Student has made a change in their program
+    """
+    required_fields = (
+        'task_session_id',
+        'program',
+    )
+    auto_fields = (
+        ('program_snapshot_id', new_id),
+        ('student_id', get_student_id_for_task_session, 'task_session_id'),
+        ('task_id', get_task_id_for_task_session, 'task_session_id'),
+        ('session_id', get_current_session_id, 'student_id'),
+        ('order', get_next_snapshot_order, 'task_session_id'),
+    )
+
+
+class RunProgram(ActionIntent):
+    """ Student has executed their program
+    """
+    required_fields = (
+        'task_session_id',
+        'program',
+        'correct',
+    )
+    auto_fields = (
+        ('program_snapshot_id', new_id),
+        ('student_id', get_student_id_for_task_session, 'task_session_id'),
+        ('task_id', get_task_id_for_task_session, 'task_session_id'),
+        ('session_id', get_current_session_id, 'student_id'),
+        ('order', get_next_snapshot_order, 'task_session_id'),
+    )
+
+
 class SolveTask(ActionIntent):
     """ Student has solved a task
     """
@@ -108,6 +142,8 @@ class ActionType(str, Enum):
     nothing_happens = 'nothing-happens'
     start_session = 'start-session'
     start_task = 'start-task'
+    run_program = 'run-program'
+    edit_program = 'edit-program'
     solve_task = 'solve-task'
     give_up_task = 'give-up-task'
     see_instruction = 'see-instruction'
@@ -118,6 +154,8 @@ class ActionType(str, Enum):
             'nothing-happens': NothingHappens,
             'start-session': StartSession,
             'start-task': StartTask,
+            'run-program': RunProgram,
+            'edit-program': EditProgram,
             'solve-task': SolveTask,
             'give-up-task': GiveUpTask,
             'see-instruction': SeeInstruction,

@@ -34,7 +34,7 @@ class ActionIntent:
                 tpl = 'Missing field {field}, which is required for {action} action'
                 msg = tpl.format(field=field, action=self.get_type_name())
                 raise ValueError(msg)
-        all_data_fields = [field[0] for field in self.auto_fields] + self.required_fields
+        all_data_fields = [field[0] for field in self.auto_fields] + list(self.required_fields)
         for field in self.data:
             if field not in all_data_fields:
                 tpl = 'Unknown field {field} passed for {action} action'

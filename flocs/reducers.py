@@ -4,7 +4,7 @@ from collections import ChainMap, defaultdict
 from inspect import signature
 from . import entities
 from .actions import ActionType
-from .entities import Session, Student, TaskSession, SeenInstruction
+from .entities import Session, Student, TaskSession, SeenInstruction, ProgramSnapshot
 
 
 def get(entity_class, action_type):
@@ -66,7 +66,7 @@ def create_or_update_session(sessions, session_id, student_id, context):
     return sessions.set(session)
 
 
-@reducer(entities.Session, ActionType.solve_task)
+@reducer(entities.Session, [ActionType.solve_task, ActionType.run_program, ActionType.edit_program])
 def update_session_end(sessions, session_id, context):
     if session_id not in sessions:
         return sessions
@@ -101,6 +101,13 @@ def solve_task_session(task_sessions, task_session_id, context):
     return task_sessions.set(updated_task_session)
 
 
+@reducer(entities.TaskSession, [ActionType.run_program, ActionType.edit_program])
+def update_task_session_end(task_sessions, task_session_id, context):
+    task_session = task_sessions[task_session_id]
+    updated_task_session = task_session._replace(end=context.time)
+    return task_sessions.set(updated_task_session)
+
+
 @reducer(entities.TaskSession, ActionType.give_up_task)
 def give_up_task_session(task_sessions, task_session_id):
     task_session = task_sessions[task_session_id]
@@ -128,6 +135,34 @@ def create_or_update_seen_instruction(seen_instructions, seen_instruction_id,
     return updated_seen_instructions
 
 
+@reducer(entities.ProgramSnapshot, ActionType.edit_program)
+def take_snapshot_on_edit(snapshots, program_snapshot_id, task_session_id,
+                          order, program, context):
+    snapshot = ProgramSnapshot(
+        program_snapshot_id=program_snapshot_id,
+        task_session_id=task_session_id,
+        order=order,
+        time=context.time,
+        program=program,
+        execution=False,
+        correct=None)
+    return snapshots.set(snapshot)
+
+
+@reducer(entities.ProgramSnapshot, ActionType.run_program)
+def take_snapshot_on_execution(snapshots, program_snapshot_id, task_session_id,
+                               order, program, correct, context):
+    snapshot = ProgramSnapshot(
+        program_snapshot_id=program_snapshot_id,
+        task_session_id=task_session_id,
+        order=order,
+        time=context.time,
+        program=program,
+        execution=True,
+        correct=correct)
+    return snapshots.set(snapshot)
+
+
 # --------------------------------------------------------------------------
 
 
@@ -149,6 +184,8 @@ _entity_reducer_map = {
     entities.Session: identity_defaultdict({
         ActionType.start_session: create_session,
         ActionType.start_task: create_or_update_session,
+        ActionType.edit_program: update_session_end,
+        ActionType.run_program: update_session_end,
         ActionType.solve_task: update_session_end,
     }),
     entities.Student: identity_defaultdict({
@@ -159,8 +196,14 @@ _entity_reducer_map = {
     }),
     entities.TaskSession: identity_defaultdict({
         ActionType.start_task: create_task_session,
+        ActionType.edit_program: update_task_session_end,
+        ActionType.run_program: update_task_session_end,
         ActionType.solve_task: solve_task_session,
         ActionType.give_up_task: give_up_task_session,
+    }),
+    entities.ProgramSnapshot: identity_defaultdict({
+        ActionType.edit_program: take_snapshot_on_edit,
+        ActionType.run_program: take_snapshot_on_execution,
     }),
     entities.Block: ALWAYS_IDENTITY,
     entities.Category: ALWAYS_IDENTITY,

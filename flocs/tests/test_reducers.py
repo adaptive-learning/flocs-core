@@ -4,12 +4,14 @@
 
 from datetime import datetime
 from flocs import reducers
-from flocs.actions import ActionType, StartSession, StartTask, SolveTask, SeeInstruction
+from flocs.actions import ActionType
+from flocs.actions import StartSession, StartTask, SolveTask, SeeInstruction
+from flocs.actions import RunProgram, EditProgram
 from flocs.context import Context
-from flocs.entities import Action, Student, TaskSession, SeenInstruction, Session
+from flocs.entities import Action, Student, TaskSession, SeenInstruction, Session, ProgramSnapshot
 from flocs.entity_map import EntityMap
 from flocs.reducers import reducer, extract_parameters
-from flocs.state import empty
+from flocs.state import empty, State
 from .fixtures_entities import s1, t2
 
 
@@ -114,6 +116,28 @@ def test_solve_task_updating_session():
     assert next_state.sessions == expected_sessions
 
 
+def test_run_program_updating_session():
+    session = Session(session_id=1, student_id=1, start=None, end=datetime(1, 1, 1, 0))
+    ts = TaskSession(task_session_id=21, student_id=1, task_id=2,
+                     start=datetime(1, 1, 1, 0), end=datetime(1, 1, 1, 0))
+    state = empty + s1 + t2 + ts + session + Context(time=datetime(1, 1, 1, 0, 5))
+    next_state = state.reduce(RunProgram(task_session_id=21, program=None, correct=False))
+    updated_session = session._replace(end=datetime(1, 1, 1, 0, 5))
+    expected_sessions = EntityMap.from_list([updated_session])
+    assert next_state.sessions == expected_sessions
+
+
+def test_run_program_updating_task_session():
+    ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28,
+                      start=datetime(1, 1, 1, 10), end=datetime(1, 1, 1, 11))
+    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67,
+                      start=datetime(1, 1, 1, 12), end=datetime(1, 1, 1, 12))
+    state = empty + ts1 + ts2 + Context(time=datetime(1, 1, 1, 20))
+    next_state = state.reduce(RunProgram(task_session_id=14, program=None, correct=False))
+    ts2_updated = ts2._replace(end=datetime(1, 1, 1, 20))
+    assert next_state.task_sessions == EntityMap.from_list([ts1, ts2_updated])
+
+
 def test_see_instruction():
     si1 = SeenInstruction(seen_instruction_id=10, student_id=1, instruction_id=2)
     state = empty + si1 + Context(new_id=15)
@@ -135,6 +159,77 @@ def test_see_same_instruction_again():
     state = empty + si1 + Context(new_id=15)
     next_state = state.reduce(SeeInstruction(student_id=1, instruction_id=2))
     assert next_state.seen_instructions == EntityMap.from_list([si1])
+
+
+def test_run_program_creates_snapshot():
+    ts = TaskSession(task_session_id=14, student_id=37, task_id=67,
+                     start=datetime(1, 1, 1, 12), end=datetime(1, 1, 1, 12))
+    state = empty + ts + Context(time=datetime(1, 1, 1, 20), new_id=10)
+    next_state = state.reduce(RunProgram(task_session_id=14, program='x', correct=False))
+    assert next_state.program_snapshots == EntityMap.from_list([
+        ProgramSnapshot(program_snapshot_id=10, task_session_id=14, order=1,
+                        time=datetime(1, 1, 1, 20), program='x', execution=True, correct=False),
+    ])
+
+
+def test_run_program_creates_snapshot_correct():
+    ts = TaskSession(task_session_id=14, student_id=37, task_id=67,
+                     start=datetime(1, 1, 1, 12), end=datetime(1, 1, 1, 12))
+    state = empty + ts + Context(time=datetime(1, 1, 1, 20), new_id=10)
+    next_state = state.reduce(RunProgram(task_session_id=14, program='x', correct=True))
+    assert next_state.program_snapshots == EntityMap.from_list([
+        ProgramSnapshot(program_snapshot_id=10, task_session_id=14, order=1,
+                        time=datetime(1, 1, 1, 20), program='x', execution=True, correct=True),
+    ])
+
+
+def test_run_program_again_creates_another_snapshot():
+    ts = TaskSession(
+        task_session_id=14,
+        student_id=37,
+        task_id=67,
+        start=datetime(1, 1, 1, 12),
+        end=datetime(1, 1, 1, 12))
+    ps = ProgramSnapshot(
+        program_snapshot_id=10,
+        task_session_id=14,
+        order=1,
+        time=datetime(1, 1, 1, 20),
+        program='x',
+        execution=False,
+        correct=None)
+    state = State.build(
+        ts, ps,
+        Context(time=datetime(1, 1, 1, 20), new_id=10))
+    next_state = state.reduce(RunProgram(task_session_id=14, program='y', correct=True))
+    assert next_state.program_snapshots == EntityMap.from_list([
+        ps,
+        ProgramSnapshot(
+            program_snapshot_id=10,
+            task_session_id=14,
+            order=2,
+            time=datetime(1, 1, 1, 20),
+            program='y',
+            execution=True,
+            correct=True),
+    ])
+
+
+def test_edit_program_creates_snapshot():
+    ts = TaskSession(task_session_id=14, student_id=37, task_id=67,
+                     start=datetime(1, 1, 1, 12), end=datetime(1, 1, 1, 12))
+    state = empty + ts + Context(time=datetime(1, 1, 1, 20), new_id=10)
+    next_state = state.reduce(EditProgram(task_session_id=14, program='x'))
+    assert next_state.program_snapshots == EntityMap.from_list([
+        ProgramSnapshot(
+            program_snapshot_id=10,
+            task_session_id=14,
+            order=1,
+            time=datetime(1, 1, 1, 20),
+            program='x',
+            execution=False,
+            correct=None),
+    ])
 
 
 def test_identity_defaultdict():

@@ -10,7 +10,7 @@ from .action_factory import ActionIntent
 from .context import static, Context
 from .data import blocks, instructions, levels, toolboxes, categories, tasks
 from .entities import Block, Instruction, Level, Toolbox, Category, Task
-from .entities import Action, Student, TaskSession, SeenInstruction, Session
+from .entities import Action, Student, TaskSession, SeenInstruction, Session, ProgramSnapshot
 from .entity_map import EntityMap
 from . import reducers
 
@@ -97,6 +97,10 @@ class State(namedtuple('State', ['entities', 'context'])):
         return self.entities[Instruction]
 
     @property
+    def program_snapshots(self):
+        return self.entities[ProgramSnapshot]
+
+    @property
     def seen_instructions(self):
         return self.entities[SeenInstruction]
 
@@ -159,6 +163,7 @@ empty = State(entities=pmap({
     TaskSession: EntityMap(),
     SeenInstruction: EntityMap(),
     Session: EntityMap(),
+    ProgramSnapshot: EntityMap(),
 }), context=static)
 
 default = State(entities=pmap({
@@ -173,4 +178,5 @@ default = State(entities=pmap({
     TaskSession: EntityMap(),
     SeenInstruction: EntityMap(),
     Session: EntityMap(),
+    ProgramSnapshot: EntityMap(),
 }), context=static)

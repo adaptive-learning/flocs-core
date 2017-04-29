@@ -8,8 +8,9 @@ from flocs.extractors import get_student_tasks, StudentTask
 from flocs.extractors import get_practice_overview, PracticeOverview, Recommendation
 from flocs.extractors import get_current_session_id
 from flocs.extractors import get_student_id_for_task_session
+from flocs.extractors import get_next_snapshot_order
 from flocs.state import default, empty, State
-from flocs.entities import Student, Instruction, SeenInstruction, TaskSession, Session
+from flocs.entities import Student, Instruction, SeenInstruction, TaskSession, Session, ProgramSnapshot
 from .fixtures_entities import s1, t2, t3
 
 
@@ -235,3 +236,33 @@ def test_get_student_id_for_task_session():
     state = empty + TaskSession(task_session_id=35, student_id=22, task_id=2, start=0, end=0)
     student_id = get_student_id_for_task_session(state, 35)
     assert student_id == 22
+
+
+def test_get_first_snapshot_order():
+    state = State.build(
+        ProgramSnapshot(program_snapshot_id=10, task_session_id=8, order=1,
+                        time=None, program=None, execution=None, correct=None),
+        ProgramSnapshot(program_snapshot_id=10, task_session_id=8, order=2,
+                        time=None, program=None, execution=None, correct=None),
+    )
+    next_order = get_next_snapshot_order(state, task_session_id=7)
+    assert next_order == 1
+
+
+def test_get_next_snapshot_order():
+    state = State.build(
+        ProgramSnapshot(program_snapshot_id=10, task_session_id=7, order=1,
+                        time=None, program=None, execution=None, correct=None),
+        ProgramSnapshot(program_snapshot_id=11, task_session_id=7, order=2,
+                        time=None, program=None, execution=None, correct=None),
+        ProgramSnapshot(program_snapshot_id=12, task_session_id=8, order=1,
+                        time=None, program=None, execution=None, correct=None),
+        ProgramSnapshot(program_snapshot_id=13, task_session_id=8, order=2,
+                        time=None, program=None, execution=None, correct=None),
+        ProgramSnapshot(program_snapshot_id=14, task_session_id=8, order=3,
+                        time=None, program=None, execution=None, correct=None),
+        ProgramSnapshot(program_snapshot_id=15, task_session_id=8, order=4,
+                        time=None, program=None, execution=None, correct=None),
+    )
+    next_order = get_next_snapshot_order(state, task_session_id=7)
+    assert next_order == 3

@@ -107,6 +107,17 @@ class TaskSession(namedtuple('TaskSession', [
         return time
 
 
+ProgramSnapshot = namedtuple('ProgramSnapshot', [
+    'program_snapshot_id',
+    'task_session_id',
+    'order',
+    'time',
+    'program',
+    'execution', # snapshots are taken when a program is executed (-> True) or edited (-> False)
+    'correct',  # boolean for executions, None for edits
+])
+
+
 Instruction = namedtuple('Instruction', [
     'instruction_id',
 ])

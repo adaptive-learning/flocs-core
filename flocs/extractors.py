@@ -175,3 +175,8 @@ def levels_with_total_credits(state):
 
 def get_task_stats(state, task_id):
     raise NotImplementedError
+
+
+def get_next_snapshot_order(state, task_session_id):
+    snapshots = state.program_snapshots.filter(task_session_id=task_session_id)
+    return len(snapshots) + 1
