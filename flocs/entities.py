@@ -64,7 +64,7 @@ Category = namedtuple('Category', [
 ])
 
 
-Level = namedtuple('level', [
+Level = namedtuple('Level', [
     'level_id',
     'credits',
 ])

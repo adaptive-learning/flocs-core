@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from functools import reduce
 from .action_factory import DuplicateAction
 from .context import dynamic
+from .export import export_state
 from .state import empty, reduce_state
 
 
@@ -50,6 +51,10 @@ class Store:
         self.initial_state = self.state
         self.actions = []
         self.hooks.post_commit(state=self.state, diff=diff)
+
+    def export(self, dirpath):
+        export_state(dirpath=dirpath, state=self.state)
+
 
     @classmethod
     @contextmanager

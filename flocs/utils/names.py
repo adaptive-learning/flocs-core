@@ -30,3 +30,11 @@ def kebab_to_snake_case(name):
 @kebab_to_snake_case.register(dict)
 def _kebab_to_snake_case(mapping):
     return {kebab_to_snake_case(key): value for key, value in mapping.items()}
+
+
+def pluralize(name):
+    if name[-1] in 'szx':
+        return name + 'es'
+    if name[-1] == 'y':
+        return name[:-1] + 'ies'
+    return name + 's'
