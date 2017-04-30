@@ -97,6 +97,8 @@ def create_task_session(task_sessions, task_session_id, student_id, task_id, con
 @reducer(entities.TaskSession, ActionType.solve_task)
 def solve_task_session(task_sessions, task_session_id, context):
     task_session = task_sessions[task_session_id]
+    if task_session.solved:
+        return task_sessions
     updated_task_session = task_session._replace(solved=True, end=context.time)
     return task_sessions.set(updated_task_session)
 
@@ -104,6 +106,8 @@ def solve_task_session(task_sessions, task_session_id, context):
 @reducer(entities.TaskSession, [ActionType.run_program, ActionType.edit_program])
 def update_task_session_end(task_sessions, task_session_id, context):
     task_session = task_sessions[task_session_id]
+    if task_session.solved:
+        return task_sessions
     updated_task_session = task_session._replace(end=context.time)
     return task_sessions.set(updated_task_session)
 
