@@ -12,10 +12,11 @@ def main():
         packages=[
             'flocs',
             'flocs.data',
+            'flocs.utils',
             'flocs.tests',
         ],
         install_requires=[
-            'pyrsistent>=0.12<0.13',
+            'pyrsistent==0.12.1',
         ],
         license='MIT',
     )
