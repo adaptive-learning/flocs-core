@@ -101,15 +101,21 @@ def test_not_discarding_start_task_action():
 
 
 def test_create_solve_task_action():
-    session = Session(session_id=58, student_id=22, start=0, end=datetime(1, 1, 1, 0))
-    ts = TaskSession(task_session_id=35, student_id=22, task_id=2, start=0,
+    session = Session(session_id=58, student_id=1, start=0, end=datetime(1, 1, 1, 0))
+    ts = TaskSession(task_session_id=35, student_id=1, task_id=2, start=0,
                      end=datetime(1, 1, 1, 0))
-    state = empty + session + ts + Context(time=datetime(1, 1, 1, 0), new_id=4)
+    state = empty + session + s1 + ts + Context(time=datetime(1, 1, 1, 0), new_id=4)
     action = SolveTask(task_session_id=35).at(state)
     expected_action = Action(
         action_id=4,
         type='solve-task',
-        data={'task_session_id': 35, 'student_id': 22, 'task_id': 2, 'session_id': 58},
+        data={
+            'task_session_id': 35,
+            'student_id': 1,
+            'task_id': 2,
+            'session_id': 58,
+            'earned_credits': 0,
+        },
         time=datetime(1, 1, 1, 0),
         randomness=0,
         version=__version__,

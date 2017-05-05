@@ -89,6 +89,10 @@ class State(namedtuple('State', ['entities', 'context'])):
         return self.entities[Action]
 
     @property
+    def categories(self):
+        return self.entities[Category]
+
+    @property
     def levels(self):
         return self.entities[Level]
 

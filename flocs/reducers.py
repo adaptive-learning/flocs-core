@@ -80,6 +80,13 @@ def create_student_if_new(students, student_id):
     return students.set(student)
 
 
+@reducer(entities.Student, ActionType.solve_task)
+def add_credits_for_solved_task(students, student_id, earned_credits):
+    student = students[student_id]
+    updated_student = student._replace(credits=student.credits + earned_credits)
+    return students.set(updated_student)
+
+
 @reducer(entities.TaskSession, ActionType.start_task)
 def create_task_session(task_sessions, task_session_id, student_id, task_id, context):
     task_session = TaskSession(
@@ -194,6 +201,7 @@ _entity_reducer_map = {
     }),
     entities.Student: identity_defaultdict({
         ActionType.start_session: create_student_if_new,
+        ActionType.solve_task: add_credits_for_solved_task,
     }),
     entities.SeenInstruction: identity_defaultdict({
         ActionType.see_instruction: create_or_update_seen_instruction,

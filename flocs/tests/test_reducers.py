@@ -8,6 +8,7 @@ from flocs.actions import ActionType
 from flocs.actions import StartSession, StartTask, SolveTask, SeeInstruction
 from flocs.actions import RunProgram, EditProgram
 from flocs.context import Context
+from flocs.entities import Level, Category, Task
 from flocs.entities import Action, Student, TaskSession, SeenInstruction, Session, ProgramSnapshot
 from flocs.entity_map import EntityMap
 from flocs.reducers import reducer, extract_parameters
@@ -97,9 +98,9 @@ def test_start_task_not_creating_session():
 def test_solve_task_session():
     ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28,
                       start=datetime(1, 1, 1, 10), end=datetime(1, 1, 1, 11))
-    ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67,
+    ts2 = TaskSession(task_session_id=14, student_id=1, task_id=67,
                       start=datetime(1, 1, 1, 12), end=datetime(1, 1, 1, 12))
-    state = empty + ts1 + ts2 + Context(time=datetime(1, 1, 1, 13))
+    state = empty + s1 + ts1 + ts2 + Context(time=datetime(1, 1, 1, 13))
     next_state = state.reduce(SolveTask(task_session_id=14))
     ts2s = ts2._replace(solved=True, end=datetime(1, 1, 1, 13))
     assert next_state.task_sessions == EntityMap.from_list([ts1, ts2s])
@@ -114,6 +115,52 @@ def test_solve_task_updating_session():
     updated_session = session._replace(end=datetime(1, 1, 1, 0, 5))
     expected_sessions = EntityMap.from_list([updated_session])
     assert next_state.sessions == expected_sessions
+
+
+def test_solving_task_adds_credits():
+    state = State.build(
+        Student(student_id=1, credits=10),
+        Level(level_id=2, credits=15),
+        Category(category_id=3, level_id=2, toolbox_id=None),
+        Task(task_id=4, category_id=3, setting=None, solution=None),
+        TaskSession(task_session_id=5, student_id=1, task_id=4)
+    )
+    next_state = state.reduce(SolveTask(task_session_id=5))
+    # currently, we add as many credits as is the level of the task category
+    s1_updated = s1._replace(credits=12)
+    assert next_state.students == EntityMap.from_list([s1_updated])
+
+
+def test_solving_multiple_task_adds_more_credits():
+    state = State.build(
+        Student(student_id=1, credits=10),
+        Level(level_id=2, credits=15),
+        Level(level_id=3, credits=25),
+        Category(category_id=12, level_id=2, toolbox_id=None),
+        Category(category_id=13, level_id=3, toolbox_id=None),
+        Task(task_id=42, category_id=12, setting=None, solution=None),
+        Task(task_id=43, category_id=13, setting=None, solution=None),
+        TaskSession(task_session_id=52, student_id=1, task_id=42),
+        TaskSession(task_session_id=53, student_id=1, task_id=43)
+    )
+    next_state1 = state.reduce(SolveTask(task_session_id=52))
+    next_state2 = next_state1.reduce(SolveTask(task_session_id=53))
+    s1_updated = s1._replace(credits=15)
+    assert next_state2.students == EntityMap.from_list([s1_updated])
+
+
+def test_solving_task_again_dont_add_credits():
+    state = State.build(
+        Student(student_id=1, credits=10),
+        Level(level_id=2, credits=15),
+        Category(category_id=3, level_id=2, toolbox_id=None),
+        Task(task_id=4, category_id=3, setting=None, solution=None),
+        TaskSession(task_session_id=5, student_id=1, task_id=4, solved=True),
+        TaskSession(task_session_id=6, student_id=1, task_id=4, solved=False),
+    )
+    next_state = state.reduce(SolveTask(task_session_id=6))
+    s1_updated = s1._replace(credits=10)
+    assert next_state.students == EntityMap.from_list([s1_updated])
 
 
 def test_run_program_updating_session():

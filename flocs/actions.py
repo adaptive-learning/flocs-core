@@ -6,6 +6,7 @@ from flocs.extractors import new_id, get_current_session_id
 from flocs.extractors import get_student_id_for_task_session
 from flocs.extractors import get_task_id_for_task_session
 from flocs.extractors import get_next_snapshot_order
+from flocs.extractors import get_earned_credits
 
 
 def create(type='nothing-happens', data=None):
@@ -117,6 +118,7 @@ class SolveTask(ActionIntent):
         ('student_id', get_student_id_for_task_session, 'task_session_id'),
         ('task_id', get_task_id_for_task_session, 'task_session_id'),
         ('session_id', get_current_session_id, 'student_id'),
+        ('earned_credits', get_earned_credits, 'student_id', 'task_id'),
     ]
 
 
