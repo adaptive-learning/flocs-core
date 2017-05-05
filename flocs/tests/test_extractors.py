@@ -162,6 +162,7 @@ def test_get_active_credits():
 def test_get_practice_overview_empty():
     state = empty + s1
     overview = get_practice_overview(state, student_id=1)
+    # there are no levels, instructions nor tasks in empty state
     expected_overview = PracticeOverview(
         level=0,
         credits=0,

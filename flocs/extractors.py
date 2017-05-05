@@ -144,33 +144,35 @@ def get_level(state, student_id):
         return Level(level_id=0, credits=0)
     student = state.students[student_id]
     level = Level(level_id=0, credits=0)
-    levels = levels_with_total_credits(state)
-    for next_level, needed_credits in chain(levels, [(None, inf)]):
+    for next_level, needed_credits in needed_credits_for_levels(state):
         if student.credits >= needed_credits:
             level = next_level
         else:
             return level
+    return level
 
 
 def get_active_credits(state, student_id):
     student = state.students[student_id]
     level = get_level(state, student_id)
-    level_total_credits = get_level_total_credits(state, level.level_id)
-    return student.credits - level_total_credits
+    passive_credits = get_needed_credits_for_level(state, level.level_id)
+    active_credits = student.credits - passive_credits
+    return active_credits
 
 
-def get_level_total_credits(state, level_id):
-    for level, credits in levels_with_total_credits(state):
+def get_needed_credits_for_level(state, level_id):
+    for level, credits in needed_credits_for_levels(state):
         if level.level_id == level_id:
             return credits
     return 0
 
 
-def levels_with_total_credits(state):
+def needed_credits_for_levels(state):
     levels = state.levels.order_by('level_id').values()
-    total_credits = accumulate(chain([0], levels), lambda c, l: c + l.credits)
-    next(total_credits)  # omit the added 0
-    return zip(levels, total_credits)
+    # 0 credits needed to already be on the first level
+    needed_credits = accumulate(chain([0], levels), lambda c, l: c + l.credits)
+    # last accumulated value is not used - one can't go beyond the last level
+    return zip(levels, needed_credits)
 
 
 def get_task_stats(state, task_id):
