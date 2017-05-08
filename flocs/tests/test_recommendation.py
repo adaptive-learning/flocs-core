@@ -6,7 +6,7 @@ from flocs import recommendation
 from flocs.context import Context
 from flocs.entities import TaskSession, Student
 from flocs.state import State, empty, default
-from .fixtures_entities import s1, t2, t3, t5, t9
+from .fixtures_entities import s1, s2, t2, t3, t5, t9, c1, c2, c3, l1, l2, l3, ts1
 
 
 def test_randomly():
@@ -76,7 +76,7 @@ def test_fixed_then_random():
     # after all tasks were solved, it can pick any task, but should avoid the
     # task which was just solved
     last_task = next_task
-    for k in range(m, 2*m):
+    for k in range(m, 2 * m):
         next_task = recommendation.fixed_then_random(state, student_id=1)
         assert next_task != last_task
         last_task = next_task
@@ -99,3 +99,28 @@ def test_multicriteria():
     criteria_b = [recommendation.Criterion(0.3, f1), recommendation.Criterion(0.7, f2)]
     assert recommendation.multicriteria(state, student_id=1, criteria=criteria_a) == 3
     assert recommendation.multicriteria(state, student_id=1, criteria=criteria_b) == 2
+
+
+def test_random_by_level():
+    state = empty + s2 + ts1 + t2 + t5 + t9 + c1 + c2 + c3 + Context(randomness=0) + l1 + l2 + l3
+    assert recommendation.random_by_level(state, 2, 2) == 5
+
+
+def test_exponentially_weighted_tasks():
+    state = empty + t2 + t5 + t9 + c1 + c2 + c3
+    weighted_tasks, sum_of_weights = recommendation._exponentially_weighted_tasks(state, 2, {2}, 2)
+    assert set(weighted_tasks) == {(2, 0), (5, 2**2), (9, 0)}
+    assert sum_of_weights == 0 + 2**2 + 0
+
+
+def test_roulette():
+    weighted_tasks = [(1, 1), (2, 2), (3, 0), (4, 4)]
+    roulette = partial(recommendation._roulette_wheel_selection, weighted_tasks=weighted_tasks)
+    assert roulette(number=0) == 1
+    assert roulette(number=1) == 2
+    assert roulette(number=2) == 2
+    assert roulette(number=3) == 4
+    with pytest.raises(ValueError):
+        roulette(number=-1)
+    with pytest.raises(ValueError):
+        roulette(number=sum(w for _, w in weighted_tasks))

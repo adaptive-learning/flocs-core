@@ -15,6 +15,7 @@ Pygments==2.2.0
 pylint==1.6.4
 pyrsistent==0.12.1
 pytest==2.9.2
+pytest-mock==1.6.0
 simplegeneric==0.8.1
 six==1.10.0
 traitlets==4.3.2
