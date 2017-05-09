@@ -9,6 +9,7 @@ instructions = (
     Instruction(instruction_id='env.toolbox'),
     Instruction(instruction_id='env.snapping'),
     Instruction(instruction_id='env.controls'),
+    Instruction(instruction_id='env.task-editor'),
     Instruction(instruction_id='object.asteroid'),
     Instruction(instruction_id='object.meteoroid'),
     Instruction(instruction_id='object.diamond'),
