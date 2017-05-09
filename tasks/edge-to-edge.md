@@ -26,7 +26,7 @@
 ```
 while color() != 'b':
     while position() < 5:
-    right()
+        right()
     while position() > 1:
-    left()
+        left()
 ```

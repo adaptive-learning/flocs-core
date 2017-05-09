@@ -1,5 +1,5 @@
 # yellow-is-not-red
-- category: loops
+- category: while
 
 ## Setting
 

@@ -24,10 +24,10 @@
 ```
 while color() != 'b':
     if color() == 'k':
-    fly()
-else:
-    if color() == 'y':
-    left()
-else:
-    right()
+        fly()
+    else:
+        if color() == 'y':
+            left()
+        else:
+            right()
 ```

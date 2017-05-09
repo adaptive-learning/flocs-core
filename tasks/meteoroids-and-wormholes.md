@@ -1,4 +1,4 @@
-# meteorites-and-wormholes
+# meteoroids-and-wormholes
 - category: comparing
 
 ## Setting
@@ -27,7 +27,7 @@
 ```
 while color() != 'b':
     while position() < 5:
-    right()
+        right()
     shoot()
     fly()
 ```

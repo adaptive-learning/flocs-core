@@ -24,9 +24,9 @@
 ```
 repeat 5:
     if color() != 'y':
-    repeat 3:
-    left()
-else:
-    repeat 3:
-    right()
+        repeat 3:
+            left()
+    else:
+        repeat 3:
+            right()
 ```
