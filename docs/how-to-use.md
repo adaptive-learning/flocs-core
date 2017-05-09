@@ -126,7 +126,7 @@ Just use `SimulationContext`, set randomness seed (or use the default one) and c
     Student entities:
     * Student(student_id=1, credits=0)
 
-    >>> print(store.state.sessions)
+    >>> print(store.state.sessions.order_by('end'))
     Session entities:
     * Session(..., student_id=1, ..., end=datetime.datetime(1, 1, 1, 0, 0))
     * Session(..., student_id=1, ..., end=datetime.datetime(1, 1, 1, 10, 0))
@@ -135,7 +135,7 @@ Just use `SimulationContext`, set randomness seed (or use the default one) and c
     TaskSession entities:
     * TaskSession(..., student_id=1, task_id='ladder', ...)
 
-    >>> print(store.state.actions)
+    >>> print(store.state.actions.order_by('time'))
     Action entities:
     * Action(..., type='start-session', ...)
     * Action(..., type='start-task', ...)
