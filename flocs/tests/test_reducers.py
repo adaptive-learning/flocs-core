@@ -58,6 +58,13 @@ def test_create_student_if_new():
     assert next_state.students == EntityMap.from_list([s1, s2])
 
 
+def test_do_not_create_student_if_not_new():
+    s = s1._replace(credits=15)
+    state = empty + s + Context(new_id=20)
+    next_state = state.reduce(StartSession(student_id=1))
+    assert next_state.students == EntityMap.from_list([s])
+
+
 def test_start_task_creating_task_session():
     ts1 = TaskSession(task_session_id=81, student_id=13, task_id=28)
     ts2 = TaskSession(task_session_id=14, student_id=37, task_id=67)

@@ -76,8 +76,11 @@ def update_session_end(sessions, session_id, context):
 
 @reducer(entities.Student, ActionType.start_session)
 def create_student_if_new(students, student_id):
-    student = Student(student_id=student_id, credits=0)
-    return students.set(student)
+    if student_id in students:
+        return students
+    new_student = Student(student_id=student_id, credits=0)
+    updated_students = students.set(new_student)
+    return updated_students
 
 
 @reducer(entities.Student, ActionType.solve_task)
