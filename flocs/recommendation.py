@@ -152,8 +152,6 @@ def _exponentially_weighted_tasks(state, student_id, growth_factor=2):
             # Tl - a task level
             # Sl - a student level
             # S - how many times the student has successfully solved the given task
-            print(solved_counter[task_id])
-            print(solved_counter)
             weight = 100 * growth_factor ** (task_level - (student_level_id * solved_counter[task_id]))
         weighted_tasks.append((task_id, weight))
         sum_of_weights += weight
