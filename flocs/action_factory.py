@@ -2,7 +2,7 @@ from collections import ChainMap
 from pyrsistent import pmap
 from flocs import entities
 from flocs.utils.names import kebab_to_snake_case, camel_to_kebab_case
-from flocs.extractors import new_id
+from flocs.common import new_id
 
 
 class ActionIntent:

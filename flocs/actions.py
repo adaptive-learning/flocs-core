@@ -2,11 +2,9 @@
 """
 from enum import Enum
 from flocs.action_factory import ActionIntent
-from flocs.extractors import new_id, get_current_session_id
-from flocs.extractors import get_student_id_for_task_session
-from flocs.extractors import get_task_id_for_task_session
-from flocs.extractors import get_next_snapshot_order
-from flocs.extractors import get_earned_credits
+from flocs.common import new_id, get_current_session_id, get_next_snapshot_order
+from flocs.task import get_earned_credits
+from flocs.task_session import get_student_id, get_task_id
 
 
 def create(type='nothing-happens', data=None):
@@ -86,8 +84,8 @@ class EditProgram(ActionIntent):
     )
     auto_fields = (
         ('program_snapshot_id', new_id),
-        ('student_id', get_student_id_for_task_session, 'task_session_id'),
-        ('task_id', get_task_id_for_task_session, 'task_session_id'),
+        ('student_id', get_student_id, 'task_session_id'),
+        ('task_id', get_task_id, 'task_session_id'),
         ('session_id', get_current_session_id, 'student_id'),
         ('order', get_next_snapshot_order, 'task_session_id'),
     )
@@ -103,8 +101,8 @@ class RunProgram(ActionIntent):
     )
     auto_fields = (
         ('program_snapshot_id', new_id),
-        ('student_id', get_student_id_for_task_session, 'task_session_id'),
-        ('task_id', get_task_id_for_task_session, 'task_session_id'),
+        ('student_id', get_student_id, 'task_session_id'),
+        ('task_id', get_task_id, 'task_session_id'),
         ('session_id', get_current_session_id, 'student_id'),
         ('order', get_next_snapshot_order, 'task_session_id'),
     )
@@ -115,8 +113,8 @@ class SolveTask(ActionIntent):
     """
     required_fields = ['task_session_id']
     auto_fields = [
-        ('student_id', get_student_id_for_task_session, 'task_session_id'),
-        ('task_id', get_task_id_for_task_session, 'task_session_id'),
+        ('student_id', get_student_id, 'task_session_id'),
+        ('task_id', get_task_id, 'task_session_id'),
         ('session_id', get_current_session_id, 'student_id'),
         ('earned_credits', get_earned_credits, 'student_id', 'task_id'),
     ]

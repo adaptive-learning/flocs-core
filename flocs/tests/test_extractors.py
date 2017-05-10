@@ -2,9 +2,8 @@
 """
 from datetime import datetime
 from flocs.context import Context
-from flocs.extractors import get_current_session_id
-from flocs.extractors import get_student_id_for_task_session
-from flocs.extractors import get_next_snapshot_order
+from flocs.common import get_current_session_id, get_next_snapshot_order
+from flocs.task_session import get_student_id
 from flocs.state import empty, State
 from flocs.entities import TaskSession, Session, ProgramSnapshot
 
@@ -48,7 +47,7 @@ def test_get_current_session_old_session():
 
 def test_get_student_id_for_task_session():
     state = empty + TaskSession(task_session_id=35, student_id=22, task_id=2, start=0, end=0)
-    student_id = get_student_id_for_task_session(state, 35)
+    student_id = get_student_id(state, 35)
     assert student_id == 22
 
 

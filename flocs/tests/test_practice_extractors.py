@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from flocs.state import default, empty, State
-from flocs.practice_extractors import get_practice_overview, get_recommendation, PracticeOverview, Recommendation
-from flocs.student_extractors import StudentInstruction, StudentTask
+from flocs.extractors import get_practice_overview, get_recommendation, PracticeOverview, Recommendation
+from flocs.student import StudentInstruction, StudentTask
 from flocs.entities import Instruction, TaskSession
 from .fixtures_entities import s1, t2
 
@@ -19,6 +19,7 @@ def test_get_recommendation(mocker):
     recommendation = get_recommendation(state, student_id=1)
     assert recommendation.available
     assert recommendation.task_id == DEFAULT_RECOMMENDED_TASK_ID
+    random_by_level.assert_called()
 
 
 def test_get_practice_overview_empty(mocker):

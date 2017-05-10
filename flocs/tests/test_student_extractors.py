@@ -2,16 +2,16 @@
 """
 from datetime import datetime, timedelta
 from flocs.state import default, empty, State
-from flocs.student_extractors import get_student_level, get_active_credits
-from flocs.student_extractors import get_student_instructions, StudentInstruction
-from flocs.student_extractors import get_student_tasks, StudentTask
+from flocs.student import get_level, get_active_credits
+from flocs.student import get_instructions, StudentInstruction
+from flocs.student import get_tasks, StudentTask
 from flocs.entities import Student, Instruction, SeenInstruction, TaskSession
 from .fixtures_entities import s1, t2, t3
 
 
 def test_get_student_tasks_no_task_sessions():
     state = empty + s1 + t2 + t3
-    student_tasks = get_student_tasks(state, student_id=1)
+    student_tasks = get_tasks(state, student_id=1)
     expected_student_tasks = {
         StudentTask(task_id=2, solved=False, time=None),
         StudentTask(task_id=3, solved=False, time=None),
@@ -23,7 +23,7 @@ def test_get_student_tasks_with_solved_task_session():
     state = empty + s1 + t2 + t3 \
             + TaskSession(task_session_id=1, student_id=1, task_id=2, solved=True,
                           start=datetime(1, 1, 1, 0, 0, 30), end=datetime(1, 1, 1, 0, 0, 40))
-    student_tasks = get_student_tasks(state, student_id=1)
+    student_tasks = get_tasks(state, student_id=1)
     expected_student_tasks = {
         StudentTask(task_id=2, solved=True, time=timedelta(seconds=10)),
         StudentTask(task_id=3, solved=False, time=None),
@@ -35,7 +35,7 @@ def test_get_student_tasks_with_unsolved_task_session():
     state = empty + s1 + t2 + t3 \
             + TaskSession(task_session_id=1, student_id=1, task_id=2,
                           start=datetime(1, 1, 1, 0, 0, 30), end=datetime(1, 1, 1, 0, 0, 40))
-    student_tasks = get_student_tasks(state, student_id=1)
+    student_tasks = get_tasks(state, student_id=1)
     expected_student_tasks = {
         StudentTask(task_id=2, solved=False, time=timedelta(seconds=10)),
         StudentTask(task_id=3, solved=False, time=None),
@@ -55,7 +55,7 @@ def test_get_student_tasks_best_solved_time():
         TaskSession(task_session_id=3, student_id=1, task_id=2, solved=False,
                     start=datetime(1, 1, 1, 0, 0, 40), end=datetime(1, 1, 1, 0, 0, 41)),
     )
-    student_tasks = get_student_tasks(state, student_id=1)
+    student_tasks = get_tasks(state, student_id=1)
     expected_student_tasks = {
         StudentTask(task_id=2, solved=True, time=timedelta(seconds=5)),
         StudentTask(task_id=3, solved=False, time=None),
@@ -73,7 +73,7 @@ def test_get_student_tasks_best_solved_datetime():
                     start=datetime(2017, 1, 10, 5, 30, 20),
                     end=datetime(2017, 1, 10, 5, 30, 23))
     )
-    student_tasks = get_student_tasks(state, student_id=1)
+    student_tasks = get_tasks(state, student_id=1)
     expected_student_tasks = {
         StudentTask(task_id=2, solved=True, time=timedelta(seconds=3)),
     }
@@ -90,7 +90,7 @@ def test_get_student_tasks_last_unsolved_time():
         TaskSession(task_session_id=3, student_id=1, task_id=2, solved=False, start=datetime(1, 1, 1, 0, 0, 30),
                     end=datetime(1, 1, 1, 0, 0, 32)),
     )
-    student_tasks = get_student_tasks(state, student_id=1)
+    student_tasks = get_tasks(state, student_id=1)
     expected_student_tasks = {
         StudentTask(task_id=2, solved=False, time=timedelta(seconds=2)),
         StudentTask(task_id=3, solved=False, time=None),
@@ -103,7 +103,7 @@ def test_get_student_instructions():
     iB = Instruction(instruction_id='B')
     state = empty + s1 + iA + iB
     state += SeenInstruction(seen_instruction_id=2, student_id=1, instruction_id='B')
-    student_instructions = get_student_instructions(state, student_id=1)
+    student_instructions = get_instructions(state, student_id=1)
     expected_student_instructions = {
         StudentInstruction(instruction_id='A', seen=False),
         StudentInstruction(instruction_id='B', seen=True),
@@ -115,7 +115,7 @@ def test_get_student_instructions_all_unseen():
     iA = Instruction(instruction_id='A')
     iB = Instruction(instruction_id='B')
     state = empty + s1 + iA + iB
-    student_instructions = get_student_instructions(state, student_id=1)
+    student_instructions = get_instructions(state, student_id=1)
     expected_student_instructions = {
         StudentInstruction(instruction_id='A', seen=False),
         StudentInstruction(instruction_id='B', seen=False),
@@ -129,7 +129,7 @@ def test_get_student_instructions_all_seen():
     state = empty + s1 + iA + iB
     state += SeenInstruction(seen_instruction_id=1, student_id=1, instruction_id='A')
     state += SeenInstruction(seen_instruction_id=2, student_id=1, instruction_id='B')
-    student_instructions = get_student_instructions(state, student_id=1)
+    student_instructions = get_instructions(state, student_id=1)
     expected_student_instructions = {
         StudentInstruction(instruction_id='A', seen=True),
         StudentInstruction(instruction_id='B', seen=True),
@@ -140,7 +140,7 @@ def test_get_student_instructions_all_seen():
 def test_get_student_level():
     student = Student(student_id=1, credits=20)
     state = default + student
-    level = get_student_level(state, student_id=1)
+    level = get_level(state, student_id=1)
     assert level.level_id == 3
 
 
