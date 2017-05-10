@@ -18,8 +18,9 @@ def get_level(state, task_id):
 
 def get_credits(state, task_id):
     try:
-        level_id = get_level(state, task_id).level_id
-        return level_id
+        level = get_level(state, task_id).level_id
+        credits = (level + 1) ** 2
+        return credits
     except KeyError:
         return 0
 
