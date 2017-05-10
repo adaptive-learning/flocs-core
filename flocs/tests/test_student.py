@@ -9,7 +9,7 @@ from flocs.entities import Student, Instruction, SeenInstruction, TaskSession
 from .fixtures_entities import s1, t2, t3
 
 
-def test_get_student_tasks_no_task_sessions():
+def test_get_tasks_no_task_sessions():
     state = empty + s1 + t2 + t3
     student_tasks = get_tasks(state, student_id=1)
     expected_student_tasks = {
@@ -19,7 +19,7 @@ def test_get_student_tasks_no_task_sessions():
     assert set(student_tasks) == expected_student_tasks
 
 
-def test_get_student_tasks_with_solved_task_session():
+def test_get_tasks_with_solved_task_session():
     state = empty + s1 + t2 + t3 \
             + TaskSession(task_session_id=1, student_id=1, task_id=2, solved=True,
                           start=datetime(1, 1, 1, 0, 0, 30), end=datetime(1, 1, 1, 0, 0, 40))
@@ -31,7 +31,7 @@ def test_get_student_tasks_with_solved_task_session():
     assert set(student_tasks) == expected_student_tasks
 
 
-def test_get_student_tasks_with_unsolved_task_session():
+def test_get_tasks_with_unsolved_task_session():
     state = empty + s1 + t2 + t3 \
             + TaskSession(task_session_id=1, student_id=1, task_id=2,
                           start=datetime(1, 1, 1, 0, 0, 30), end=datetime(1, 1, 1, 0, 0, 40))
@@ -43,7 +43,7 @@ def test_get_student_tasks_with_unsolved_task_session():
     assert set(student_tasks) == expected_student_tasks
 
 
-def test_get_student_tasks_best_solved_time():
+def test_get_tasks_best_solved_time():
     state = State.build(
         s1, t2, t3,
         TaskSession(task_session_id=1, student_id=1, task_id=2, solved=True,
@@ -63,7 +63,7 @@ def test_get_student_tasks_best_solved_time():
     assert set(student_tasks) == expected_student_tasks
 
 
-def test_get_student_tasks_best_solved_datetime():
+def test_get_tasks_best_solved_datetime():
     state = State.build(
         s1, t2,
         TaskSession(task_session_id=1, student_id=1, task_id=2, solved=True,
@@ -80,7 +80,7 @@ def test_get_student_tasks_best_solved_datetime():
     assert set(student_tasks) == expected_student_tasks
 
 
-def test_get_student_tasks_last_unsolved_time():
+def test_get_tasks_last_unsolved_time():
     state = State.build(
         s1, t2, t3,
         TaskSession(task_session_id=1, student_id=1, task_id=2, solved=False, start=datetime(1, 1, 1, 0, 0, 10),
@@ -98,7 +98,7 @@ def test_get_student_tasks_last_unsolved_time():
     assert set(student_tasks) == expected_student_tasks
 
 
-def test_get_student_instructions():
+def test_get_instructions():
     iA = Instruction(instruction_id='A')
     iB = Instruction(instruction_id='B')
     state = empty + s1 + iA + iB
@@ -111,7 +111,7 @@ def test_get_student_instructions():
     assert set(student_instructions) == expected_student_instructions
 
 
-def test_get_student_instructions_all_unseen():
+def test_get_instructions_all_unseen():
     iA = Instruction(instruction_id='A')
     iB = Instruction(instruction_id='B')
     state = empty + s1 + iA + iB
@@ -123,7 +123,7 @@ def test_get_student_instructions_all_unseen():
     assert set(student_instructions) == expected_student_instructions
 
 
-def test_get_student_instructions_all_seen():
+def test_get_instructions_all_seen():
     iA = Instruction(instruction_id='A')
     iB = Instruction(instruction_id='B')
     state = empty + s1 + iA + iB
@@ -137,7 +137,7 @@ def test_get_student_instructions_all_seen():
     assert set(student_instructions) == expected_student_instructions
 
 
-def test_get_student_level():
+def test_get_level():
     student = Student(student_id=1, credits=20)
     state = default + student
     level = get_level(state, student_id=1)
