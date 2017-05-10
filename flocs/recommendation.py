@@ -4,9 +4,11 @@ Task recommender protocol:
     - args: state, student_id
     - return: recommneded task_id
 """
-from collections import namedtuple
+from collections import namedtuple, Counter
 import random
-from flocs.student import get_level
+from flocs import student
+from flocs import task
+from flocs import task_session
 
 Criterion = namedtuple('Criterion', ['weight', 'fn'])
 
@@ -96,52 +98,63 @@ def fixed_then_random(state, student_id):
             return selected_task_id
 
 
-def random_by_level(state, student_id, growth_factor=2):
+def random_by_level(state, student_id):
     """ Selects task randomly but the probability is distributed according to difference between student's and task's
     levels. There is a single exception it never selects the last solved task.
 
     Args:
         state: current world state
         student_id: id of the student to whom the recommendation is given
-        growth_factor: factor of probability decay between levels
 
     Returns: id of the selected task
 
     """
-    student_level = get_level(state, student_id).level_id
-    solved_task_sessions = state.task_sessions.filter(
-        student_id=student_id,
-        solved=True)
-    last_task_session = solved_task_sessions.order_by('end').last()
-    last_task_id = last_task_session.task_id if last_task_session else None
-    restricted_tasks = {last_task_id} if last_task_id else {}
-    weighted_tasks, sum_of_weights = _exponentially_weighted_tasks(state, student_level, restricted_tasks, growth_factor)
+    weighted_tasks, sum_of_weights = _exponentially_weighted_tasks(state, student_id)
     random.seed(state.context.randomness)
     number = random.randint(0, sum_of_weights - 1)
     return _roulette_wheel_selection(weighted_tasks, number)
 
 
-def _exponentially_weighted_tasks(state, student_level, restricted_tasks, growth_factor):
+def _exponentially_weighted_tasks(state, student_id, growth_factor=2):
     """ Gives weights to the tasks based on their levels. Tasks with level higher than the student's level as well as
     restricted tasks have weight equal to 0.
 
     Args:
         state: current world state
-        student_level: student's level
-        restricted_tasks: collection of task id's that should not we selected
+        student_id: student's id
         growth_factor: factor of probability decay between levels
 
     Returns: tuple with list of tuples with task id and weight and total sum of all weights across all tasks
 
     """
+    student_level_id = student.get_level(state, student_id).level_id
+    solved_task_sessions = task_session.get_all_solved(state, student_id)
+
+    last_task_session = solved_task_sessions.order_by('end').last()
+    last_task_id = last_task_session.task_id if last_task_session else None
+    restricted_tasks = {last_task_id} if last_task_id else {}
+
     weighted_tasks = []
     sum_of_weights = 0
+
+    solved_counter = Counter([ts.task_id for ts in solved_task_sessions.values()])
+
     for task_id in state.tasks:
-        task = state.tasks[task_id]
-        task_level = state.categories[task.category_id].level_id
+        try:
+            task_level = task.get_level(state, task_id).level_id
+        except KeyError:
+            task_level = 1
+
         weight = 0
-        if task_id not in restricted_tasks and task_level <= student_level:
-            weight = growth_factor ** task_level
+        if task_id not in restricted_tasks and task_level <= student_level_id:
+            # "magic" formula 100 * G^(Tl) / G^(Sl * S) where
+            # G - growth factor (2 by default)
+            # Tl - a task level
+            # Sl - a student level
+            # S - how many times the student has successfully solved the given task
+            print(solved_counter[task_id])
+            print(solved_counter)
+            weight = 100 * growth_factor ** (task_level - (student_level_id * solved_counter[task_id]))
         weighted_tasks.append((task_id, weight))
         sum_of_weights += weight
     return weighted_tasks, sum_of_weights

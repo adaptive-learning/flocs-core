@@ -29,3 +29,7 @@ def get_time(state, student_id, task_id):
         return min(times)
     last_task_session = task_sessions.order_by('end').last()
     return last_task_session.time_spent if last_task_session else None
+
+
+def get_all_solved(state, student_id):
+    return state.task_sessions.filter(student_id=student_id, solved=True)

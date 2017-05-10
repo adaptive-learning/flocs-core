@@ -6,7 +6,9 @@ from flocs import recommendation
 from flocs.context import Context
 from flocs.entities import TaskSession, Student
 from flocs.state import State, empty, default
-from .fixtures_entities import s1, s2, t2, t3, t5, t9, c1, c2, c3, l1, l2, l3, ts1
+from .fixtures_entities import s1, s2, s3
+from .fixtures_entities import t2, t3, t5, t6, t7, t8, t9, ts1, ts2, ts3, ts4, ts5, ts6
+from .fixtures_entities import c1, c2, c3, l1, l2, l3
 
 
 def test_randomly():
@@ -103,14 +105,25 @@ def test_multicriteria():
 
 def test_random_by_level():
     state = empty + s2 + ts1 + t2 + t5 + t9 + c1 + c2 + c3 + Context(randomness=0) + l1 + l2 + l3
-    assert recommendation.random_by_level(state, 2, 2) == 5
+    assert recommendation.random_by_level(state, 2) == 5
 
 
 def test_exponentially_weighted_tasks():
-    state = empty + t2 + t5 + t9 + c1 + c2 + c3
-    weighted_tasks, sum_of_weights = recommendation._exponentially_weighted_tasks(state, 2, {2}, 2)
-    assert set(weighted_tasks) == {(2, 0), (5, 2**2), (9, 0)}
-    assert sum_of_weights == 0 + 2**2 + 0
+    state = empty + t2 + t5 + t9 + c1 + c2 + c3 + s1 + Context(randomness=0) + l1 + l2 + l3
+    weighted_tasks, sum_of_weights = recommendation._exponentially_weighted_tasks(state, 1)
+    assert set(weighted_tasks) == {(2, 200), (5, 0), (9, 0)}
+    assert sum_of_weights == 0 + 200 + 0
+
+
+def test_exponentially_weighted_tasks_some_solved():
+    state = empty + t2 + t5 + t6 + t7 + t8 + t9 + c1 + c2 + c3 + s3 + Context(randomness=0) \
+            + l1 + l2 + l3 + ts1 + ts2 + ts3 + ts4 + ts5 + ts6
+    weighted_tasks, sum_of_weights = recommendation._exponentially_weighted_tasks(state, 3)
+    assert set(weighted_tasks) == {(2, 100 * 2 ** (1 - (2 * 0))), (5, 100 * 2 ** (2 - (2 * 0))), (6, 0),
+                                   (7, 100 * 2 ** (2 - (2 * 2))), (8, 100 * 2 ** (2 - (2 * 0))),
+                                   (9, 0)}
+    assert sum_of_weights == 100 * 2 ** (1 - (2 * 0)) + 100 * 2 ** (2 - (2 * 0)) + 0 + 100 * 2 ** (2 - (2 * 2)) + \
+                             100 * 2 ** (2 - (2 * 0)) + 0
 
 
 def test_roulette():

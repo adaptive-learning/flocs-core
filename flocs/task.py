@@ -12,12 +12,13 @@ def get_level(state, task_id):
     """
     task = state.tasks[task_id]
     category = state.categories[task.category_id]
-    return category.level_id
+    level = state.levels[category.level_id]
+    return level
 
 
 def get_credits(state, task_id):
     try:
-        level_id = get_level(state, task_id)
+        level_id = get_level(state, task_id).level_id
         return level_id
     except KeyError:
         return 0
