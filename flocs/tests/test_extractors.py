@@ -45,11 +45,11 @@ def test_get_practice_overview_empty(mocker):
 def test_get_practice_overview_level_and_credits(mocker):
     mocker.patch(DEFAULT_RECOMMENDATION_FUNCTION)
 
-    state = default + s1._replace(credits=10)
+    state = default + s1._replace(credits=8)
     overview = get_practice_overview(state, student_id=1)
     assert overview.level == 2
-    assert overview.credits == 10
-    assert overview.active_credits == 6
+    assert overview.credits == 8
+    assert overview.active_credits == 2
 
 
 def test_get_practice_overview_with_instructions(mocker):

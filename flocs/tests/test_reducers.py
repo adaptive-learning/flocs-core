@@ -133,8 +133,8 @@ def test_solving_task_adds_credits():
         TaskSession(task_session_id=5, student_id=1, task_id=4)
     )
     next_state = state.reduce(SolveTask(task_session_id=5))
-    # currently, we add as many credits as is the level of the task category
-    s1_updated = s1._replace(credits=12)
+    # currently, we add (L + 1)^2 credits
+    s1_updated = s1._replace(credits=10 + 9)
     assert next_state.students == EntityMap.from_list([s1_updated])
 
 
@@ -152,7 +152,7 @@ def test_solving_multiple_task_adds_more_credits():
     )
     next_state1 = state.reduce(SolveTask(task_session_id=52))
     next_state2 = next_state1.reduce(SolveTask(task_session_id=53))
-    s1_updated = s1._replace(credits=15)
+    s1_updated = s1._replace(credits=10 + 9 + 16)
     assert next_state2.students == EntityMap.from_list([s1_updated])
 
 
