@@ -5,6 +5,7 @@ Task recommender protocol:
     - return: recommneded task_id
 """
 from collections import namedtuple, Counter
+import math
 import random
 from flocs import student
 from flocs import task
@@ -155,7 +156,8 @@ def _exponentially_weighted_tasks(state, student_id, growth_factor=2):
             weight = 100 * growth_factor ** (task_level - (student_level_id * solved_counter[task_id]))
         weighted_tasks.append((task_id, weight))
         sum_of_weights += weight
-    return weighted_tasks, sum_of_weights
+    # sum of weights may become be float, some kind of rounding is required
+    return weighted_tasks, math.ceil(sum_of_weights)
 
 
 def _roulette_wheel_selection(weighted_tasks, number):
